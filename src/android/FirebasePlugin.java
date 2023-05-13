@@ -805,7 +805,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          final boolean activated = FirebaseRemoteConfig.getInstance().activateFetched();
+          final boolean activated; // = FirebaseRemoteConfig.getInstance().activateFetched();
           Log.d(TAG, "activateFetched success. activated: " + String.valueOf(activated));
           callbackContext.success(String.valueOf(activated));
         } catch (Exception e) {
@@ -855,7 +855,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          byte[] bytes = FirebaseRemoteConfig.getInstance().getByteArray(key);
+          byte[] bytes; // = FirebaseRemoteConfig.getInstance().getByteArray(key);
           JSONObject object = new JSONObject();
           object.put("base64", Base64.encodeToString(bytes, Base64.DEFAULT));
           object.put("array", new JSONArray(bytes));
@@ -912,8 +912,8 @@ public class FirebasePlugin extends CordovaPlugin {
       public void run() {
         try {
           boolean devMode = config.getBoolean("developerModeEnabled");
-          FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder()
-              .setDeveloperModeEnabled(devMode);
+          FirebaseRemoteConfigSettings.Builder settings; // = new FirebaseRemoteConfigSettings.Builder()
+              //.setDeveloperModeEnabled(devMode);
           FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
           callbackContext.success();
         } catch (Exception e) {
@@ -928,7 +928,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults));
+          //FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults));
           callbackContext.success();
         } catch (Exception e) {
           Crashlytics.logException(e);
