@@ -796,7 +796,7 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
-
+}
 /*
   //
   // Remote Configuration
