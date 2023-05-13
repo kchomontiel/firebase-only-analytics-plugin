@@ -148,26 +148,26 @@ public class FirebasePlugin extends CordovaPlugin {
       this.setUserProperty(callbackContext, args.getString(0), args.getString(1));
       return true;
     } else if (action.equals("activateFetched")) {
-      this.activateFetched(callbackContext);
+      //this.activateFetched(callbackContext);
       return true;
     } else if (action.equals("fetch")) {
-      if (args.length() > 0) this.fetch(callbackContext, args.getLong(0));
-      else this.fetch(callbackContext);
+      //if (args.length() > 0) this.fetch(callbackContext, args.getLong(0));
+      //else this.fetch(callbackContext);
       return true;
     } else if (action.equals("getByteArray")) {
-      this.getByteArray(callbackContext, args.getString(0));
+      //this.getByteArray(callbackContext, args.getString(0));
       return true;
     } else if (action.equals("getValue")) {
-      this.getValue(callbackContext, args.getString(0));
+      //this.getValue(callbackContext, args.getString(0));
       return true;
     } else if (action.equals("getInfo")) {
-      this.getInfo(callbackContext);
+      //this.getInfo(callbackContext);
       return true;
     } else if (action.equals("setConfigSettings")) {
-      this.setConfigSettings(callbackContext, args.getJSONObject(0));
+      //this.setConfigSettings(callbackContext, args.getJSONObject(0));
       return true;
     } else if (action.equals("setDefaults")) {
-      this.setDefaults(callbackContext, args.getJSONObject(0));
+      //this.setDefaults(callbackContext, args.getJSONObject(0));
       return true;
     } else if (action.equals("startTrace")) {
       this.startTrace(callbackContext, args.getString(0));
