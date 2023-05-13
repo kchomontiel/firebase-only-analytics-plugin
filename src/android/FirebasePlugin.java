@@ -914,7 +914,7 @@ public class FirebasePlugin extends CordovaPlugin {
           boolean devMode = config.getBoolean("developerModeEnabled");
           FirebaseRemoteConfigSettings.Builder settings; // = new FirebaseRemoteConfigSettings.Builder()
               //.setDeveloperModeEnabled(devMode);
-          FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
+          //FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
           callbackContext.success();
         } catch (Exception e) {
           Crashlytics.logException(e);
