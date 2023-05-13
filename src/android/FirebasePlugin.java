@@ -892,7 +892,7 @@ public class FirebasePlugin extends CordovaPlugin {
           JSONObject info = new JSONObject();
 
           JSONObject settings = new JSONObject();
-          settings.put("developerModeEnabled", remoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
+          //settings.put("developerModeEnabled", remoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
           info.put("configSettings", settings);
 
           info.put("fetchTimeMillis", remoteConfigInfo.getFetchTimeMillis());
