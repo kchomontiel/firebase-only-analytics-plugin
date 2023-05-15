@@ -148,26 +148,26 @@ public class FirebasePlugin extends CordovaPlugin {
       this.setUserProperty(callbackContext, args.getString(0), args.getString(1));
       return true;
     } else if (action.equals("activateFetched")) {
-      this.activateFetched(callbackContext);
+      //this.activateFetched(callbackContext);
       return true;
     } else if (action.equals("fetch")) {
-      if (args.length() > 0) this.fetch(callbackContext, args.getLong(0));
-      else this.fetch(callbackContext);
+      //if (args.length() > 0) this.fetch(callbackContext, args.getLong(0));
+      //else this.fetch(callbackContext);
       return true;
     } else if (action.equals("getByteArray")) {
-      this.getByteArray(callbackContext, args.getString(0));
+      //this.getByteArray(callbackContext, args.getString(0));
       return true;
     } else if (action.equals("getValue")) {
-      this.getValue(callbackContext, args.getString(0));
+      //this.getValue(callbackContext, args.getString(0));
       return true;
     } else if (action.equals("getInfo")) {
-      this.getInfo(callbackContext);
+      //this.getInfo(callbackContext);
       return true;
     } else if (action.equals("setConfigSettings")) {
-      this.setConfigSettings(callbackContext, args.getJSONObject(0));
+      //this.setConfigSettings(callbackContext, args.getJSONObject(0));
       return true;
     } else if (action.equals("setDefaults")) {
-      this.setDefaults(callbackContext, args.getJSONObject(0));
+      //this.setDefaults(callbackContext, args.getJSONObject(0));
       return true;
     } else if (action.equals("startTrace")) {
       this.startTrace(callbackContext, args.getString(0));
@@ -796,7 +796,8 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
-
+}
+/*
   //
   // Remote Configuration
   //
@@ -805,7 +806,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          final boolean activated = FirebaseRemoteConfig.getInstance().activateFetched();
+          final boolean activated; // = FirebaseRemoteConfig.getInstance().activateFetched();
           Log.d(TAG, "activateFetched success. activated: " + String.valueOf(activated));
           callbackContext.success(String.valueOf(activated));
         } catch (Exception e) {
@@ -855,7 +856,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          byte[] bytes = FirebaseRemoteConfig.getInstance().getByteArray(key);
+          byte[] bytes; // = FirebaseRemoteConfig.getInstance().getByteArray(key);
           JSONObject object = new JSONObject();
           object.put("base64", Base64.encodeToString(bytes, Base64.DEFAULT));
           object.put("array", new JSONArray(bytes));
@@ -892,7 +893,7 @@ public class FirebasePlugin extends CordovaPlugin {
           JSONObject info = new JSONObject();
 
           JSONObject settings = new JSONObject();
-          settings.put("developerModeEnabled", remoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
+          //settings.put("developerModeEnabled", remoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
           info.put("configSettings", settings);
 
           info.put("fetchTimeMillis", remoteConfigInfo.getFetchTimeMillis());
@@ -912,9 +913,9 @@ public class FirebasePlugin extends CordovaPlugin {
       public void run() {
         try {
           boolean devMode = config.getBoolean("developerModeEnabled");
-          FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder()
-              .setDeveloperModeEnabled(devMode);
-          FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
+          FirebaseRemoteConfigSettings.Builder settings; // = new FirebaseRemoteConfigSettings.Builder()
+              //.setDeveloperModeEnabled(devMode);
+          //FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
           callbackContext.success();
         } catch (Exception e) {
           Crashlytics.logException(e);
@@ -928,7 +929,7 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults));
+          //FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults));
           callbackContext.success();
         } catch (Exception e) {
           Crashlytics.logException(e);
@@ -967,3 +968,5 @@ public class FirebasePlugin extends CordovaPlugin {
     return map;
   }
 }
+
+*/
