@@ -36,7 +36,7 @@ repositories {
   }
 }
 
-apply plugin: com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
+//apply plugin: com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
 
 dependencies {
   //added
@@ -60,12 +60,12 @@ dependencies {
   // GSON
   //implementation 'com.google.code.gson:gson:2.8.5'  
 }
-/** 
+
 cdvPluginPostBuildExtras.add({
   apply plugin: 'com.google.gms.google-services'
   apply plugin: 'com.google.firebase.crashlytics'
 })
-**/
+
 
 android {
 
@@ -75,6 +75,7 @@ android {
   }
 }
 
+/*
 cdvPluginPostBuildExtras.add({
   //apply plugin: 'com.google.gms.google-services'
    afterEvaluate {
@@ -87,3 +88,4 @@ cdvPluginPostBuildExtras.add({
         }
     }
 })
+*/
