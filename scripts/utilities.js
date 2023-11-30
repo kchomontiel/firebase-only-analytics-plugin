@@ -22,7 +22,7 @@ var constants = {
     firebaseFileExtension: ".plist",
     soundFileName: "push_sound.caf",
     getSoundDestinationFolder: function(context) {
-      return "platforms/ios/" + utils.getAppName(context) + "/Resources";
+      return "platforms/ios/" + getAppName(context) + "/Resources";
     }
   },
   zipExtension: ".zip",
@@ -40,6 +40,7 @@ function checkIfFolderExists(path) {
 }
 
 function getFilesFromPath(path) {
+  console.log(path);
   return fs.readdirSync(path);
 }
 
