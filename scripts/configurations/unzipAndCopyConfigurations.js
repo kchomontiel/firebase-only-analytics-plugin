@@ -3,7 +3,7 @@
 var path = require("path");
 var AdmZip = require("adm-zip");
 
-var utils = require("./utilities");
+var utils = require("../utilities");
 
 var constants = {
   googleServices: "google-services"
