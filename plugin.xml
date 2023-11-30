@@ -58,6 +58,11 @@
           <action android:name="com.google.firebase.MESSAGING_EVENT"/>
         </intent-filter>
       </service>
+      <service android:name="org.apache.cordova.firebase.FirebasePluginInstanceIDService" android:exported="false">
+        <intent-filter>
+          <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+        </intent-filter>
+      </service>
       <receiver android:name="org.apache.cordova.firebase.OnNotificationOpenReceiver" />
       <activity android:name="org.apache.cordova.firebase.OnNotificationOpenActivity" />
     </config-file>
@@ -100,6 +105,18 @@
         <param name="onload" value="true" />
       </feature>
     </config-file>
+
+    <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+                   <array>
+                          <dict>
+                                  <key>CFBundleURLSchemes</key>
+                                  <array>
+                                          <string>com.entel.movil.autoactivacion</string>
+                                   </array>
+                          </dict>
+                   </array>
+    </config-file>
+
     <config-file parent="aps-environment" target="*/Entitlements-Debug.plist">
       <string>development</string>
     </config-file>
@@ -121,7 +138,7 @@
     <framework src="FirebaseAnalytics" type="podspec" spec="~> 4.2" />
     <framework src="FirebaseMessaging" type="podspec" spec="~> 2.2" />
 -->
-    <framework src="FirebaseAnalytics" type="podspec" spec="~> 4.2" />
+    <framework src="FirebaseAnalytics" type="podspec" spec="~> 7.0.0" />
     <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
 
    <!--  <framework src="FirebaseAuth" type="podspec" spec="~> 4.6.1" />

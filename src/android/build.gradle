@@ -18,13 +18,13 @@ buildscript {
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
   }*/
 
-  dependencies{
+  /*dependencies{
     //for sdk
     classpath 'com.google.gms:google-services:4.3.14'
 
     classpath 'com.android.tools.build:gradle:4.1.3'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
-  }
+  }*/
 }
 
 
@@ -58,7 +58,7 @@ dependencies {
   implementation 'androidx.work:work-runtime:2.7.1'
 
   // GSON
-  implementation 'com.google.code.gson:gson:2.8.5'  
+  //implementation 'com.google.code.gson:gson:2.8.5'  
 }
 /** 
 cdvPluginPostBuildExtras.add({
