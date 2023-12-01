@@ -55,8 +55,9 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 // Crashlytics
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+//import com.crashlytics.android.Crashlytics;
+//import io.fabric.sdk.android.Fabric;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 // Dynamic Links
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -132,12 +133,13 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("logEvent")) {
       this.logEvent(callbackContext, args.getString(0), args.getJSONObject(1));
       return true;
-    } else if (action.equals("logError")) {
+    /*} else if (action.equals("logError")) {
       this.logError(callbackContext, args.getString(0));
-      return true;
-    } else if (action.equals("setCrashlyticsUserId")) {
+      return true;*/
+
+    /*} else if (action.equals("setCrashlyticsUserId")) {
       this.setCrashlyticsUserId(callbackContext, args.getString(0));
-      return true;
+      return true;*/
     } else if (action.equals("setScreenName")) {
       this.setScreenName(callbackContext, args.getString(0));
       return true;
@@ -181,9 +183,9 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("addTraceAttribute")) {
       this.addTraceAttribute(callbackContext, args.getString(0), args.getString(1), args.getString(2));
       return true;  
-    } else if (action.equals("forceCrashlytics")) {
+    /*} else if (action.equals("forceCrashlytics")) {
       this.forceCrashlytics(callbackContext);
-      return true;
+      return true;*/
     } else if (action.equals("setPerformanceCollectionEnabled")) {
       this.setPerformanceCollectionEnabled(callbackContext, args.getBoolean(0));
       return true;
@@ -261,7 +263,8 @@ public class FirebasePlugin extends CordovaPlugin {
         try {
           json.put(key, bundle.get(key));
         } catch (JSONException e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
           return;
         }
@@ -316,7 +319,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "onTokenRefresh success. token: " + currentToken);
           }
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -332,7 +336,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(id);
           Log.d(TAG, "getId success. id: " + id);
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -348,7 +353,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(token);
           Log.d(TAG, "getToken success. token: " + token);
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -368,7 +374,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(object);
           Log.d(TAG, "hasPermission success. areEnabled: " + (areNotificationsEnabled ? "true" : "false"));
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -388,7 +395,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setBadgeNumber success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -406,7 +414,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(number);
           Log.d(TAG, "getBadgeNumber success. number: " + Integer.toString(number));
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -422,7 +431,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "subscribe success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -438,7 +448,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "unsubscribe success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -458,7 +469,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "unregister success. currentToken: " + currentToken);
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -476,7 +488,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "clearAllNotifications success");
         } catch (Exception e) {
-          Crashlytics.log(e.getMessage());
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
         }
       }
     });
@@ -554,7 +567,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "logEvent success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -570,7 +584,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setScreenName success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -586,7 +601,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserId success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -602,7 +618,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserProperty success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -619,7 +636,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setAnalyticsCollectionEnabled success");
         } catch (Exception e) {
-          Crashlytics.log(e.getMessage());
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -649,7 +667,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "startTrace success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -675,7 +694,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "incrementCounter trace not found");
           }
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -702,7 +722,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "stopTrace trace not found");
           }
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -728,7 +749,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "addTraceAttribute trace not found");
           }
         } catch (Exception e) {
-          Crashlytics.log(e.getMessage());
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -745,22 +767,25 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setPerformanceCollectionEnabled success");
         } catch (Exception e) {
-          Crashlytics.log(e.getMessage());
+          //Crashlytics.logException(e);
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
     });
   }
-
+}
   // 
   // Crashlytics
   //
+  /* CRASHLITYCS COMMENTED
+
   private void forceCrashlytics(final CallbackContext callbackContext) {
     Log.d(TAG, "forceCrashlytics called");
     final FirebasePlugin self = this;
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
-        Crashlytics.getInstance().crash();
+        FirebaseCrashlytics.getInstance().crash();
       }
     });
   }
@@ -770,11 +795,11 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          Crashlytics.logException(new Exception(message));
+          FirebaseCrashlytics.logException(new Exception(message));
           callbackContext.success(1);
           Log.d(TAG, "logError success");
         } catch (Exception e) {
-          Crashlytics.log(e.getMessage());
+          FirebaseCrashlytics.log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }
@@ -786,17 +811,21 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getActivity().runOnUiThread(new Runnable() {
       public void run() {
         try {
-          Crashlytics.setUserIdentifier(userId);
+          FirebaseCrashlytics.setUserIdentifier(userId);
           callbackContext.success();
           Log.d(TAG, "setCrashlyticsUserId success");
         } catch (Exception e) {
-          Crashlytics.logException(e);
+          FirebaseCrashlytics.logException(e);
           callbackContext.error(e.getMessage());
         }
       }
     });
   }
 }
+
+*/
+
+
 /*
   //
   // Remote Configuration
