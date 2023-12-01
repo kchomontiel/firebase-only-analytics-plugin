@@ -75,6 +75,8 @@
     <resource-file src="src/android/cordova-plugin-firebase-colors.xml" target="res/values/cordova-plugin-firebase-colors.xml" />
 
     <source-file src="src/android/FirebasePlugin.java" target-dir="src/org/apache/cordova/firebase" />
+    <source-file src="src/android/FirebasePluginInstanceIDService.java" target-dir="src/org/apache/cordova/firebase" />
+
     <source-file src="src/android/OnNotificationOpenReceiver.java" target-dir="src/org/apache/cordova/firebase" />
     <source-file src="src/android/FirebasePluginMessagingService.java" target-dir="src/org/apache/cordova/firebase" />
     <source-file src="src/android/FirebasePluginMessageReceiver.java" target-dir="src/org/apache/cordova/firebase" />
