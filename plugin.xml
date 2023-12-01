@@ -92,6 +92,7 @@
     <framework src="com.google.firebase:firebase-perf:20.0.4" />
     <framework src="com.google.firebase:firebase-dynamic-links:21.0.0" />
     <framework src="com.google.firebase:firebase-iid:21.1.0" />
+    <framework src="com.google.firebase:firebase-crashlytics:18.2.7" />
   </platform>
 
   <platform name="ios">
