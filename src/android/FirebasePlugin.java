@@ -133,12 +133,13 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("logEvent")) {
       this.logEvent(callbackContext, args.getString(0), args.getJSONObject(1));
       return true;
-    } else if (action.equals("logError")) {
+    /*} else if (action.equals("logError")) {
       this.logError(callbackContext, args.getString(0));
-      return true;
-    } else if (action.equals("setCrashlyticsUserId")) {
+      return true;*/
+
+    /*} else if (action.equals("setCrashlyticsUserId")) {
       this.setCrashlyticsUserId(callbackContext, args.getString(0));
-      return true;
+      return true;*/
     } else if (action.equals("setScreenName")) {
       this.setScreenName(callbackContext, args.getString(0));
       return true;
@@ -182,9 +183,9 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("addTraceAttribute")) {
       this.addTraceAttribute(callbackContext, args.getString(0), args.getString(1), args.getString(2));
       return true;  
-    } else if (action.equals("forceCrashlytics")) {
+    /*} else if (action.equals("forceCrashlytics")) {
       this.forceCrashlytics(callbackContext);
-      return true;
+      return true;*/
     } else if (action.equals("setPerformanceCollectionEnabled")) {
       this.setPerformanceCollectionEnabled(callbackContext, args.getBoolean(0));
       return true;
