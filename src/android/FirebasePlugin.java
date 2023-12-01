@@ -777,6 +777,8 @@ public class FirebasePlugin extends CordovaPlugin {
   // 
   // Crashlytics
   //
+  /* CRASHLITYCS COMMENTED
+
   private void forceCrashlytics(final CallbackContext callbackContext) {
     Log.d(TAG, "forceCrashlytics called");
     final FirebasePlugin self = this;
@@ -819,6 +821,10 @@ public class FirebasePlugin extends CordovaPlugin {
     });
   }
 }
+
+*/
+
+
 /*
   //
   // Remote Configuration
