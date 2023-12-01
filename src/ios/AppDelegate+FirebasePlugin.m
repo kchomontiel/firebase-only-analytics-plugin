@@ -82,23 +82,34 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    [[FIRMessaging messaging] disconnect];
+   // [[FIRMessaging messaging] disconnect];  //modified
     self.applicationInBackground = @(YES);
-    NSLog(@"FirebasePlugin - Disconnected from FCM");
+   //NSLog(@"FirebasePlugin - Disconnected from FCM");  //modified
 }
 
 - (void)tokenRefreshNotification:(NSNotification *)notification {
     // Note that this callback will be fired everytime a new token is generated, including the first
     // time. So if you need to retrieve the token as soon as it is available this is where that
     // should be done.
+    
+    /* MODIFIED
     NSString *refreshedToken = [[FIRInstanceID instanceID] token];
     NSLog(@"FirebasePlugin - InstanceID token: %@", refreshedToken);
 
     // Connect to FCM since connection may have failed when attempted before having a token.
     [self connectToFcm];
     [FirebasePlugin.firebasePlugin sendToken:refreshedToken];
+    */
+    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
+        NSString* token = nil;
+        if (error == nil && result != nil && result.token != nil) {
+            token = result.token;
+        }
+        // [self connectToFcm];
+        [FirebasePlugin.firebasePlugin sendToken:token];
+    }];
 }
-
+/* MODIFIED
 - (void)connectToFcm {
     [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
         if (error != nil) {
@@ -109,7 +120,7 @@
             NSLog(@"FirebasePlugin - InstanceID token: %@", refreshedToken);
         }
     }];
-}
+}*/
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [FIRMessaging messaging].APNSToken = deviceToken;
@@ -148,6 +159,8 @@
 // [START ios_10_data_message]
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
 // To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
+
+/*MODIFIED
 - (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     NSLog(@"FirebasePlugin - didReceiveMessage");
     NSLog(@"FirebasePlugin - Received data message: %@", remoteMessage.appData);
@@ -158,6 +171,7 @@
 }
 // [END ios_10_data_message]
 
+*/
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
   NSLog(@"FirebasePlugin - Unable to register for remote notifications: %@", error);
 }
@@ -215,13 +229,13 @@
 
     completionHandler();
 }
-
+/*MODIFIED
 // Receive data message on iOS 10 devices.
 - (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     // Print full message
     NSLog(@"FirebasePlugin - applicationReceivedRemoteMessage");
     NSLog(@"%@", [remoteMessage appData]);
-}
+}*/
 #endif
 
 @end
