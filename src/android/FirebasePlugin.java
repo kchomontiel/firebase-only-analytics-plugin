@@ -773,7 +773,7 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
-
+}
   // 
   // Crashlytics
   //
