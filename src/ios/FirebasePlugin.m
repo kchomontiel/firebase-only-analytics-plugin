@@ -3,7 +3,7 @@
 #import "AppDelegate.h"
 // @import Fabric;
 // @import Crashlytics;
-@import FirebaseInstanceID;
+//@import FirebaseInstanceID; --Commented 25/072024
 @import FirebaseMessaging;
 @import FirebaseAnalytics;
 // @import FirebaseRemoteConfig;
@@ -37,9 +37,14 @@ static FirebasePlugin *firebasePlugin;
     firebasePlugin = self;
 }
 
+
+
 //
 // Notifications
 //
+
+//Commented 25/07/2024
+/*
 - (void)getId:(CDVInvokedUrlCommand *)command {
   __block CDVPluginResult *pluginResult;
 
@@ -170,6 +175,7 @@ static FirebasePlugin *firebasePlugin;
                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }];
+            */ //Commented 25/07/2024
 
         /*
             NSString* currentToken = [[FIRInstanceID instanceID] token];
@@ -179,10 +185,13 @@ static FirebasePlugin *firebasePlugin;
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             */
+ /* //Commented 25/07/2024
         }
     }];
 }
+*/ //Commented 25/07/2024
 
+/* //Commented 25/07/2024
 - (void)onNotificationOpen:(CDVInvokedUrlCommand *)command {
     self.notificationCallbackId = command.callbackId;
 
@@ -206,6 +215,8 @@ static FirebasePlugin *firebasePlugin;
         }
     }];
 }
+
+*/ //Commented 25/07/2024
 /*MODIFIED
 - (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
     self.tokenRefreshCallbackId = command.callbackId;
@@ -216,6 +227,8 @@ static FirebasePlugin *firebasePlugin;
     }
 }*/
 
+
+/* //Commented 25/07/2024
 - (void)sendNotification:(NSDictionary *)userInfo {
     if (self.notificationCallbackId != nil) {
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:userInfo];
@@ -252,6 +265,9 @@ static FirebasePlugin *firebasePlugin;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
+
+*/ //Commented 25/07/2024
+
 
 //
 // Analytics
