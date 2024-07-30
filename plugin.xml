@@ -137,11 +137,8 @@
 <!--     <framework src="Fabric" type="podspec" spec="~> 1.9" />
     <framework src="Crashlytics" type="podspec" spec="~> 3.12" /> -->
 
-<!--commented for update
-    <framework src="FirebaseAnalytics" type="podspec" spec="~> 4.2" />
-    <framework src="FirebaseMessaging" type="podspec" spec="~> 2.2" />
--->
-    <framework src="FirebaseAnalytics" type="podspec" spec="~> 4.2.0" />
+<!--update FirebaseAnalytics from 4.2.0 to 7.0.0-->
+    <framework src="FirebaseAnalytics" type="podspec" spec="~> 7.0.0" />  
     <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
 
    <!--  <framework src="FirebaseAuth" type="podspec" spec="~> 4.6.1" />
