@@ -141,7 +141,7 @@
 
       <framework src="FirebaseAnalytics" type="podspec" spec="~> 7.0.0" />  
       <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
-
+      <framework src="FirebaseInstanceID" type="podspec" spec="~> 7.0.0" />
 
 <!--    <podspec>
       <pod name="FirebaseAnalytics" spec="~> 7.0.0"/>
