@@ -139,9 +139,19 @@
 
 <!--update FirebaseAnalytics from 4.2.0 to 7.0.0-->
 
-      <framework src="FirebaseAnalytics" type="podspec" spec="~> 7.0.0" />  
-      <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
+<!--    
+    <framework src="FirebaseAnalytics" type="podspec" spec="~> 7.0.0" />  
+    <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
+    -->
 
+    <framework src="Firebase" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseCore" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseCrashlytics" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseMessaging" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseAuth" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseRemoteConfig" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebasePerformance" type="podspec" spec="~> 7.0.0" />
+    <framework src="FirebaseDynamicLinks" type="podspec" spec="~> 7.0.0" />
 <!--    <podspec>
       <pod name="FirebaseAnalytics" spec="~> 7.0.0"/>
       <pod name="FirebaseMessaging" spec="~> 7.0.0"/>
