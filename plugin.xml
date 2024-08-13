@@ -96,9 +96,9 @@
   </platform>
 
   <platform name="ios">
-<!--     <hook type="after_plugin_install" src="scripts/crashlytics/ios/after_plugin_install.js" />
+    <hook type="after_plugin_install" src="scripts/crashlytics/ios/after_plugin_install.js" />
     <hook type="before_plugin_uninstall" src="scripts/crashlytics/ios/before_plugin_uninstall.js" /> -->
-   
+    <hook type="after_prepare" src="scripts/crashlytics/ios/after_prepare.js" />
  <!--  commented
    <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
  -->
