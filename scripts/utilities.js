@@ -155,7 +155,7 @@ function copyFromSourceToDestPath(defer, sourcePath, destPath) {
 }
 
 function getAppName(context) {
-  var ConfigParser = context.requireCordovaModule("cordova-lib").configpaser;
+  var ConfigParser = context.requireCordovaModule("cordova-lib").configparser;
   var config = new ConfigParser("config.xml");
   return config.name();
 }
