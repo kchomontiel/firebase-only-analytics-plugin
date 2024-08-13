@@ -1,5 +1,6 @@
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
+#import "Firebase.h"
 
 @interface FirebasePlugin : CDVPlugin
 + (FirebasePlugin *)firebasePlugin;

@@ -1,10 +1,14 @@
 #import "AppDelegate+FirebasePlugin.h"
 #import "FirebasePlugin.h"
-@import FirebaseMessaging;
+//@import FirebaseMessaging;
 // @import Fabric;
 // @import Crashlytics;
-@import FirebaseInstanceID;
+//@import FirebaseInstanceID;
 @import FirebaseAnalytics;
+//<new>
+#import "Firebase.h"
+@import Firebase;
+//</new>
 // @import FirebaseRemoteConfig;
 // @import FirebaseAuth;
 #import <objc/runtime.h>
@@ -54,19 +58,22 @@
     NSLog(@"FirebasePlugin - Finished launching");
     [self application:application swizzledDidFinishLaunchingWithOptions:launchOptions];
 
+    //new
+    [FIRApp configure];
+
     // [START set_messaging_delegate]
     [FIRMessaging messaging].delegate = self;
     // [END set_messaging_delegate]  
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+//#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
     // self.delegate = [UNUserNotificationCenter currentNotificationCenter].delegate;
-    NSLog(@"FirebasePlugin - Finished launching - Configure iOS >= 10");
+//    NSLog(@"FirebasePlugin - Finished launching - Configure iOS >= 10");
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-    [FIRMessaging messaging].remoteMessageDelegate = self;
-#endif
+//    [FIRMessaging messaging].remoteMessageDelegate = self;
+//#endif
 
     [[UIApplication sharedApplication] registerForRemoteNotifications];
 
-    [FIRApp configure];
+    //[FIRApp configure];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
                                                  name:kFIRInstanceIDTokenRefreshNotification object:nil];
