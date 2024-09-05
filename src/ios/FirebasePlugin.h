@@ -33,6 +33,14 @@
 // - (void)setPerformanceCollectionEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command;
 - (void)clearAllNotifications:(CDVInvokedUrlCommand *)command;
+
+- (void)getDynamicLink:(CDVInvokedUrlCommand *)command;
+- (void)onDynamicLink:(CDVInvokedUrlCommand *)command;
+- (void)postDynamicLink:(FIRDynamicLink*) dynamicLink;
+
+@property (nonatomic, copy) NSString* dynamicLinkCallbackId;
+@property (nonatomic, retain) NSDictionary* lastDynamicLinkData;
+
 @property(nonatomic, copy) NSString *notificationCallbackId;
 @property(nonatomic, copy) NSString *tokenRefreshCallbackId;
 @property(nonatomic, retain) NSMutableArray *notificationStack;

@@ -1,16 +1,8 @@
 #import "AppDelegate+FirebasePlugin.h"
 #import "FirebasePlugin.h"
-//@import FirebaseMessaging;
-// @import Fabric;
-// @import Crashlytics;
-//@import FirebaseInstanceID;
-@import FirebaseAnalytics;
-//<new>
 #import "Firebase.h"
 @import Firebase;
-//</new>
-// @import FirebaseRemoteConfig;
-// @import FirebaseAuth;
+@import FirebaseAnalytics;
 #import <objc/runtime.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -44,7 +36,56 @@
     Method original = class_getInstanceMethod(self, @selector(application:didFinishLaunchingWithOptions:));
     Method swizzled = class_getInstanceMethod(self, @selector(application:swizzledDidFinishLaunchingWithOptions:));
     method_exchangeImplementations(original, swizzled);
+
+    //Dynamic Link
+    Method originalDL = class_getInstanceMethod(self, @selector(application:openURL:options:));
+    Method swizzledDL = class_getInstanceMethod(self, @selector(swizzled_application:openURL:options:));
+    method_exchangeImplementations(originalDL, swizzledDL);
+    Method originalMDL = class_getInstanceMethod(self, @selector(application:continueUserActivity:restorationHandler:));
+    Method swizzledMDL = class_getInstanceMethod(self, @selector(swizzled_application:continueUserActivity:restorationHandler:));
+    method_exchangeImplementations(originalMDL, swizzledMDL);
 }
+//DL
+-(BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options{
+    return FALSE;
+}
+
+- (BOOL)swizzled_application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
+    // always call original method implementation first
+    BOOL handled = [self swizzled_application:app openURL:url options:options];
+    FirebasePlugin* dl = [self.viewController getCommandInstance:@"FirebasePlugin"];
+    // parse firebase dynamic link
+    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    if (dynamicLink) {
+        [dl postDynamicLink:dynamicLink];
+        handled = TRUE;
+    }
+    return handled;
+}
+
+-(BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler{
+    return FALSE;
+}
+
+- (BOOL)swizzled_application:(UIApplication *)app continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler {
+    // always call original method implementation first
+    BOOL handled = [self swizzled_application:app continueUserActivity:userActivity restorationHandler:restorationHandler];
+    FirebasePlugin* dl = [self.viewController getCommandInstance:@"FirebasePlugin"];
+    // handle firebase dynamic link
+    return [[FIRDynamicLinks dynamicLinks]
+        handleUniversalLink:userActivity.webpageURL
+        completion:^(FIRDynamicLink * dynamicLink, NSError * error) {
+            if (dynamicLink) {
+                [dl postDynamicLink:dynamicLink];
+            } else {
+                [[FIRDynamicLinks dynamicLinks] dynamicLinkFromUniversalLinkURL:userActivity.webpageURL];
+                if (dynamicLink){
+                    [dl postDynamicLink:dynamicLink];
+                }
+            }
+        }] || handled;
+}
+//DL<
 
 - (void)setApplicationInBackground:(NSNumber *)applicationInBackground {
     objc_setAssociatedObject(self, kApplicationInBackgroundKey, applicationInBackground, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -58,18 +99,14 @@
     NSLog(@"FirebasePlugin - Finished launching");
     [self application:application swizzledDidFinishLaunchingWithOptions:launchOptions];
 
-    //new
+    
     [FIRApp configure];
 
-    // [START set_messaging_delegate]
+   
     [FIRMessaging messaging].delegate = self;
-    // [END set_messaging_delegate]  
-//#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-    // self.delegate = [UNUserNotificationCenter currentNotificationCenter].delegate;
-//    NSLog(@"FirebasePlugin - Finished launching - Configure iOS >= 10");
+     
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-//    [FIRMessaging messaging].remoteMessageDelegate = self;
-//#endif
+
 
     [[UIApplication sharedApplication] registerForRemoteNotifications];
 
@@ -84,7 +121,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    [self connectToFcm];
+   // [self connectToFcm];
     self.applicationInBackground = @(NO);
 }
 

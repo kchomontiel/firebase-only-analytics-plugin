@@ -1,15 +1,7 @@
 #import "FirebasePlugin.h"
+#import "AppDelegate+FirebasePlugin.h"
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-// @import Fabric;
-// @import Crashlytics;
-//-@import FirebaseInstanceID;
-//-@import FirebaseMessaging;
-//-@import FirebaseAnalytics;
-// @import FirebaseRemoteConfig;
-// @import FirebasePerformance;
-// @import FirebaseAuth;
-#import "AppDelegate+FirebasePlugin.h"
 @import Firebase;
 @import FirebaseAnalytics;
 @import FirebasePerformance;
@@ -275,7 +267,8 @@ static FirebasePlugin *firebasePlugin;
      [self.commandDelegate runInBackground:^{
         BOOL enabled = [[command argumentAtIndex:0] boolValue];
 
-        [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+        //[[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+        [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
      }];
