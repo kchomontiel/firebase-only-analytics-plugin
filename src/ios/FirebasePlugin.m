@@ -1,14 +1,10 @@
 #import "FirebasePlugin.h"
+#import "AppDelegate+FirebasePlugin.h"
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-// @import Fabric;
-// @import Crashlytics;
-@import FirebaseInstanceID;
-@import FirebaseMessaging;
+@import Firebase;
 @import FirebaseAnalytics;
-// @import FirebaseRemoteConfig;
-// @import FirebasePerformance;
-// @import FirebaseAuth;
+@import FirebasePerformance;
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -37,9 +33,13 @@ static FirebasePlugin *firebasePlugin;
     firebasePlugin = self;
 }
 
+
+
 //
 // Notifications
 //
+
+
 - (void)getId:(CDVInvokedUrlCommand *)command {
   __block CDVPluginResult *pluginResult;
 
@@ -170,6 +170,7 @@ static FirebasePlugin *firebasePlugin;
                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }];
+            
 
         /*
             NSString* currentToken = [[FIRInstanceID instanceID] token];
@@ -179,9 +180,11 @@ static FirebasePlugin *firebasePlugin;
             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             */
+
         }
     }];
 }
+
 
 - (void)onNotificationOpen:(CDVInvokedUrlCommand *)command {
     self.notificationCallbackId = command.callbackId;
@@ -206,6 +209,8 @@ static FirebasePlugin *firebasePlugin;
         }
     }];
 }
+
+
 /*MODIFIED
 - (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
     self.tokenRefreshCallbackId = command.callbackId;
@@ -215,6 +220,7 @@ static FirebasePlugin *firebasePlugin;
         [self sendToken:currentToken];
     }
 }*/
+
 
 - (void)sendNotification:(NSDictionary *)userInfo {
     if (self.notificationCallbackId != nil) {
@@ -253,6 +259,7 @@ static FirebasePlugin *firebasePlugin;
     }];
 }
 
+
 //
 // Analytics
 //
@@ -260,7 +267,8 @@ static FirebasePlugin *firebasePlugin;
      [self.commandDelegate runInBackground:^{
         BOOL enabled = [[command argumentAtIndex:0] boolValue];
 
-        [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+        //[[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+        [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
      }];

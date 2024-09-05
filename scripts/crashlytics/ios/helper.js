@@ -7,7 +7,7 @@ var utilities = require("../../utilities");
  * inline comments inside of the .pbxproj file for the build script phase block.
  */
 var comment = "\"Crashlytics\"";
-
+var iosDeploymentTargetPodRegEx = /platform :ios, '(\d+\.\d+)'/;
 module.exports = {
 
   /**
@@ -30,8 +30,14 @@ module.exports = {
      * (dSYMs) so that Crashlytics can display stack trace information in it's web console.
      */
   addShellScriptBuildPhase: function (context, xcodeProjectPath) {
-    var xcode = context.requireCordovaModule("xcode");
-
+  //  var xcode = context.requireCordovaModule("xcode");
+  let xcode;
+  if (cmpVersions(context.opts.cordova.version, '8.0.0') < 0) {
+    xcode = context.requireCordovaModule("xcode");
+  //var xcode = context.requireCordovaModule("xcode");
+  } else {
+    xcode = require('xcode');
+  }
     // Read and parse the XCode project (.pxbproj) from disk.
     // File format information: http://www.monobjc.net/xcode-project-file-format.html
     var xcodeProject = xcode.project(xcodeProjectPath);
@@ -39,7 +45,7 @@ module.exports = {
 
     // Build the body of the script to be executed during the build phase.
     // var script = '"' + '\\"${SRCROOT}\\"' + "/\\\"" + utilities.getAppName(context) + "\\\"/Plugins/" + utilities.getPluginId() + "/Fabric.framework/run" + '"';
-    var script = '"\\"${PODS_ROOT}/Fabric/run\\""';
+    var script = '"' + '\\"${PODS_ROOT}/FirebaseCrashlytics/run\\"' + '"';
 
     // Generate a unique ID for our new build phase.
     var id = xcodeProject.generateUuid();
@@ -48,7 +54,7 @@ module.exports = {
           isa: "PBXShellScriptBuildPhase",
           buildActionMask: 2147483647,
           files: [],
-          inputPaths: [],
+          inputPaths: ['"' + '$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)' + '"'],
           name: comment,
           outputPaths: [],
           runOnlyForDeploymentPostprocessing: 0,
@@ -86,8 +92,14 @@ module.exports = {
      */
   removeShellScriptBuildPhase: function (context, xcodeProjectPath) {
 
-    var xcode = context.requireCordovaModule("xcode");
-
+    //var xcode = context.requireCordovaModule("xcode");
+    let xcode;
+    if (cmpVersions(context.opts.cordova.version, '8.0.0') < 0) {
+      xcode = context.requireCordovaModule("xcode");
+    //var xcode = context.requireCordovaModule("xcode");
+    } else {
+      xcode = require('xcode');
+    }
     // Read and parse the XCode project (.pxbproj) from disk.
     // File format information: http://www.monobjc.net/xcode-project-file-format.html
     var xcodeProject = xcode.project(xcodeProjectPath);
@@ -140,5 +152,90 @@ module.exports = {
 
     // Finally, write the .pbxproj back out to disk.
     fs.writeFileSync(xcodeProjectPath, xcodeProject.writeSync());
+  },
+  applyPodsPostInstall: function(){
+    var podFileModified = false,
+        podFilePath = "platforms/ios/Podfile",
+        podFile = fs.readFileSync(path.resolve(podFilePath)).toString(),
+        IPHONEOS_DEPLOYMENT_TARGET = podFile.match(iosDeploymentTargetPodRegEx)[1];
+
+    if(!podFile.match('post_install')){
+        podFile += `
+post_install do |installer|
+installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '${IPHONEOS_DEPLOYMENT_TARGET}'
+    end
+end
+end
+            `;
+        fs.writeFileSync(path.resolve(podFilePath), podFile);
+        console.log('cordova-plugin-firebase: Applied post install block to Podfile');
+        podFileModified = true;
+    }
+    return podFileModified;
+  },
+  ensureRunpathSearchPath: function (context, xcodeProjectPath) {
+    let xcode;
+    if (cmpVersions(context.opts.cordova.version, '8.0.0') < 0) {
+      xcode = context.requireCordovaModule("xcode");
+    } else {
+      xcode = require('xcode');
+    }
+
+    function addRunpathSearchBuildProperty(proj, build) {
+        let LD_RUNPATH_SEARCH_PATHS = proj.getBuildProperty("LD_RUNPATH_SEARCH_PATHS", build);
+
+        if (!Array.isArray(LD_RUNPATH_SEARCH_PATHS)) {
+            LD_RUNPATH_SEARCH_PATHS = [LD_RUNPATH_SEARCH_PATHS];
+        }
+
+        LD_RUNPATH_SEARCH_PATHS.forEach(LD_RUNPATH_SEARCH_PATH => {
+            if (!LD_RUNPATH_SEARCH_PATH) {
+                proj.addBuildProperty("LD_RUNPATH_SEARCH_PATHS", "\"$(inherited) @executable_path/Frameworks\"", build);
+            }
+            if (LD_RUNPATH_SEARCH_PATH.indexOf("@executable_path/Frameworks") == -1) {
+                var newValue = LD_RUNPATH_SEARCH_PATH.substr(0, LD_RUNPATH_SEARCH_PATH.length - 1);
+                newValue += ' @executable_path/Frameworks\"';
+              	console.log ("Search Path executable path::"+newValue);
+                proj.updateBuildProperty("LD_RUNPATH_SEARCH_PATHS", newValue, build);
+            }
+            if (LD_RUNPATH_SEARCH_PATH.indexOf("$(inherited)") == -1) {
+                var newValue = LD_RUNPATH_SEARCH_PATH.substr(0, LD_RUNPATH_SEARCH_PATH.length - 1);
+                newValue = '"$(inherited)"';
+              	console.log ("Search Path inherited::"+newValue);
+                proj.updateBuildProperty("LD_RUNPATH_SEARCH_PATHS", newValue, build);
+            }
+        });
+    }
+
+    // Read and parse the XCode project (.pxbproj) from disk.
+    // File format information: http://www.monobjc.net/xcode-project-file-format.html
+    var xcodeProject = xcode.project(xcodeProjectPath);
+    console.log ("xCodeProject Path Firebase::"+JSON.stringify(xcodeProject));
+    xcodeProject.parseSync();
+
+    // Add search paths build property
+    addRunpathSearchBuildProperty(xcodeProject, "Debug");
+    addRunpathSearchBuildProperty(xcodeProject, "Release");
+
+    // Finally, write the .pbxproj back out to disk.
+    fs.writeFileSync(path.resolve(xcodeProjectPath), xcodeProject.writeSync());
   }
+};
+
+function cmpVersions (a, b) {
+  var i, diff;
+  var regExStrip0 = /(\.0+)+$/;
+  var segmentsA = a.replace(regExStrip0, '').split('.');
+  var segmentsB = b.replace(regExStrip0, '').split('.');
+  var l = Math.min(segmentsA.length, segmentsB.length);
+
+  for (i = 0; i < l; i++) {
+      diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+      if (diff) {
+          return diff;
+      }
+  }
+  return segmentsA.length - segmentsB.length;
 };
