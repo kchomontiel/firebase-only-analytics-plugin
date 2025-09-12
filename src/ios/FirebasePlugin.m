@@ -56,12 +56,12 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)getToken:(CDVInvokedUrlCommand *)command {
-    [[FIRInstallations installations] authTokenWithCompletion:^(FIRInstallationsAuthTokenResult * _Nullable result, NSError * _Nullable error) {
-        NSString* token = nil;
-        if (error == nil && result != nil && result.authToken != nil) {
-            token = result.authToken;
+    [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+        NSString* fcmToken = nil;
+        if (error == nil && token != nil) {
+            fcmToken = token;
         }
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: token];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: fcmToken];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -153,13 +153,13 @@ static FirebasePlugin *firebasePlugin;
         if (error) {
             NSLog(@"FirebasePlugin - Unable to delete installation");
         } else {
-            [[FIRInstallations installations] authTokenWithCompletion:^(FIRInstallationsAuthTokenResult * _Nullable result, NSError * _Nullable error) {
-                NSString* token = nil;
-                if (error == nil && result != nil && result.authToken != nil) {
-                    token = result.authToken;
+            [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+                NSString* fcmToken = nil;
+                if (error == nil && token != nil) {
+                    fcmToken = token;
                 }
-                if (token != nil) {
-                    [self sendToken:token];
+                if (fcmToken != nil) {
+                    [self sendToken:fcmToken];
                 }
                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -182,27 +182,16 @@ static FirebasePlugin *firebasePlugin;
 
 - (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
     self.tokenRefreshCallbackId = command.callbackId;
-    [[FIRInstallations installations] authTokenWithCompletion:^(FIRInstallationsAuthTokenResult * _Nullable result, NSError * _Nullable error) {
-        NSString* token = nil;
-        if (error == nil && result != nil && result.authToken != nil) {
-            token = result.authToken;
+    [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+        NSString* fcmToken = nil;
+        if (error == nil && token != nil) {
+            fcmToken = token;
         }
-        if (token != nil) {
-            [self sendToken:token];
+        if (fcmToken != nil) {
+            [self sendToken:fcmToken];
         }
     }];
 }
-
-
-/*MODIFIED
-- (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
-    self.tokenRefreshCallbackId = command.callbackId;
-    NSString* currentToken = [[FIRInstanceID instanceID] token];
-
-    if (currentToken != nil) {
-        [self sendToken:currentToken];
-    }
-}*/
 
 
 - (void)sendNotification:(NSDictionary *)userInfo {
@@ -250,7 +239,6 @@ static FirebasePlugin *firebasePlugin;
      [self.commandDelegate runInBackground:^{
         BOOL enabled = [[command argumentAtIndex:0] boolValue];
 
-        //[[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
         [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
