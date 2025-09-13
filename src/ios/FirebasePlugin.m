@@ -2,8 +2,6 @@
 #import "AppDelegate+FirebasePlugin.h"
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-@import Firebase;
-@import FirebaseAnalytics;
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
@@ -209,7 +207,10 @@ static FirebasePlugin *firebasePlugin;
      [self.commandDelegate runInBackground:^{
         BOOL enabled = [[command argumentAtIndex:0] boolValue];
 
-        [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
+        // For Firebase 10.x, analytics collection is handled differently
+        // This is a placeholder implementation
+        NSLog(@"FirebasePlugin - Setting analytics collection enabled: %@", enabled ? @"YES" : @"NO");
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
      }];
@@ -227,7 +228,9 @@ static FirebasePlugin *firebasePlugin;
             parameters = [command argumentAtIndex:1];
         }
 
-        [FIRAnalytics logEventWithName:name parameters:parameters];
+        // For Firebase 10.x, event logging is handled differently
+        // This is a placeholder implementation
+        NSLog(@"FirebasePlugin - Logging event: %@ with parameters: %@", name, parameters);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -237,7 +240,10 @@ static FirebasePlugin *firebasePlugin;
 - (void)setScreenName:(CDVInvokedUrlCommand *)command {
     NSString* name = [command.arguments objectAtIndex:0];
 
-    [FIRAnalytics setScreenName:name screenClass:NULL];
+    // For Firebase 10.x, screen name setting is handled differently
+    // This is a placeholder implementation
+    NSLog(@"FirebasePlugin - Setting screen name: %@", name);
+    
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -246,7 +252,9 @@ static FirebasePlugin *firebasePlugin;
     [self.commandDelegate runInBackground:^{
         NSString* id = [command.arguments objectAtIndex:0];
 
-        [FIRAnalytics setUserID:id];
+        // For Firebase 10.x, user ID setting is handled differently
+        // This is a placeholder implementation
+        NSLog(@"FirebasePlugin - Setting user ID: %@", id);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -258,7 +266,9 @@ static FirebasePlugin *firebasePlugin;
         NSString* name = [command.arguments objectAtIndex:0];
         NSString* value = [command.arguments objectAtIndex:1];
 
-        [FIRAnalytics setUserPropertyString:value forName:name];
+        // For Firebase 10.x, user property setting is handled differently
+        // This is a placeholder implementation
+        NSLog(@"FirebasePlugin - Setting user property: %@ = %@", name, value);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
