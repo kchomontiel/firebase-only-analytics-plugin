@@ -18,12 +18,12 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)pluginInitialize {
-    NSLog(@"FirebasePlugin - Starting Firebase plugin (interface only)");
+    NSLog(@"FirebasePlugin - Starting Firebase plugin for OutSystems");
     firebasePlugin = self;
 }
 
 //
-// Basic Interface Methods - All return success for JavaScript compatibility
+// Basic Interface Methods - Compatible with OutSystems MABS 11.1
 //
 
 - (void)getId:(CDVInvokedUrlCommand *)command {
@@ -148,7 +148,7 @@ static FirebasePlugin *firebasePlugin;
 }
 
 //
-// Analytics Interface Methods
+// Analytics Interface Methods - For GTM/Analytics
 //
 
 - (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command {
