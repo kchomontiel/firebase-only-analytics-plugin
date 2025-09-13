@@ -131,20 +131,8 @@
     
     <!--<resource-file src="src/ios/PrivacyInfo.xcprivacy" />-->
     
-    <!-- AppDelegate+FirebasePlugin files removed to avoid compilation conflicts -->
-    <header-file src="src/ios/FirebasePlugin.h" />
-    <source-file src="src/ios/FirebasePlugin.m" />
-
-   <podspec>
-      <config>
-        <source url="https://cdn.cocoapods.org/"/>
-      </config>
-      <pods use-frameworks="true">
-        <pod name="Firebase" spec="~> 10.25.0" />
-        <pod name="FirebaseCore" spec="~> 10.25.0" />
-        <pod name="FirebaseAnalytics" spec="~> 10.25.0" />
-        <pod name="FirebaseMessaging" spec="~> 10.25.0" />
-      </pods>
-    </podspec>
+    <!-- Native plugin removed to avoid compilation conflicts in OutSystems MABS 11.1 -->
+    <!-- This plugin now provides only JavaScript interface for GTM/Analytics -->
+    <!-- Firebase functionality is handled by OutSystems native capabilities -->
   </platform>
 </plugin>
