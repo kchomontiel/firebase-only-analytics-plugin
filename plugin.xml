@@ -92,13 +92,11 @@
     <framework src="com.google.firebase:firebase-perf:20.0.4" />
     <framework src="com.google.firebase:firebase-dynamic-links:21.0.0" />
     <framework src="com.google.firebase:firebase-iid:21.1.0" />
-    <framework src="com.google.firebase:firebase-crashlytics:18.2.7" />
+    <!-- <framework src="com.google.firebase:firebase-crashlytics:18.2.7" /> -->
   </platform>
 
   <platform name="ios">
-    <hook type="after_plugin_install" src="scripts/crashlytics/ios/after_plugin_install.js" />
-    <hook type="before_plugin_uninstall" src="scripts/crashlytics/ios/before_plugin_uninstall.js" /> 
-    <hook type="after_prepare" src="scripts/crashlytics/ios/after_prepare.js" />
+    <!-- Crashlytics hooks removed to avoid compilation conflicts -->
  <!--  commented
    <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
  -->
