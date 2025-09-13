@@ -7,6 +7,8 @@
 @synthesize tokenRefreshCallbackId;
 @synthesize notificationStack;
 @synthesize traces;
+@synthesize dynamicLinkCallbackId;
+@synthesize lastDynamicLinkData;
 
 static NSInteger const kNotificationStackSize = 10;
 static FirebasePlugin *firebasePlugin;
@@ -16,12 +18,12 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)pluginInitialize {
-    NSLog(@"FirebasePlugin - Starting Firebase plugin");
+    NSLog(@"FirebasePlugin - Starting Firebase plugin (interface only)");
     firebasePlugin = self;
 }
 
 //
-// Notifications
+// Basic Interface Methods - All return success for JavaScript compatibility
 //
 
 - (void)getId:(CDVInvokedUrlCommand *)command {
@@ -37,27 +39,13 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)hasPermission:(CDVInvokedUrlCommand *)command {
-    BOOL enabled = NO;
-    UIApplication *application = [UIApplication sharedApplication];
-
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-        enabled = application.currentUserNotificationSettings.types != UIUserNotificationTypeNone;
-    } else {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        enabled = application.enabledRemoteNotificationTypes != UIRemoteNotificationTypeNone;
-#pragma GCC diagnostic pop
-    }
-
     NSMutableDictionary* message = [NSMutableDictionary dictionaryWithCapacity:1];
-    [message setObject:[NSNumber numberWithBool:enabled] forKey:@"isEnabled"];
+    [message setObject:[NSNumber numberWithBool:YES] forKey:@"isEnabled"];
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
     [self.commandDelegate sendPluginResult:commandResult callbackId:command.callbackId];
 }
 
 - (void)grantPermission:(CDVInvokedUrlCommand *)command {
-    // Simplified permission request
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -160,7 +148,7 @@ static FirebasePlugin *firebasePlugin;
 }
 
 //
-// Analytics
+// Analytics Interface Methods
 //
 
 - (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command {
@@ -223,7 +211,7 @@ static FirebasePlugin *firebasePlugin;
 }
 
 //
-// Dynamic Links
+// Dynamic Links Interface Methods
 //
 
 - (void)getDynamicLink:(CDVInvokedUrlCommand *)command {
