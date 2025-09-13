@@ -129,7 +129,7 @@
 
     <resource-file src="GoogleService-Info.plist" target="./GoogleService-Info.plist" />
     
-    <resource-file src="src/ios/PrivacyInfo.xcprivacy" />
+    <!--<resource-file src="src/ios/PrivacyInfo.xcprivacy" />-->
     
     <header-file src="src/ios/AppDelegate+FirebasePlugin.h" />
     <source-file src="src/ios/AppDelegate+FirebasePlugin.m" />
