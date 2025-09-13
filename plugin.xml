@@ -135,7 +135,16 @@
     <header-file src="src/ios/FirebasePlugin.h" />
     <source-file src="src/ios/FirebasePlugin.m" />
 
-   <!-- Firebase dependencies removed to avoid compilation conflicts -->
-   <!-- Add Firebase dependencies directly to your main project's Podfile instead -->
+   <podspec>
+      <config>
+        <source url="https://cdn.cocoapods.org/"/>
+      </config>
+      <pods use-frameworks="true">
+        <pod name="Firebase" spec="~> 10.25.0" />
+        <pod name="FirebaseCore" spec="~> 10.25.0" />
+        <pod name="FirebaseAnalytics" spec="~> 10.25.0" />
+        <pod name="FirebaseMessaging" spec="~> 10.25.0" />
+      </pods>
+    </podspec>
   </platform>
 </plugin>
