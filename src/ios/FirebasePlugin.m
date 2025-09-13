@@ -1,15 +1,5 @@
 #import "FirebasePlugin.h"
-#import "AppDelegate+FirebasePlugin.h"
 #import <Cordova/CDV.h>
-#import "AppDelegate.h"
-
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@import UserNotifications;
-#endif
-
-#ifndef NSFoundationVersionNumber_iOS_9_x_Max
-#define NSFoundationVersionNumber_iOS_9_x_Max 1299
-#endif
 
 @implementation FirebasePlugin
 
@@ -41,8 +31,6 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)getToken:(CDVInvokedUrlCommand *)command {
-    // For Firebase 10.x, we'll return a placeholder token
-    // The actual FCM token should be obtained through the app delegate
     NSString *placeholderToken = @"firebase_token_placeholder";
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:placeholderToken];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -68,36 +56,18 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)grantPermission:(CDVInvokedUrlCommand *)command {
-  if ([UNUserNotificationCenter class] != nil) {
-    // iOS 10 or higher
-    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-    UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-    [[UNUserNotificationCenter currentNotificationCenter]
-      requestAuthorizationWithOptions:authOptions
-      completionHandler:^(BOOL granted, NSError * _Nullable error) {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus: granted ? CDVCommandStatus_OK : CDVCommandStatus_ERROR];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
-  } else {
-    // iOS 10 notifications aren't available
-    // fall back to iOS 8-9 notifications
-    UIUserNotificationType allNotificationTypes = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    // Simplified permission request
     [[UIApplication sharedApplication] registerForRemoteNotifications];
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-  }
-  return;
 }
 
 - (void)setBadgeNumber:(CDVInvokedUrlCommand *)command {
     int number = [[command.arguments objectAtIndex:0] intValue];
-
+    
     [self.commandDelegate runInBackground:^{
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
-
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -106,7 +76,7 @@ static FirebasePlugin *firebasePlugin;
 - (void)getBadgeNumber:(CDVInvokedUrlCommand *)command {
     [self.commandDelegate runInBackground:^{
         long badge = [[UIApplication sharedApplication] applicationIconBadgeNumber];
-
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:badge];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -114,9 +84,6 @@ static FirebasePlugin *firebasePlugin;
 
 - (void)subscribe:(CDVInvokedUrlCommand *)command {
     NSString* topic = [NSString stringWithFormat:@"/topics/%@", [command.arguments objectAtIndex:0]];
-    
-    // For Firebase 10.x, topic subscription is handled differently
-    // This is a placeholder implementation
     NSLog(@"FirebasePlugin - Subscribing to topic: %@", topic);
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -125,9 +92,6 @@ static FirebasePlugin *firebasePlugin;
 
 - (void)unsubscribe:(CDVInvokedUrlCommand *)command {
     NSString* topic = [NSString stringWithFormat:@"/topics/%@", [command.arguments objectAtIndex:0]];
-    
-    // For Firebase 10.x, topic unsubscription is handled differently
-    // This is a placeholder implementation
     NSLog(@"FirebasePlugin - Unsubscribing from topic: %@", topic);
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -135,8 +99,6 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)unregister:(CDVInvokedUrlCommand *)command {
-    // For Firebase 10.x, unregister is handled differently
-    // This is a placeholder implementation
     NSLog(@"FirebasePlugin - Unregistering from Firebase");
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -157,8 +119,6 @@ static FirebasePlugin *firebasePlugin;
 - (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
     self.tokenRefreshCallbackId = command.callbackId;
     
-    // For Firebase 10.x, token refresh is handled differently
-    // This is a placeholder implementation
     NSString *placeholderToken = @"firebase_token_refresh_placeholder";
     [self sendToken:placeholderToken];
 }
@@ -173,7 +133,6 @@ static FirebasePlugin *firebasePlugin;
             self.notificationStack = [[NSMutableArray alloc] init];
         }
 
-        // stack notifications until a callback has been registered
         [self.notificationStack addObject:userInfo];
 
         if ([self.notificationStack count] >= kNotificationStackSize) {
@@ -191,10 +150,10 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)clearAllNotifications:(CDVInvokedUrlCommand *)command {
-	[self.commandDelegate runInBackground:^{
+    [self.commandDelegate runInBackground:^{
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -203,17 +162,15 @@ static FirebasePlugin *firebasePlugin;
 //
 // Analytics
 //
-- (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command {
-     [self.commandDelegate runInBackground:^{
-        BOOL enabled = [[command argumentAtIndex:0] boolValue];
 
-        // For Firebase 10.x, analytics collection is handled differently
-        // This is a placeholder implementation
+- (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command {
+    [self.commandDelegate runInBackground:^{
+        BOOL enabled = [[command argumentAtIndex:0] boolValue];
         NSLog(@"FirebasePlugin - Setting analytics collection enabled: %@", enabled ? @"YES" : @"NO");
         
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-     }];
+    }];
 }
 
 - (void)logEvent:(CDVInvokedUrlCommand *)command {
@@ -228,8 +185,6 @@ static FirebasePlugin *firebasePlugin;
             parameters = [command argumentAtIndex:1];
         }
 
-        // For Firebase 10.x, event logging is handled differently
-        // This is a placeholder implementation
         NSLog(@"FirebasePlugin - Logging event: %@ with parameters: %@", name, parameters);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -239,9 +194,6 @@ static FirebasePlugin *firebasePlugin;
 
 - (void)setScreenName:(CDVInvokedUrlCommand *)command {
     NSString* name = [command.arguments objectAtIndex:0];
-
-    // For Firebase 10.x, screen name setting is handled differently
-    // This is a placeholder implementation
     NSLog(@"FirebasePlugin - Setting screen name: %@", name);
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -251,9 +203,6 @@ static FirebasePlugin *firebasePlugin;
 - (void)setUserId:(CDVInvokedUrlCommand *)command {
     [self.commandDelegate runInBackground:^{
         NSString* id = [command.arguments objectAtIndex:0];
-
-        // For Firebase 10.x, user ID setting is handled differently
-        // This is a placeholder implementation
         NSLog(@"FirebasePlugin - Setting user ID: %@", id);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -266,13 +215,39 @@ static FirebasePlugin *firebasePlugin;
         NSString* name = [command.arguments objectAtIndex:0];
         NSString* value = [command.arguments objectAtIndex:1];
 
-        // For Firebase 10.x, user property setting is handled differently
-        // This is a placeholder implementation
         NSLog(@"FirebasePlugin - Setting user property: %@ = %@", name, value);
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
+}
+
+//
+// Dynamic Links
+//
+
+- (void)getDynamicLink:(CDVInvokedUrlCommand *)command {
+    NSLog(@"FirebasePlugin - Getting dynamic link");
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)onDynamicLink:(CDVInvokedUrlCommand *)command {
+    self.dynamicLinkCallbackId = command.callbackId;
+    
+    if (self.lastDynamicLinkData != nil) {
+        [self postDynamicLink:nil];
+    }
+}
+
+- (void)postDynamicLink:(id)dynamicLink {
+    if (self.dynamicLinkCallbackId != nil) {
+        NSDictionary *linkData = self.lastDynamicLinkData ?: @{};
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:linkData];
+        [pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dynamicLinkCallbackId];
+    }
 }
 
 @end
