@@ -54,10 +54,10 @@ import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
-// Crashlytics
+// Crashlytics - Removed to avoid compilation conflicts
 //import com.crashlytics.android.Crashlytics;
 //import io.fabric.sdk.android.Fabric;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
+//import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 // Dynamic Links
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -264,7 +264,7 @@ public class FirebasePlugin extends CordovaPlugin {
           json.put(key, bundle.get(key));
         } catch (JSONException e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
           return;
         }
@@ -320,7 +320,7 @@ public class FirebasePlugin extends CordovaPlugin {
           }
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -337,7 +337,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "getId success. id: " + id);
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -354,7 +354,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "getToken success. token: " + token);
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -375,7 +375,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "hasPermission success. areEnabled: " + (areNotificationsEnabled ? "true" : "false"));
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -396,7 +396,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setBadgeNumber success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -415,7 +415,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "getBadgeNumber success. number: " + Integer.toString(number));
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -432,7 +432,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "subscribe success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -449,7 +449,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "unsubscribe success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -470,7 +470,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "unregister success. currentToken: " + currentToken);
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -489,7 +489,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "clearAllNotifications success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
         }
       }
     });
@@ -568,7 +568,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "logEvent success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -585,7 +585,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setScreenName success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -602,7 +602,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setUserId success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -619,7 +619,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setUserProperty success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -637,7 +637,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setAnalyticsCollectionEnabled success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -668,7 +668,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "startTrace success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -695,7 +695,7 @@ public class FirebasePlugin extends CordovaPlugin {
           }
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -723,7 +723,7 @@ public class FirebasePlugin extends CordovaPlugin {
           }
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -750,7 +750,7 @@ public class FirebasePlugin extends CordovaPlugin {
           }
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -768,7 +768,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "setPerformanceCollectionEnabled success");
         } catch (Exception e) {
           //Crashlytics.logException(e);
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
