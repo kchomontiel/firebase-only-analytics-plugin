@@ -129,10 +129,8 @@
     
     <!--<resource-file src="src/ios/PrivacyInfo.xcprivacy" />-->
     
-    <header-file src="src/ios/AppDelegate+FirebasePlugin.h" />
-    <source-file src="src/ios/AppDelegate+FirebasePlugin.m" />
-    <header-file src="src/ios/FirebasePlugin.h" />
-    <source-file src="src/ios/FirebasePlugin.m" />
+    <source-file src="src/ios/FirebasePlugin.swift" />
+    <source-file src="src/ios/AppDelegate+FirebasePlugin.swift" />
     
     <!-- Firebase dependencies for iOS -->
     <podspec>
