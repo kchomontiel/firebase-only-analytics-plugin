@@ -132,10 +132,14 @@
     <source-file src="src/ios/FirebasePlugin.swift" />
     <source-file src="src/ios/AppDelegate+FirebasePlugin.swift" />
     
+    <!-- iOS Deployment Target Configuration -->
+    <preference name="deployment-target" value="12.0" />
+    
     <!-- Firebase dependencies for iOS -->
     <podspec>
       <config>
         <source url="https://github.com/CocoaPods/Specs.git"/>
+        <ios deployment-target="12.0"/>
       </config>
       <pods use-frameworks="true">
         <pod name="Firebase/Core" spec="~> 11.15.0"/>
