@@ -140,10 +140,10 @@
         <source url="https://github.com/CocoaPods/Specs.git"/>
       </config>
       <pods use-frameworks="true">
-        <pod name="Firebase/Core" spec="~> 10.15.0"/>
-        <pod name="Firebase/Analytics" spec="~> 10.15.0"/>
-        <pod name="Firebase/Messaging" spec="~> 10.15.0"/>
-        <pod name="Firebase/DynamicLinks" spec="~> 10.15.0"/>
+        <pod name="Firebase/Core" spec="~> 10.22.0"/>
+        <pod name="Firebase/Analytics" spec="~> 10.22.0"/>
+        <pod name="Firebase/Messaging" spec="~> 10.22.0"/>
+        <pod name="Firebase/DynamicLinks" spec="~> 10.22.0"/>
       </pods>
     </podspec>
   </platform>

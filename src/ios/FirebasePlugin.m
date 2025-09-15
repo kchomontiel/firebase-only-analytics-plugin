@@ -172,7 +172,7 @@ static FirebasePlugin *firebasePlugin;
         
         NSLog(@"FirebasePlugin - Logging event: %@ with parameters: %@", name, parameters);
 
-        // Enviar evento real a Firebase Analytics
+        // Enviar evento real a Firebase Analytics usando la API moderna
         [FIRAnalytics logEventWithName:name parameters:parameters];
         
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
