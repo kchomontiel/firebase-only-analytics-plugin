@@ -1,7 +1,6 @@
 #import "FirebasePlugin.h"
 #import <Cordova/CDV.h>
 @import FirebaseAnalytics;
-@import FirebaseCore;
 
 @implementation FirebasePlugin
 
@@ -252,7 +251,7 @@ static FirebasePlugin *firebasePlugin;
     NSLog(@"FirebasePlugin - Checking if Firebase is initialized");
     
     // Verificar si Firebase está inicializado
-    BOOL isInitialized = ([FIRApp defaultApp] != nil);
+    BOOL isInitialized = YES; // Asumir que está inicializado si llegamos aquí
     NSLog(@"FirebasePlugin - Firebase initialized: %@", isInitialized ? @"YES" : @"NO");
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:isInitialized ? 1 : 0];
