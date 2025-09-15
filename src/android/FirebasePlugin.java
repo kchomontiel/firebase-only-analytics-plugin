@@ -92,7 +92,7 @@ public class FirebasePlugin extends CordovaPlugin {
       Log.e(TAG, "Failed to initialize Firebase Analytics: " + e.getMessage(), e);
       // Intentar usar la instancia global si existe
       try {
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         Log.d(TAG, "Using global Firebase Analytics instance");
       } catch (Exception e2) {
         Log.e(TAG, "No global Firebase Analytics instance available: " + e2.getMessage(), e2);
@@ -522,7 +522,7 @@ public class FirebasePlugin extends CordovaPlugin {
     
     // Verificar también si hay una instancia global disponible
     try {
-      FirebaseAnalytics globalInstance = FirebaseAnalytics.getInstance();
+      FirebaseAnalytics globalInstance = FirebaseAnalytics.getInstance(cordova.getActivity().getApplicationContext());
       if (globalInstance != null) {
         Log.d(TAG, "Global Firebase Analytics instance is available");
         isInitialized = true;
@@ -616,7 +616,7 @@ public class FirebasePlugin extends CordovaPlugin {
           FirebaseAnalytics analyticsInstance = mFirebaseAnalytics;
           if (analyticsInstance == null) {
             try {
-              analyticsInstance = FirebaseAnalytics.getInstance();
+              analyticsInstance = FirebaseAnalytics.getInstance(cordova.getActivity().getApplicationContext());
               Log.d(TAG, "Using global Firebase Analytics instance for logEvent");
             } catch (Exception e) {
               Log.e(TAG, "No Firebase Analytics instance available: " + e.getMessage());
