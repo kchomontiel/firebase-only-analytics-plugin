@@ -145,7 +145,7 @@
     <podspec>
       <config>
         <source url="https://github.com/CocoaPods/Specs.git"/>
-        <ios deployment-target="12.0"/>
+        <ios deployment-target="$DEPLOYMENT-TARGET"/>
       </config>
       <pods use-frameworks="true">
         <pod name="Firebase/Core" spec="~> 11.15.0"/>
