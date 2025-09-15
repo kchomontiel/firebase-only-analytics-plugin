@@ -114,6 +114,11 @@
       <preference name="IPHONEOS_DEPLOYMENT_TARGET" value="12.0" />
       <preference name="SWIFT_VERSION" value="5.0" />
     </config-file>
+    
+    <!-- Force deployment target for all targets -->
+    <config-file parent="/*" target="config.xml">
+      <preference name="DEPLOYMENT_TARGET" value="12.0" />
+    </config-file>
 
     <config-file target="*-Info.plist" parent="CFBundleURLTypes">
                    <array>
@@ -152,8 +157,12 @@
       </pods>
       <post_install>
         installer.pods_project.targets.each do |target|
-          if target.name == 'FirebasePlugin'
-            target.build_configurations.each do |config|
+          target.build_configurations.each do |config|
+            # Force deployment target to 12.0 for all targets
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+            
+            # Set Swift optimization level only for our plugin
+            if target.name == 'FirebasePlugin'
               config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
             end
           end
