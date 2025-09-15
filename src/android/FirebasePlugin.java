@@ -54,10 +54,10 @@ import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
-// Crashlytics - Removed to avoid compilation conflicts
+// Crashlytics
 //import com.crashlytics.android.Crashlytics;
 //import io.fabric.sdk.android.Fabric;
-//import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 // Dynamic Links
 import com.google.firebase.dynamiclinks.DynamicLink;
@@ -80,11 +80,28 @@ public class FirebasePlugin extends CordovaPlugin {
   protected void pluginInitialize() {
     final Context context = this.cordova.getActivity().getApplicationContext();
     final Bundle extras = this.cordova.getActivity().getIntent().getExtras();
+    
+    Log.d(TAG, "Starting Firebase plugin initialization");
+    
+    // Inicialización síncrona para asegurar que esté disponible
+    try {
+      mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+      mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+      Log.d(TAG, "Firebase Analytics initialized successfully");
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to initialize Firebase Analytics: " + e.getMessage(), e);
+      // Intentar usar la instancia global si existe
+      try {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance();
+        Log.d(TAG, "Using global Firebase Analytics instance");
+      } catch (Exception e2) {
+        Log.e(TAG, "No global Firebase Analytics instance available: " + e2.getMessage(), e2);
+      }
+    }
+    
     this.cordova.getThreadPool().execute(new Runnable() {
       public void run() {
-        Log.d(TAG, "Starting Firebase plugin");
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+        Log.d(TAG, "Firebase plugin background initialization");
         if (extras != null && extras.size() > 1) {
           if (FirebasePlugin.notificationStack == null) {
             FirebasePlugin.notificationStack = new ArrayList<Bundle>();
@@ -197,6 +214,9 @@ public class FirebasePlugin extends CordovaPlugin {
       return true;
     } else if (action.equals("clearAllNotifications")) {
       this.clearAllNotifications(callbackContext);
+      return true;
+    } else if (action.equals("isFirebaseInitialized")) {
+      this.isFirebaseInitialized(callbackContext);
       return true;
   }
 
@@ -495,6 +515,25 @@ public class FirebasePlugin extends CordovaPlugin {
     });
   }
 
+  private void isFirebaseInitialized(final CallbackContext callbackContext) {
+    Log.d(TAG, "isFirebaseInitialized called");
+    boolean isInitialized = (mFirebaseAnalytics != null);
+    Log.d(TAG, "Firebase Analytics initialized: " + isInitialized);
+    
+    // Verificar también si hay una instancia global disponible
+    try {
+      FirebaseAnalytics globalInstance = FirebaseAnalytics.getInstance();
+      if (globalInstance != null) {
+        Log.d(TAG, "Global Firebase Analytics instance is available");
+        isInitialized = true;
+      }
+    } catch (Exception e) {
+      Log.d(TAG, "No global Firebase Analytics instance: " + e.getMessage());
+    }
+    
+    callbackContext.success(isInitialized ? 1 : 0);
+  }
+
     //
   // Dynamic Links
   //
@@ -547,6 +586,14 @@ public class FirebasePlugin extends CordovaPlugin {
   //
   private void logEvent(final CallbackContext callbackContext, final String name, final JSONObject params) throws JSONException {
     Log.d(TAG, "logEvent called. name: " + name);
+    
+    // Verificar que Firebase Analytics esté inicializado
+    if (mFirebaseAnalytics == null) {
+      Log.e(TAG, "Firebase Analytics not initialized yet");
+      callbackContext.error("Firebase Analytics not initialized");
+      return;
+    }
+    
     final Bundle bundle = new Bundle();
     Iterator iter = params.keys();
     while (iter.hasNext()) {
@@ -563,12 +610,28 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          mFirebaseAnalytics.logEvent(name, bundle);
+          Log.d(TAG, "Sending event to Firebase: " + name + " with bundle: " + bundle.toString());
+          
+          // Usar la instancia del plugin si está disponible, sino usar la global
+          FirebaseAnalytics analyticsInstance = mFirebaseAnalytics;
+          if (analyticsInstance == null) {
+            try {
+              analyticsInstance = FirebaseAnalytics.getInstance();
+              Log.d(TAG, "Using global Firebase Analytics instance for logEvent");
+            } catch (Exception e) {
+              Log.e(TAG, "No Firebase Analytics instance available: " + e.getMessage());
+              callbackContext.error("Firebase Analytics not available");
+              return;
+            }
+          }
+          
+          analyticsInstance.logEvent(name, bundle);
           callbackContext.success();
-          Log.d(TAG, "logEvent success");
+          Log.d(TAG, "logEvent success - Event sent to Firebase Analytics");
         } catch (Exception e) {
+          Log.e(TAG, "logEvent failed: " + e.getMessage(), e);
           //Crashlytics.logException(e);
-          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
+          FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
       }

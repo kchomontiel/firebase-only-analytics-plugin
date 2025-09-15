@@ -6,10 +6,10 @@ var AdmZip = require("adm-zip");
 var utils = require("../utilities");
 
 var constants = {
-  googleServices: "google-services"
+  googleServices: "google-services",
 };
 
-module.exports = function(context) {
+module.exports = function (context) {
   var cordovaAbove8 = utils.isCordovaAbove(context, 8);
   var cordovaAbove7 = utils.isCordovaAbove(context, 7);
   var defer;
@@ -18,7 +18,7 @@ module.exports = function(context) {
   } else {
     defer = context.requireCordovaModule("q").defer();
   }
-  
+
   var platform = context.opts.plugin.platform;
   var platformConfig = utils.getPlatformConfigs(platform);
   if (!platformConfig) {
@@ -27,10 +27,21 @@ module.exports = function(context) {
 
   var wwwPath = utils.getResourcesFolderPath(context, platform, platformConfig);
   var sourceFolderPath = utils.getSourceFolderPath(context, wwwPath);
-  
-  var googleServicesZipFile = utils.getZipFile(sourceFolderPath, constants.googleServices);
+
+  var googleServicesZipFile = utils.getZipFile(
+    sourceFolderPath,
+    constants.googleServices
+  );
   if (!googleServicesZipFile) {
-    utils.handleError("No zip file found containing google services configuration file", defer);
+    console.log("⚠️  No zip file found containing google services configuration file");
+    console.log("📁 Searched in:", sourceFolderPath);
+    console.log("🔧 Please ensure google-services.zip is placed in one of these locations:");
+    console.log("   - www/" + utils.getAppId(context) + ".firebase/google-services.zip");
+    console.log("   - www/firebase." + utils.getAppId(context) + "/google-services.zip");
+    utils.handleError(
+      "No zip file found containing google services configuration file",
+      defer
+    );
   }
 
   var zip = new AdmZip(googleServicesZipFile);
@@ -56,12 +67,17 @@ module.exports = function(context) {
   utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
 
   if (cordovaAbove7) {
-    var destPath = path.join(context.opts.projectRoot, "platforms", platform, "app");
+    var destPath = path.join(
+      context.opts.projectRoot,
+      "platforms",
+      platform,
+      "app"
+    );
     if (utils.checkIfFolderExists(destPath)) {
       var destFilePath = path.join(destPath, fileName);
       utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
     }
   }
-      
+
   return defer.promise;
-}
+};
