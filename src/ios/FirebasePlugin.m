@@ -1,5 +1,7 @@
 #import "FirebasePlugin.h"
 #import <Cordova/CDV.h>
+@import FirebaseAnalytics;
+@import FirebaseCore;
 
 @implementation FirebasePlugin
 
