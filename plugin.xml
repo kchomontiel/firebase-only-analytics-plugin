@@ -113,6 +113,7 @@
     <config-file parent="/*" target="config.xml">
       <preference name="IPHONEOS_DEPLOYMENT_TARGET" value="12.0" />
       <preference name="SWIFT_VERSION" value="5.0" />
+      <preference name="SWIFT_OPTIMIZATION_LEVEL" value="-Onone" />
     </config-file>
 
     <config-file target="*-Info.plist" parent="CFBundleURLTypes">
@@ -148,7 +149,7 @@
         <pod name="Firebase/Core" spec="~> 11.15.0"/>
         <pod name="Firebase/Analytics" spec="~> 11.15.0"/>
         <pod name="Firebase/Messaging" spec="~> 11.15.0"/>
-        <pod name="Firebase/DynamicLinks" spec="~> 11.15.0"/>
+        <pod name="Firebase/Installations" spec="~> 11.15.0"/>
       </pods>
     </podspec>
   </platform>

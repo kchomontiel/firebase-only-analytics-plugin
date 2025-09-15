@@ -2,6 +2,9 @@ import Foundation
 import Cordova
 import FirebaseAnalytics
 import FirebaseCore
+import FirebaseMessaging
+import FirebaseDynamicLinks
+import FirebaseInstallations
 
 @objc(FirebasePlugin)
 class FirebasePlugin: CDVPlugin {

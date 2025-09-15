@@ -3,7 +3,7 @@ import UIKit
 import Firebase
 import FirebaseMessaging
 import UserNotifications
-import objc
+import ObjectiveC
 
 // MARK: - AppDelegate Extension for Firebase Plugin
 extension AppDelegate {
