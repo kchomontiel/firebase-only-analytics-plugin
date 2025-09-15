@@ -133,7 +133,7 @@
     <source-file src="src/ios/AppDelegate+FirebasePlugin.swift" />
     
     <!-- iOS Deployment Target Configuration -->
-    <preference name="deployment-target" value="12.0" />
+    <preference name="DEPLOYMENT-TARGET" value="12.0" />
     
     <!-- Firebase dependencies for iOS -->
     <podspec>
