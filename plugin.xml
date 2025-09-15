@@ -17,6 +17,7 @@
   <hook type="before_plugin_install" src="scripts/configurations/installDependencies.js" />
   <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopyConfigurations.js" />
   <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
+  <hook type="after_plugin_install" src="scripts/ios/fixDeploymentTargets.js" />
 
   <preference name="APP_DOMAIN" default="/" />
   <preference name="APP_PATH" default="/" />
@@ -155,19 +156,6 @@
         <pod name="Firebase/Messaging" spec="~> 11.15.0"/>
         <pod name="Firebase/Installations" spec="~> 11.15.0"/>
       </pods>
-      <post_install>
-        installer.pods_project.targets.each do |target|
-          target.build_configurations.each do |config|
-            # Force deployment target to 12.0 for all targets
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-            
-            # Set Swift optimization level only for our plugin
-            if target.name == 'FirebasePlugin'
-              config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
-            end
-          end
-        end
-      </post_install>
     </podspec>
   </platform>
 </plugin>
