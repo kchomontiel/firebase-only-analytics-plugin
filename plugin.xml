@@ -133,5 +133,18 @@
     <source-file src="src/ios/AppDelegate+FirebasePlugin.m" />
     <header-file src="src/ios/FirebasePlugin.h" />
     <source-file src="src/ios/FirebasePlugin.m" />
+    
+    <!-- Firebase dependencies for iOS -->
+    <podspec>
+      <config>
+        <source url="https://github.com/CocoaPods/Specs.git"/>
+      </config>
+      <pods use-frameworks="true">
+        <pod name="Firebase/Core" spec="~> 10.0.0"/>
+        <pod name="Firebase/Analytics" spec="~> 10.0.0"/>
+        <pod name="Firebase/Messaging" spec="~> 10.0.0"/>
+        <pod name="Firebase/DynamicLinks" spec="~> 10.0.0"/>
+      </pods>
+    </podspec>
   </platform>
 </plugin>
