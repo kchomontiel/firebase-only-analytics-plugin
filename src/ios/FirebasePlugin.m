@@ -156,6 +156,9 @@ static FirebasePlugin *firebasePlugin;
         BOOL enabled = [[command argumentAtIndex:0] boolValue];
         NSLog(@"FirebasePlugin - Setting analytics collection enabled: %@", enabled ? @"YES" : @"NO");
         
+        // Habilitar/deshabilitar recolección de analytics real en Firebase
+        [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -164,17 +167,13 @@ static FirebasePlugin *firebasePlugin;
 - (void)logEvent:(CDVInvokedUrlCommand *)command {
     [self.commandDelegate runInBackground:^{
         NSString* name = [command.arguments objectAtIndex:0];
-        NSDictionary *parameters;
-        @try {
-            NSString *description = NSLocalizedString([command argumentAtIndex:1 withDefault:@"No Message Provided"], nil);
-            parameters = @{ NSLocalizedDescriptionKey: description };
-        }
-        @catch (NSException *execption) {
-            parameters = [command argumentAtIndex:1];
-        }
-
+        NSDictionary *parameters = [command argumentAtIndex:1];
+        
         NSLog(@"FirebasePlugin - Logging event: %@ with parameters: %@", name, parameters);
 
+        // Enviar evento real a Firebase Analytics
+        [FIRAnalytics logEventWithName:name parameters:parameters];
+        
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -184,6 +183,9 @@ static FirebasePlugin *firebasePlugin;
     NSString* name = [command.arguments objectAtIndex:0];
     NSLog(@"FirebasePlugin - Setting screen name: %@", name);
     
+    // Establecer nombre de pantalla real en Firebase Analytics
+    [FIRAnalytics setScreenName:name screenClass:nil];
+    
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -192,6 +194,9 @@ static FirebasePlugin *firebasePlugin;
     [self.commandDelegate runInBackground:^{
         NSString* id = [command.arguments objectAtIndex:0];
         NSLog(@"FirebasePlugin - Setting user ID: %@", id);
+
+        // Establecer ID de usuario real en Firebase Analytics
+        [FIRAnalytics setUserID:id];
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -204,6 +209,9 @@ static FirebasePlugin *firebasePlugin;
         NSString* value = [command.arguments objectAtIndex:1];
 
         NSLog(@"FirebasePlugin - Setting user property: %@ = %@", name, value);
+
+        // Establecer propiedad de usuario real en Firebase Analytics
+        [FIRAnalytics setUserPropertyString:value forName:name];
 
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -236,6 +244,17 @@ static FirebasePlugin *firebasePlugin;
         [pluginResult setKeepCallbackAsBool:YES];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dynamicLinkCallbackId];
     }
+}
+
+- (void)isFirebaseInitialized:(CDVInvokedUrlCommand *)command {
+    NSLog(@"FirebasePlugin - Checking if Firebase is initialized");
+    
+    // Verificar si Firebase está inicializado
+    BOOL isInitialized = ([FIRApp defaultApp] != nil);
+    NSLog(@"FirebasePlugin - Firebase initialized: %@", isInitialized ? @"YES" : @"NO");
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:isInitialized ? 1 : 0];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end

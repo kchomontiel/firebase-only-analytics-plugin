@@ -23,6 +23,7 @@
 - (void)setUserProperty:(CDVInvokedUrlCommand *)command;
 - (void)setAnalyticsCollectionEnabled:(CDVInvokedUrlCommand *)command;
 - (void)clearAllNotifications:(CDVInvokedUrlCommand *)command;
+- (void)isFirebaseInitialized:(CDVInvokedUrlCommand *)command;
 
 - (void)getDynamicLink:(CDVInvokedUrlCommand *)command;
 - (void)onDynamicLink:(CDVInvokedUrlCommand *)command;
