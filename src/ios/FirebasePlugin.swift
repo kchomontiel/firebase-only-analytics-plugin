@@ -55,7 +55,86 @@ class FirebasePlugin: CDVPlugin {
 
     @objc(getToken:)
     func getToken(_ command: CDVInvokedUrlCommand) {
-        getId(command)
+        commandDelegate.run {
+            // ✅ FIREBASE 11.15.0 FIX: Verify APNS token before FCM token
+            print("\(FirebasePlugin.TAG) - Checking APNS token availability...")
+            
+            // Check if APNS token is available
+            if Messaging.messaging().apnsToken == nil {
+                print("\(FirebasePlugin.TAG) - APNS token not available, checking permissions...")
+                
+                // Check notification permissions
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    if settings.authorizationStatus == .notDetermined {
+                        print("\(FirebasePlugin.TAG) - APNS not configured, requesting permissions...")
+                        // Request permissions and register for remote notifications
+                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+                            if granted {
+                                DispatchQueue.main.async {
+                                    UIApplication.shared.registerForRemoteNotifications()
+                                }
+                                // Wait for APNS token
+                                self.waitForAPNSTokenAndGetFCM(command)
+                            } else {
+                                let result = CDVPluginResult(status: .error, messageAs: "APNS permission denied")
+                                self.commandDelegate.send(result, callbackId: command.callbackId)
+                            }
+                        }
+                    } else {
+                        // Permissions granted but APNS token not ready, wait for it
+                        print("\(FirebasePlugin.TAG) - Permissions granted, waiting for APNS token...")
+                        self.waitForAPNSTokenAndGetFCM(command)
+                    }
+                }
+            } else {
+                print("\(FirebasePlugin.TAG) - APNS token available, getting FCM token...")
+                // APNS token available, get FCM token
+                self.getFCMToken(command)
+            }
+        }
+    }
+    
+    private func waitForAPNSTokenAndGetFCM(_ command: CDVInvokedUrlCommand) {
+        var attempts = 0
+        let maxAttempts = 15
+        let delay = 1.0
+        
+        func checkAPNS() {
+            attempts += 1
+            print("\(FirebasePlugin.TAG) - APNS token check attempt \(attempts)/\(maxAttempts)")
+            
+            if Messaging.messaging().apnsToken != nil {
+                print("\(FirebasePlugin.TAG) - APNS token ready, getting FCM token")
+                self.getFCMToken(command)
+            } else if attempts < maxAttempts {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                    checkAPNS()
+                }
+            } else {
+                print("\(FirebasePlugin.TAG) - APNS token timeout after \(maxAttempts) attempts")
+                let result = CDVPluginResult(status: .error, messageAs: "APNS token not available after \(maxAttempts) seconds")
+                self.commandDelegate.send(result, callbackId: command.callbackId)
+            }
+        }
+        
+        checkAPNS()
+    }
+    
+    private func getFCMToken(_ command: CDVInvokedUrlCommand) {
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("\(FirebasePlugin.TAG) - Error fetching FCM registration token: \(error)")
+                let result = CDVPluginResult(status: .error, messageAs: error.localizedDescription)
+                self.commandDelegate.send(result, callbackId: command.callbackId)
+            } else if let token = token {
+                print("\(FirebasePlugin.TAG) - FCM registration token: \(token)")
+                let result = CDVPluginResult(status: .ok, messageAs: token)
+                self.commandDelegate.send(result, callbackId: command.callbackId)
+            } else {
+                let result = CDVPluginResult(status: .error, messageAs: "No token available")
+                self.commandDelegate.send(result, callbackId: command.callbackId)
+            }
+        }
     }
 
     @objc(hasPermission:)
