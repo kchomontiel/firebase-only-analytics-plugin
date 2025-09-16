@@ -7,7 +7,7 @@ import FirebaseInstallations
 @objc(FirebasePlugin)
 class FirebasePlugin: CDVPlugin {
     
-    // MARK: - Properties (matching Android logic exactly)
+    // MARK: - Properties
     @objc var notificationCallbackId: String?
     @objc var tokenRefreshCallbackId: String?
     @objc var notificationStack: [Any] = []
@@ -15,27 +15,18 @@ class FirebasePlugin: CDVPlugin {
     @objc var dynamicLinkCallbackId: String?
     @objc var lastDynamicLinkData: [String: Any] = [:]
     
-    // MARK: - Constants (matching Android)
+    // MARK: - Constants
     private static let kNotificationStackSize = 10
     private static let TAG = "FirebasePlugin"
-    private static var firebasePlugin: FirebasePlugin?
 
     override func pluginInitialize() {
         super.pluginInitialize()
-        FirebasePlugin.firebasePlugin = self
         print("\(FirebasePlugin.TAG) - Starting Firebase plugin initialization")
         
         // Initialize Firebase Analytics synchronously
         do {
             FirebaseApp.configure()
             print("\(FirebasePlugin.TAG) - Firebase App configured successfully")
-            
-            // Set up messaging delegate
-            Messaging.messaging().delegate = FirebasePluginAppDelegate()
-            
-            // Set up notification center delegate
-            UNUserNotificationCenter.current().delegate = FirebasePluginAppDelegate()
-            
         } catch {
             print("\(FirebasePlugin.TAG) - Failed to configure Firebase App: \(error.localizedDescription)")
         }
@@ -64,7 +55,7 @@ class FirebasePlugin: CDVPlugin {
 
     @objc(getToken:)
     func getToken(_ command: CDVInvokedUrlCommand) {
-        getId(command) // Same implementation as getId
+        getId(command)
     }
 
     @objc(hasPermission:)
