@@ -89,6 +89,23 @@ module.exports = function (context) {
             content.substring(0, importIndex) +
             "import com.google.firebase.FirebaseApp;\n" +
             content.substring(importIndex);
+          console.log(
+            "FirebasePlugin: Added Firebase import to MainActivity.java"
+          );
+        } else {
+          // Fallback: add import after package declaration
+          var packageIndex = content.indexOf("package ");
+          if (packageIndex !== -1) {
+            var endOfPackage = content.indexOf(";", packageIndex) + 1;
+            var newlineAfterPackage = content.indexOf("\n", endOfPackage) + 1;
+            content =
+              content.substring(0, newlineAfterPackage) +
+              "import com.google.firebase.FirebaseApp;\n" +
+              content.substring(newlineAfterPackage);
+            console.log(
+              "FirebasePlugin: Added Firebase import after package declaration"
+            );
+          }
         }
       }
 
