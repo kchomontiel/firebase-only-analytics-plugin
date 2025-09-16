@@ -236,8 +236,12 @@ class FirebasePlugin: CDVPlugin {
             
             print("\(FirebasePlugin.TAG) - Setting screen name: \(name)")
             
-            // Set screen name in Firebase Analytics - FIXED: Use proper method
-            Analytics.setScreenName(name, screenClass: nil)
+            // FIXED: Use logEvent instead of deprecated setScreenName
+            // Firebase 11 removed setScreenName, use logEvent with screen_view
+            Analytics.logEvent("screen_view", parameters: [
+                "screen_name": name,
+                "screen_class": "Screen"
+            ])
             
             let result = CDVPluginResult(status: .ok)
             self.commandDelegate.send(result, callbackId: command.callbackId)
@@ -327,7 +331,8 @@ class FirebasePlugin: CDVPlugin {
                 self.commandDelegate.send(result, callbackId: command.callbackId)
             } else {
                 print("\(FirebasePlugin.TAG) - No dynamic link data available")
-                let result = CDVPluginResult(status: .ok, messageAs: NSNull())
+                // FIXED: Use nil instead of NSNull() for Firebase 11 compatibility
+                let result = CDVPluginResult(status: .ok, messageAs: nil)
                 self.commandDelegate.send(result, callbackId: command.callbackId)
             }
         }
