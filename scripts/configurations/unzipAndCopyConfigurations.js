@@ -38,10 +38,9 @@ module.exports = function (context) {
     console.log("🔧 Please ensure google-services.zip is placed in one of these locations:");
     console.log("   - www/" + utils.getAppId(context) + ".firebase/google-services.zip");
     console.log("   - www/firebase." + utils.getAppId(context) + "/google-services.zip");
-    utils.handleError(
-      "No zip file found containing google services configuration file",
-      defer
-    );
+    console.log("ℹ️  Continuing without Firebase configuration - you can add it later");
+    defer.resolve();
+    return defer.promise;
   }
 
   var zip = new AdmZip(googleServicesZipFile);
