@@ -10,55 +10,11 @@ extension AppDelegate {
     
     // MARK: - Associated Objects Keys
     private static let kApplicationInBackgroundKey = "applicationInBackground"
-    private static let kDelegateKey = "delegate"
     
     // MARK: - Associated Objects Properties
     @objc var applicationInBackground: NSNumber? {
         get { return objc_getAssociatedObject(self, &AppDelegate.kApplicationInBackgroundKey) as? NSNumber }
         set { objc_setAssociatedObject(self, &AppDelegate.kApplicationInBackgroundKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-    }
-    
-    // MARK: - Method Swizzling
-    @objc static func swizzleMethods() {
-        let originalSelector = #selector(UIApplicationDelegate.application(_:didFinishLaunchingWithOptions:))
-        let swizzledSelector = #selector(AppDelegate.application(_:swizzledDidFinishLaunchingWithOptions:))
-        
-        guard let originalMethod = class_getInstanceMethod(AppDelegate.self, originalSelector),
-              let swizzledMethod = class_getInstanceMethod(AppDelegate.self, swizzledSelector) else {
-            return
-        }
-        
-        let didAddMethod = class_addMethod(AppDelegate.self, originalSelector,
-                                         method_getImplementation(swizzledMethod),
-                                         method_getTypeEncoding(swizzledMethod))
-        
-        if didAddMethod {
-            class_replaceMethod(AppDelegate.self, swizzledSelector,
-                              method_getImplementation(originalMethod),
-                              method_getTypeEncoding(originalMethod))
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod)
-        }
-    }
-
-    @objc func application(_ application: UIApplication, swizzledDidFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        print("FirebasePlugin - AppDelegate swizzled didFinishLaunchingWithOptions")
-        
-        // Initialize Firebase
-        FirebaseApp.configure()
-        
-        // Set messaging delegate
-        Messaging.messaging().delegate = self
-        
-        // Set UNUserNotificationCenter delegate
-        UNUserNotificationCenter.current().delegate = self
-        
-        // Register for remote notifications
-        application.registerForRemoteNotifications()
-        
-        // Call original method
-        let handled = self.application(application, swizzledDidFinishLaunchingWithOptions: launchOptions)
-        return handled
     }
 }
 

@@ -15,6 +15,7 @@
     <hook type="before_plugin_install" src="scripts/configurations/installDependencies.js" />
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopyConfigurations.js" />
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
+    <hook type="before_plugin_install" src="scripts/ios/cleanCocoaPodsRepos.js" />
     <hook type="after_plugin_install" src="scripts/ios/fixDeploymentTargets.js" />
 
     <preference name="APP_DOMAIN" default="/" />
@@ -99,7 +100,7 @@
         <source-file src="src/ios/FirebasePlugin.swift" />
         <source-file src="src/ios/AppDelegate+FirebasePlugin.swift" />
         
-        <!-- Firebase dependencies for iOS - IMPROVED -->
+        <!-- Firebase dependencies for iOS - ENHANCED -->
         <podspec>
             <config>
                 <!-- Use only CDN source to avoid conflicts -->
@@ -113,21 +114,52 @@
                 <pod name="Firebase/Messaging" spec="11.15.0"/>
                 <pod name="Firebase/Installations" spec="11.15.0"/>
             </pods>
-            <!-- Post install script to fix deployment targets and conflicts -->
+            <!-- Enhanced post install script to fix ALL build settings conflicts -->
             <post_install>
                 installer.pods_project.targets.each do |target|
                     target.build_configurations.each do |config|
                         # Force deployment target to 12.0 for all pods
                         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
                         
-                        # Fix Swift optimization levels
-                        if target.name.include?('Firebase') || target.name == 'FirebasePlugin'
+                        # Fix Swift optimization levels for all Swift targets
+                        if target.name.include?('Firebase') || target.name == 'FirebasePlugin' || target.name.include?('Swift')
                             config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
                         end
                         
-                        # Fix build settings conflicts
+                        # Fix Swift language version
+                        config.build_settings['SWIFT_VERSION'] = '5.0'
+                        
+                        # Remove problematic build settings that cause conflicts
                         config.build_settings.delete('EMBEDDED_CONTENT_CONTAINS_SWIFT')
+                        config.build_settings.delete('ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES')
                         config.build_settings.delete('LD_RUNPATH_SEARCH_PATHS')
+                        
+                        # Set proper Swift standard library embedding
+                        config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+                        
+                        # Fix library search paths
+                        config.build_settings['LD_RUNPATH_SEARCH_PATHS'] = [
+                            '$(inherited)',
+                            '@executable_path/Frameworks',
+                            '@loader_path/Frameworks'
+                        ]
+                        
+                        # Ensure proper Swift compilation
+                        config.build_settings['SWIFT_COMPILATION_MODE'] = 'singlefile'
+                        config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = 'DEBUG'
+                    end
+                end
+                
+                # Also fix the main project targets
+                installer.aggregate_targets.each do |target|
+                    target.user_project.targets.each do |project_target|
+                        project_target.build_configurations.each do |config|
+                            # Apply same fixes to main project targets
+                            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+                            config.build_settings['SWIFT_VERSION'] = '5.0'
+                            config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+                            config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+                        end
                     end
                 end
             </post_install>
