@@ -331,8 +331,8 @@ class FirebasePlugin: CDVPlugin {
                 self.commandDelegate.send(result, callbackId: command.callbackId)
             } else {
                 print("\(FirebasePlugin.TAG) - No dynamic link data available")
-                // FIXED: Use nil instead of NSNull() for Firebase 11 compatibility
-                let result = CDVPluginResult(status: .ok, messageAs: nil)
+                // FIXED: Use empty string instead of nil for CDVPluginResult compatibility
+                let result = CDVPluginResult(status: .ok, messageAs: "")
                 self.commandDelegate.send(result, callbackId: command.callbackId)
             }
         }
