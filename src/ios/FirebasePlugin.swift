@@ -29,6 +29,13 @@ class FirebasePlugin: CDVPlugin {
         do {
             FirebaseApp.configure()
             print("\(FirebasePlugin.TAG) - Firebase App configured successfully")
+            
+            // Set up messaging delegate
+            Messaging.messaging().delegate = FirebasePluginAppDelegate()
+            
+            // Set up notification center delegate
+            UNUserNotificationCenter.current().delegate = FirebasePluginAppDelegate()
+            
         } catch {
             print("\(FirebasePlugin.TAG) - Failed to configure Firebase App: \(error.localizedDescription)")
         }
@@ -334,9 +341,4 @@ class FirebasePlugin: CDVPlugin {
             }
         }
     }
-}
-
-// MARK: - Static reference to FirebasePlugin
-extension FirebasePlugin {
-    static var firebasePlugin: FirebasePlugin?
 }
