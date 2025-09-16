@@ -85,7 +85,7 @@ public class FirebasePlugin extends CordovaPlugin {
     // ✅ CRITICAL FIX: Initialize Firebase App first
     try {
       // Check if Firebase is already initialized
-      if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+      if (com.google.firebase.FirebaseApp.getApps(context).isEmpty()) {
         Log.d(TAG, "Firebase not initialized, initializing...");
         com.google.firebase.FirebaseApp.initializeApp(context);
         Log.d(TAG, "Firebase App initialized successfully");
@@ -599,9 +599,10 @@ public class FirebasePlugin extends CordovaPlugin {
     // ✅ CRITICAL FIX: Ensure Firebase is initialized before logging
     try {
       // Check if Firebase App is initialized
-      if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+      Context appContext = cordova.getActivity().getApplicationContext();
+      if (com.google.firebase.FirebaseApp.getApps(appContext).isEmpty()) {
         Log.d(TAG, "Firebase not initialized in logEvent, initializing...");
-        com.google.firebase.FirebaseApp.initializeApp(cordova.getActivity().getApplicationContext());
+        com.google.firebase.FirebaseApp.initializeApp(appContext);
         Log.d(TAG, "Firebase App initialized in logEvent");
       }
       
