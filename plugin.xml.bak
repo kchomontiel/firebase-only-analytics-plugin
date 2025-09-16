@@ -15,7 +15,6 @@
     <hook type="before_plugin_install" src="scripts/configurations/installDependencies.js" />
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopyConfigurations.js" />
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
-    <hook type="before_plugin_install" src="scripts/ios/cleanCocoaPodsRepos.js" />
     <hook type="after_plugin_install" src="scripts/ios/fixDeploymentTargets.js" />
 
     <preference name="APP_DOMAIN" default="/" />
