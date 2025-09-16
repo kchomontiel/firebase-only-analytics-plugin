@@ -82,8 +82,18 @@ public class FirebasePlugin extends CordovaPlugin {
     
     Log.d(TAG, "Starting Firebase plugin initialization");
     
-    // Inicialización síncrona para asegurar que esté disponible
+    // ✅ CRITICAL FIX: Initialize Firebase App first
     try {
+      // Check if Firebase is already initialized
+      if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+        Log.d(TAG, "Firebase not initialized, initializing...");
+        com.google.firebase.FirebaseApp.initializeApp(context);
+        Log.d(TAG, "Firebase App initialized successfully");
+      } else {
+        Log.d(TAG, "Firebase App already initialized");
+      }
+      
+      // Initialize Firebase Analytics
       mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
       mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
       Log.d(TAG, "Firebase Analytics initialized successfully");
@@ -586,10 +596,25 @@ public class FirebasePlugin extends CordovaPlugin {
   private void logEvent(final CallbackContext callbackContext, final String name, final JSONObject params) throws JSONException {
     Log.d(TAG, "logEvent called. name: " + name);
     
-    // Verificar que Firebase Analytics esté inicializado
-    if (mFirebaseAnalytics == null) {
-      Log.e(TAG, "Firebase Analytics not initialized yet");
-      callbackContext.error("Firebase Analytics not initialized");
+    // ✅ CRITICAL FIX: Ensure Firebase is initialized before logging
+    try {
+      // Check if Firebase App is initialized
+      if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+        Log.d(TAG, "Firebase not initialized in logEvent, initializing...");
+        com.google.firebase.FirebaseApp.initializeApp(cordova.getActivity().getApplicationContext());
+        Log.d(TAG, "Firebase App initialized in logEvent");
+      }
+      
+      // Ensure Firebase Analytics is available
+      if (mFirebaseAnalytics == null) {
+        Log.d(TAG, "Firebase Analytics not initialized in logEvent, initializing...");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(cordova.getActivity().getApplicationContext());
+        mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+        Log.d(TAG, "Firebase Analytics initialized in logEvent");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to initialize Firebase in logEvent: " + e.getMessage(), e);
+      callbackContext.error("Failed to initialize Firebase: " + e.getMessage());
       return;
     }
     
