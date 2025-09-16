@@ -3,7 +3,6 @@ import Cordova
 import FirebaseAnalytics
 import FirebaseCore
 import FirebaseMessaging
-import FirebaseDynamicLinks
 import FirebaseInstallations
 
 @objc(FirebasePlugin)
@@ -21,414 +20,296 @@ class FirebasePlugin: CDVPlugin {
     private static let kNotificationStackSize = 10
     private static let TAG = "FirebasePlugin"
     private static var firebasePlugin: FirebasePlugin?
-    
-    // MARK: - Static accessor (matching Android)
-    @objc static func firebasePlugin() -> FirebasePlugin? {
-        return firebasePlugin
-    }
-    
-    // MARK: - Plugin Initialization (matching Android logic exactly)
+
     override func pluginInitialize() {
-        print("\(FirebasePlugin.TAG) - Starting Firebase plugin for OutSystems")
+        super.pluginInitialize()
         FirebasePlugin.firebasePlugin = self
+        print("\(FirebasePlugin.TAG) - Starting Firebase plugin initialization")
         
-        // Initialize Firebase Analytics with robust fallback logic (matching Android)
-        initializeFirebaseAnalytics()
-    }
-    
-    // MARK: - Firebase Analytics Initialization (matching Android logic exactly)
-    private func initializeFirebaseAnalytics() {
+        // Initialize Firebase Analytics synchronously
         do {
-            // Try to get the default Firebase app instance
-            guard let app = FirebaseApp.app() else {
-                print("\(FirebasePlugin.TAG) - No default Firebase app found")
+            FirebaseApp.configure()
+            print("\(FirebasePlugin.TAG) - Firebase App configured successfully")
+        } catch {
+            print("\(FirebasePlugin.TAG) - Failed to configure Firebase App: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - Cloud Messaging FCM
+    @objc(getId:)
+    func getId(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            Messaging.messaging().token { token, error in
+                if let error = error {
+                    print("\(FirebasePlugin.TAG) - Error fetching FCM registration token: \(error)")
+                    command.send(CDVPluginResult(status: .error, messageAs: error.localizedDescription))
+                } else if let token = token {
+                    print("\(FirebasePlugin.TAG) - FCM registration token: \(token)")
+                    command.send(CDVPluginResult(status: .ok, messageAs: token))
+                } else {
+                    command.send(CDVPluginResult(status: .error, messageAs: "No token available"))
+                }
+            }
+        }
+    }
+
+    @objc(getToken:)
+    func getToken(_ command: CDVInvokedUrlCommand) {
+        getId(command) // Same implementation as getId
+    }
+
+    @objc(hasPermission:)
+    func hasPermission(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                let hasPermission = settings.authorizationStatus == .authorized
+                print("\(FirebasePlugin.TAG) - Has permission: \(hasPermission)")
+                command.send(CDVPluginResult(status: .ok, messageAs: hasPermission))
+            }
+        }
+    }
+
+    @objc(grantPermission:)
+    func grantPermission(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+                if let error = error {
+                    print("\(FirebasePlugin.TAG) - Error requesting permission: \(error)")
+                    command.send(CDVPluginResult(status: .error, messageAs: error.localizedDescription))
+                } else {
+                    print("\(FirebasePlugin.TAG) - Permission granted: \(granted)")
+                    command.send(CDVPluginResult(status: .ok, messageAs: granted))
+                }
+            }
+        }
+    }
+
+    @objc(setBadgeNumber:)
+    func setBadgeNumber(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let number = command.arguments[0] as? Int else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid badge number"))
                 return
             }
             
-            print("\(FirebasePlugin.TAG) - Firebase Analytics initialized successfully")
-        } catch {
-            print("\(FirebasePlugin.TAG) - Failed to initialize Firebase Analytics: \(error.localizedDescription)")
-            
-            // Try to use global instance if available (matching Android fallback logic)
-            do {
-                if FirebaseApp.app() != nil {
-                    print("\(FirebasePlugin.TAG) - Using global Firebase Analytics instance")
-                }
-            } catch {
-                print("\(FirebasePlugin.TAG) - No global Firebase Analytics instance available: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                UIApplication.shared.applicationIconBadgeNumber = number
+                print("\(FirebasePlugin.TAG) - Badge number set to: \(number)")
+                command.send(CDVPluginResult(status: .ok))
             }
         }
     }
-    
-    // MARK: - Basic Interface Methods (matching Android exactly)
-    
-    @objc func getId(_ command: CDVInvokedUrlCommand) {
-        let installationId = Bundle.main.bundleIdentifier?.appending(".firebase") ?? "unknown.firebase"
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: installationId)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func getToken(_ command: CDVInvokedUrlCommand) {
-        let placeholderToken = "firebase_token_placeholder"
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: placeholderToken)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func hasPermission(_ command: CDVInvokedUrlCommand) {
-        let message = ["isEnabled": true]
-        let commandResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message)
-        self.commandDelegate.send(commandResult, callbackId: command.callbackId)
-    }
-    
-    @objc func grantPermission(_ command: CDVInvokedUrlCommand) {
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func setBadgeNumber(_ command: CDVInvokedUrlCommand) {
-        guard let number = command.arguments[0] as? Int else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid badge number")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
+
+    @objc(getBadgeNumber:)
+    func getBadgeNumber(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
+            print("\(FirebasePlugin.TAG) - Current badge number: \(badgeNumber)")
+            command.send(CDVPluginResult(status: .ok, messageAs: badgeNumber))
         }
-        
-        DispatchQueue.main.async {
-            UIApplication.shared.applicationIconBadgeNumber = number
+    }
+
+    @objc(subscribe:)
+    func subscribe(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let topic = command.arguments[0] as? String else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid topic"))
+                return
+            }
+            
+            Messaging.messaging().subscribe(toTopic: topic) { error in
+                if let error = error {
+                    print("\(FirebasePlugin.TAG) - Error subscribing to topic \(topic): \(error)")
+                    command.send(CDVPluginResult(status: .error, messageAs: error.localizedDescription))
+                } else {
+                    print("\(FirebasePlugin.TAG) - Successfully subscribed to topic: \(topic)")
+                    command.send(CDVPluginResult(status: .ok))
+                }
+            }
         }
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
     }
-    
-    @objc func getBadgeNumber(_ command: CDVInvokedUrlCommand) {
-        let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: badgeNumber)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func subscribe(_ command: CDVInvokedUrlCommand) {
-        guard let topic = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid topic")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
+
+    @objc(unsubscribe:)
+    func unsubscribe(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let topic = command.arguments[0] as? String else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid topic"))
+                return
+            }
+            
+            Messaging.messaging().unsubscribe(fromTopic: topic) { error in
+                if let error = error {
+                    print("\(FirebasePlugin.TAG) - Error unsubscribing from topic \(topic): \(error)")
+                    command.send(CDVPluginResult(status: .error, messageAs: error.localizedDescription))
+                } else {
+                    print("\(FirebasePlugin.TAG) - Successfully unsubscribed from topic: \(topic)")
+                    command.send(CDVPluginResult(status: .ok))
+                }
+            }
         }
-        
-        print("\(FirebasePlugin.TAG) - Subscribing to topic: \(topic)")
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
     }
-    
-    @objc func unsubscribe(_ command: CDVInvokedUrlCommand) {
-        guard let topic = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid topic")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
+
+    @objc(unregister:)
+    func unregister(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            Messaging.messaging().deleteToken { error in
+                if let error = error {
+                    print("\(FirebasePlugin.TAG) - Error deleting token: \(error)")
+                    command.send(CDVPluginResult(status: .error, messageAs: error.localizedDescription))
+                } else {
+                    print("\(FirebasePlugin.TAG) - Token deleted successfully")
+                    command.send(CDVPluginResult(status: .ok))
+                }
+            }
         }
-        
-        print("\(FirebasePlugin.TAG) - Unsubscribing from topic: \(topic)")
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
     }
-    
-    @objc func unregister(_ command: CDVInvokedUrlCommand) {
-        print("\(FirebasePlugin.TAG) - Unregistering from Firebase")
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func onNotificationOpen(_ command: CDVInvokedUrlCommand) {
-        self.notificationCallbackId = command.callbackId
+
+    @objc(onNotificationOpen:)
+    func onNotificationOpen(_ command: CDVInvokedUrlCommand) {
+        notificationCallbackId = command.callbackId
         print("\(FirebasePlugin.TAG) - Notification callback registered")
     }
-    
-    @objc func onTokenRefresh(_ command: CDVInvokedUrlCommand) {
-        self.tokenRefreshCallbackId = command.callbackId
+
+    @objc(onTokenRefresh:)
+    func onTokenRefresh(_ command: CDVInvokedUrlCommand) {
+        tokenRefreshCallbackId = command.callbackId
         print("\(FirebasePlugin.TAG) - Token refresh callback registered")
     }
-    
-    @objc func clearAllNotifications(_ command: CDVInvokedUrlCommand) {
-        print("\(FirebasePlugin.TAG) - clearAllNotifications called")
-        
-        // Execute in background thread (matching Android logic)
-        DispatchQueue.global(qos: .background).async {
+
+    @objc(clearAllNotifications:)
+    func clearAllNotifications(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
             DispatchQueue.main.async {
-                // Clear all notifications
                 UIApplication.shared.applicationIconBadgeNumber = 0
-                print("\(FirebasePlugin.TAG) - clearAllNotifications success")
-                
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+                print("\(FirebasePlugin.TAG) - All notifications cleared")
+                command.send(CDVPluginResult(status: .ok))
             }
         }
     }
-    
-    // MARK: - Firebase Analytics Methods (matching Android logic exactly)
-    
-    @objc func logEvent(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String,
-              let parameters = command.arguments[1] as? [String: Any] else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid parameters")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - logEvent called with name: \(name)")
-        
-        // Convert parameters to Firebase format (matching Android logic)
-        var firebaseParameters: [String: Any] = [:]
-        for (key, value) in parameters {
-            if let numberValue = value as? NSNumber {
-                firebaseParameters[key] = numberValue
-            } else {
-                firebaseParameters[key] = String(describing: value)
+
+    // MARK: - Analytics
+    @objc(logEvent:)
+    func logEvent(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let name = command.arguments[0] as? String,
+                  let parameters = command.arguments[1] as? [String: Any] else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid arguments for logEvent"))
+                return
             }
-        }
-        
-        // Execute in background thread (matching Android logic)
-        DispatchQueue.global(qos: .background).async {
-            do {
-                print("\(FirebasePlugin.TAG) - Sending event to Firebase: \(name) with parameters: \(firebaseParameters)")
-                
-                // Use Firebase Analytics (matching Android fallback logic)
-                Analytics.logEvent(name, parameters: firebaseParameters)
-                
-                DispatchQueue.main.async {
-                    let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                    self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-                }
-                
-                print("\(FirebasePlugin.TAG) - Event sent successfully to Firebase")
-            } catch {
-                print("\(FirebasePlugin.TAG) - Error sending event to Firebase: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Failed to log event")
-                    self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-                }
-            }
+            
+            print("\(FirebasePlugin.TAG) - Logging event: \(name) with parameters: \(parameters)")
+            
+            // Send real event to Firebase Analytics
+            Analytics.logEvent(name, parameters: parameters)
+            
+            command.send(CDVPluginResult(status: .ok))
         }
     }
-    
-    @objc func setScreenName(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid screen name")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - setScreenName called with name: \(name)")
-        
-        DispatchQueue.global(qos: .background).async {
+
+    @objc(setScreenName:)
+    func setScreenName(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let name = command.arguments[0] as? String else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid screen name"))
+                return
+            }
+            
+            print("\(FirebasePlugin.TAG) - Setting screen name: \(name)")
+            
+            // Set screen name in Firebase Analytics
             Analytics.setScreenName(name, screenClass: nil)
             
-            DispatchQueue.main.async {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            }
+            command.send(CDVPluginResult(status: .ok))
         }
     }
-    
-    @objc func setUserId(_ command: CDVInvokedUrlCommand) {
-        guard let id = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid user ID")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - setUserId called with id: \(id)")
-        
-        DispatchQueue.global(qos: .background).async {
-            Analytics.setUserID(id)
+
+    @objc(setUserId:)
+    func setUserId(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let userId = command.arguments[0] as? String else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid user ID"))
+                return
+            }
             
-            DispatchQueue.main.async {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            }
+            print("\(FirebasePlugin.TAG) - Setting user ID: \(userId)")
+            
+            // Set user ID in Firebase Analytics
+            Analytics.setUserID(userId)
+            
+            command.send(CDVPluginResult(status: .ok))
         }
     }
-    
-    @objc func setUserProperty(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String,
-              let value = command.arguments[1] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid user property")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - setUserProperty called with name: \(name), value: \(value)")
-        
-        DispatchQueue.global(qos: .background).async {
+
+    @objc(setUserProperty:)
+    func setUserProperty(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let name = command.arguments[0] as? String,
+                  let value = command.arguments[1] as? String else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid user property arguments"))
+                return
+            }
+            
+            print("\(FirebasePlugin.TAG) - Setting user property: \(name) = \(value)")
+            
+            // Set user property in Firebase Analytics
             Analytics.setUserProperty(value, forName: name)
             
-            DispatchQueue.main.async {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            }
+            command.send(CDVPluginResult(status: .ok))
         }
     }
-    
-    @objc func setAnalyticsCollectionEnabled(_ command: CDVInvokedUrlCommand) {
-        guard let enabled = command.arguments[0] as? Bool else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid enabled parameter")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - setAnalyticsCollectionEnabled called with enabled: \(enabled)")
-        
-        DispatchQueue.global(qos: .background).async {
+
+    @objc(setAnalyticsCollectionEnabled:)
+    func setAnalyticsCollectionEnabled(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            guard let enabled = command.arguments[0] as? Bool else {
+                command.send(CDVPluginResult(status: .error, messageAs: "Invalid enabled parameter"))
+                return
+            }
+            
+            print("\(FirebasePlugin.TAG) - Setting analytics collection enabled: \(enabled)")
+            
+            // Set analytics collection enabled in Firebase Analytics
             Analytics.setAnalyticsCollectionEnabled(enabled)
             
-            DispatchQueue.main.async {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            }
+            command.send(CDVPluginResult(status: .ok))
         }
     }
-    
-    @objc func isFirebaseInitialized(_ command: CDVInvokedUrlCommand) {
-        print("\(FirebasePlugin.TAG) - isFirebaseInitialized called")
-        
-        // Check if Firebase is initialized (matching Android logic exactly)
-        var isInitialized = false
-        
-        // Check if default Firebase app is available
-        if let app = FirebaseApp.app() {
-            isInitialized = true
-            print("\(FirebasePlugin.TAG) - Firebase Analytics initialized: \(isInitialized)")
-        }
-        
-        // Additional check for global instance (matching Android fallback logic)
-        if !isInitialized {
-            if FirebaseApp.app() != nil {
-                print("\(FirebasePlugin.TAG) - Global Firebase Analytics instance is available")
-                isInitialized = true
-            }
-        }
-        
-        print("\(FirebasePlugin.TAG) - Firebase initialization status: \(isInitialized)")
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: isInitialized)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+
+    @objc(isFirebaseInitialized:)
+    func isFirebaseInitialized(_ command: CDVInvokedUrlCommand) {
+        print("\(FirebasePlugin.TAG) - Checking if Firebase is initialized")
+        let isInitialized = FirebaseApp.app() != nil
+        print("\(FirebasePlugin.TAG) - Firebase initialized: \(isInitialized ? "YES" : "NO")")
+        command.send(CDVPluginResult(status: .ok, messageAs: isInitialized ? 1 : 0))
     }
-    
-    // MARK: - Dynamic Links Methods (matching Android)
-    
-    @objc func onDynamicLink(_ command: CDVInvokedUrlCommand) {
-        self.dynamicLinkCallbackId = command.callbackId
+
+    // MARK: - Dynamic Links
+    @objc(onDynamicLink:)
+    func onDynamicLink(_ command: CDVInvokedUrlCommand) {
+        dynamicLinkCallbackId = command.callbackId
         print("\(FirebasePlugin.TAG) - Dynamic link callback registered")
     }
-    
-    @objc func getDynamicLink(_ command: CDVInvokedUrlCommand) {
-        if let linkData = self.lastDynamicLinkData {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: linkData)
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-        } else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "No dynamic link data")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+
+    @objc(getDynamicLink:)
+    func getDynamicLink(_ command: CDVInvokedUrlCommand) {
+        commandDelegate.run {
+            if let dynamicLinkData = lastDynamicLinkData as? [String: Any], !dynamicLinkData.isEmpty {
+                print("\(FirebasePlugin.TAG) - Returning cached dynamic link data")
+                command.send(CDVPluginResult(status: .ok, messageAs: dynamicLinkData))
+            } else {
+                print("\(FirebasePlugin.TAG) - No dynamic link data available")
+                command.send(CDVPluginResult(status: .ok, messageAs: NSNull()))
+            }
         }
     }
-    
-    @objc func dynamicLinkCallback(_ command: CDVInvokedUrlCommand) {
-        // Handle dynamic link callback
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    // MARK: - Performance Monitoring Methods (matching Android)
-    
-    @objc func startTrace(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid trace name")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - startTrace called with name: \(name)")
-        // Performance monitoring implementation would go here
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func incrementCounter(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String,
-              let counterName = command.arguments[1] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid counter parameters")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - incrementCounter called for trace: \(name), counter: \(counterName)")
-        // Performance monitoring implementation would go here
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func stopTrace(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid trace name")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - stopTrace called with name: \(name)")
-        // Performance monitoring implementation would go here
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func addTraceAttribute(_ command: CDVInvokedUrlCommand) {
-        guard let name = command.arguments[0] as? String,
-              let attribute = command.arguments[1] as? String,
-              let value = command.arguments[2] as? String else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid trace attribute parameters")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - addTraceAttribute called for trace: \(name), attribute: \(attribute), value: \(value)")
-        // Performance monitoring implementation would go here
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    @objc func setPerformanceCollectionEnabled(_ command: CDVInvokedUrlCommand) {
-        guard let enabled = command.arguments[0] as? Bool else {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid enabled parameter")
-            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-            return
-        }
-        
-        print("\(FirebasePlugin.TAG) - setPerformanceCollectionEnabled called with enabled: \(enabled)")
-        // Performance monitoring implementation would go here
-        
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
-    }
-    
-    // MARK: - Helper Methods (matching Android)
-    
-    @objc func sendToken(_ token: String?) {
-        if let token = token, let callbackId = self.tokenRefreshCallbackId {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: token)
-            self.commandDelegate.send(pluginResult, callbackId: callbackId)
-        }
-    }
-    
-    @objc func sendNotification(_ userInfo: [String: Any]) {
-        if let callbackId = self.notificationCallbackId {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: userInfo)
-            self.commandDelegate.send(pluginResult, callbackId: callbackId)
-        }
-    }
-    
-    @objc func postDynamicLink(_ dynamicLink: Any) {
-        if let callbackId = self.dynamicLinkCallbackId {
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: dynamicLink)
-            self.commandDelegate.send(pluginResult, callbackId: callbackId)
-        }
+}
+
+// MARK: - CDVInvokedUrlCommand Extension
+extension CDVInvokedUrlCommand {
+    func send(_ result: CDVPluginResult) {
+        // This is a helper method to send plugin results
+        // The actual implementation would depend on the Cordova framework version
     }
 }

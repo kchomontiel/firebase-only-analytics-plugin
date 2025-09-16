@@ -22,34 +22,39 @@ module.exports = function (context) {
   console.log("FirebasePlugin: Cleaning CocoaPods repositories to resolve conflicts...");
 
   try {
-    // Clean CocoaPods repositories
-    exec('pod repo remove trunk', function(error, stdout, stderr) {
-      if (error) {
-        console.log("FirebasePlugin: trunk repo not found or already removed");
-      } else {
-        console.log("FirebasePlugin: Removed trunk repo");
+    // Clean CocoaPods repositories and cache
+    var commands = [
+      'pod repo remove trunk || true',
+      'pod repo remove cocoapods || true', 
+      'pod cache clean --all || true',
+      'pod repo add trunk https://cdn.cocoapods.org/ || true'
+    ];
+    
+    var currentCommand = 0;
+    
+    function runNextCommand() {
+      if (currentCommand >= commands.length) {
+        console.log("FirebasePlugin: CocoaPods repositories cleaned successfully");
+        deferral.resolve();
+        return;
       }
       
-      exec('pod repo remove cocoapods', function(error, stdout, stderr) {
+      var command = commands[currentCommand];
+      console.log("FirebasePlugin: Running:", command);
+      
+      exec(command, function(error, stdout, stderr) {
         if (error) {
-          console.log("FirebasePlugin: cocoapods repo not found or already removed");
+          console.log("FirebasePlugin: Command completed with warnings:", error.message);
         } else {
-          console.log("FirebasePlugin: Removed cocoapods repo");
+          console.log("FirebasePlugin: Command completed successfully");
         }
         
-        // Re-add only the CDN trunk repo
-        exec('pod repo add trunk https://cdn.cocoapods.org/', function(error, stdout, stderr) {
-          if (error) {
-            console.log("FirebasePlugin: Warning - could not add CDN trunk repo:", error.message);
-          } else {
-            console.log("FirebasePlugin: Added CDN trunk repo");
-          }
-          
-          console.log("FirebasePlugin: CocoaPods repositories cleaned successfully");
-          deferral.resolve();
-        });
+        currentCommand++;
+        runNextCommand();
       });
-    });
+    }
+    
+    runNextCommand();
 
   } catch (error) {
     console.error("FirebasePlugin: Error cleaning CocoaPods repositories:", error);
