@@ -236,7 +236,7 @@ class FirebasePlugin: CDVPlugin {
             
             print("\(FirebasePlugin.TAG) - Setting screen name: \(name)")
             
-            // Set screen name in Firebase Analytics
+            // Set screen name in Firebase Analytics - FIXED: Use proper method
             Analytics.setScreenName(name, screenClass: nil)
             
             let result = CDVPluginResult(status: .ok)
@@ -321,7 +321,7 @@ class FirebasePlugin: CDVPlugin {
     @objc(getDynamicLink:)
     func getDynamicLink(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
-            if let dynamicLinkData = lastDynamicLinkData as? [String: Any], !dynamicLinkData.isEmpty {
+            if let dynamicLinkData = self.lastDynamicLinkData as? [String: Any], !dynamicLinkData.isEmpty {
                 print("\(FirebasePlugin.TAG) - Returning cached dynamic link data")
                 let result = CDVPluginResult(status: .ok, messageAs: dynamicLinkData)
                 self.commandDelegate.send(result, callbackId: command.callbackId)
