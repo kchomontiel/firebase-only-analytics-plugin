@@ -6,7 +6,31 @@ var Q = require("q");
 
 module.exports = function (context) {
   var deferral = Q.defer();
-  var platform = context.opts.platforms[0];
+
+  // ✅ CRITICAL FIX: Defensive platform detection
+  var platform = null;
+  if (
+    context.opts &&
+    context.opts.platforms &&
+    context.opts.platforms.length > 0
+  ) {
+    platform = context.opts.platforms[0];
+  } else if (
+    context.opts &&
+    context.opts.cordova &&
+    context.opts.cordova.platforms &&
+    context.opts.cordova.platforms.length > 0
+  ) {
+    platform = context.opts.cordova.platforms[0];
+  } else {
+    console.log(
+      "FirebasePlugin: No platform detected, skipping Firebase initialization"
+    );
+    deferral.resolve();
+    return deferral.promise;
+  }
+
+  console.log("FirebasePlugin: Detected platform:", platform);
 
   if (platform === "android") {
     console.log(
