@@ -56,45 +56,76 @@ class FirebasePlugin: CDVPlugin {
     @objc(getToken:)
     func getToken(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
-            // ✅ FIREBASE 11.15.0 FIX: Verify APNS token before FCM token
-            print("\(FirebasePlugin.TAG) - Checking APNS token availability...")
+            // ✅ FIREBASE 11.15.0 FIX: Try direct FCM first, fallback to APNS
+            print("\(FirebasePlugin.TAG) - Attempting FCM token retrieval...")
             
-            // Check if APNS token is available
-            if Messaging.messaging().apnsToken == nil {
-                print("\(FirebasePlugin.TAG) - APNS token not available, forcing registration...")
+            // Try direct FCM token first (some environments might work without APNS)
+            self.tryDirectFCMToken(command)
+        }
+    }
+    
+    private func tryDirectFCMToken(_ command: CDVInvokedUrlCommand) {
+        print("\(FirebasePlugin.TAG) - Attempting direct FCM token retrieval...")
+        
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("\(FirebasePlugin.TAG) - Direct FCM token failed: \(error)")
                 
-                // Check notification permissions first
-                UNUserNotificationCenter.current().getNotificationSettings { settings in
-                    if settings.authorizationStatus == .notDetermined {
-                        print("\(FirebasePlugin.TAG) - APNS not configured, requesting permissions...")
-                        // Request permissions and register for remote notifications
-                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-                            if granted {
-                                print("\(FirebasePlugin.TAG) - Permissions granted, registering for remote notifications...")
-                                DispatchQueue.main.async {
-                                    UIApplication.shared.registerForRemoteNotifications()
-                                }
-                                // Wait for APNS token
-                                self.waitForAPNSTokenAndGetFCM(command)
-                            } else {
-                                let result = CDVPluginResult(status: .error, messageAs: "APNS permission denied")
-                                self.commandDelegate.send(result, callbackId: command.callbackId)
-                            }
-                        }
-                    } else {
-                        // Permissions granted but APNS token not ready, force register
-                        print("\(FirebasePlugin.TAG) - Permissions granted, forcing remote notification registration...")
+                // If direct FCM fails due to APNS, try APNS approach
+                if error.localizedDescription.contains("APNS token") {
+                    print("\(FirebasePlugin.TAG) - APNS token required, trying APNS approach...")
+                    self.tryAPNSApproach(command)
+                } else {
+                    let result = CDVPluginResult(status: .error, messageAs: error.localizedDescription)
+                    self.commandDelegate.send(result, callbackId: command.callbackId)
+                }
+            } else if let token = token {
+                print("\(FirebasePlugin.TAG) - Direct FCM token successful: \(token)")
+                let result = CDVPluginResult(status: .ok, messageAs: token)
+                self.commandDelegate.send(result, callbackId: command.callbackId)
+            } else {
+                print("\(FirebasePlugin.TAG) - No token available, trying APNS approach...")
+                self.tryAPNSApproach(command)
+            }
+        }
+    }
+    
+    private func tryAPNSApproach(_ command: CDVInvokedUrlCommand) {
+        print("\(FirebasePlugin.TAG) - Trying APNS approach...")
+        
+        // Check if APNS token is already available
+        if Messaging.messaging().apnsToken != nil {
+            print("\(FirebasePlugin.TAG) - APNS token available, getting FCM token...")
+            self.getFCMToken(command)
+            return
+        }
+        
+        // Check notification permissions first
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .notDetermined {
+                print("\(FirebasePlugin.TAG) - APNS not configured, requesting permissions...")
+                // Request permissions and register for remote notifications
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+                    if granted {
+                        print("\(FirebasePlugin.TAG) - Permissions granted, registering for remote notifications...")
                         DispatchQueue.main.async {
                             UIApplication.shared.registerForRemoteNotifications()
                         }
                         // Wait for APNS token
                         self.waitForAPNSTokenAndGetFCM(command)
+                    } else {
+                        let result = CDVPluginResult(status: .error, messageAs: "APNS permission denied")
+                        self.commandDelegate.send(result, callbackId: command.callbackId)
                     }
                 }
             } else {
-                print("\(FirebasePlugin.TAG) - APNS token available, getting FCM token...")
-                // APNS token available, get FCM token
-                self.getFCMToken(command)
+                // Permissions granted but APNS token not ready, force register
+                print("\(FirebasePlugin.TAG) - Permissions granted, forcing remote notification registration...")
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+                // Wait for APNS token
+                self.waitForAPNSTokenAndGetFCM(command)
             }
         }
     }
