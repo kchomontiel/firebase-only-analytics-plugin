@@ -21,7 +21,7 @@ import android.text.TextUtils;
 import android.content.ContentResolver;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import me.leolin.shortcutbadger.ShortcutBadger;
+// import me.leolin.shortcutbadger.ShortcutBadger; // Removed - not available
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -330,7 +330,7 @@ public class FirebasePluginMessagingService extends FirebaseMessagingService {
 
   private void applyBadgeCount(Context context, int count) {
     Log.d(TAG, "Applying badge count: " + count);
-    ShortcutBadger.applyCount(context, count);
+    // ShortcutBadger.applyCount(context, count); // Removed - not available
     SharedPreferences.Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
     editor.putInt(KEY, count);
     editor.apply();

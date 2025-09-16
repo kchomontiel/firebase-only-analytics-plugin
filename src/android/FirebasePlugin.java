@@ -25,7 +25,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
-import me.leolin.shortcutbadger.ShortcutBadger;
+// import me.leolin.shortcutbadger.ShortcutBadger; // Removed - not available
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -42,17 +42,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// Firebase PhoneAuth
-import java.util.concurrent.TimeUnit;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
+// Firebase PhoneAuth - REMOVED (not needed for analytics only)
+// import java.util.concurrent.TimeUnit;
+// import com.google.firebase.auth.FirebaseAuth;
+// import com.google.firebase.auth.AuthResult;
+// import com.google.firebase.FirebaseException;
+// import com.google.firebase.auth.FirebaseAuthException;
+// import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+// import com.google.firebase.FirebaseTooManyRequestsException;
+// import com.google.firebase.auth.PhoneAuthCredential;
+// import com.google.firebase.auth.PhoneAuthProvider;
 
 // Crashlytics
 //import com.crashlytics.android.Crashlytics;
@@ -411,7 +410,7 @@ public class FirebasePlugin extends CordovaPlugin {
           SharedPreferences.Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
           editor.putInt(KEY, number);
           editor.apply();
-          ShortcutBadger.applyCount(context, number);
+          // ShortcutBadger.applyCount(context, number); // Removed - not available
           callbackContext.success();
           Log.d(TAG, "setBadgeNumber success");
         } catch (Exception e) {
