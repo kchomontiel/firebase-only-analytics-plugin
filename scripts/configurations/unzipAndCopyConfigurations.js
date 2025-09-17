@@ -28,6 +28,11 @@ module.exports = function (context) {
   var wwwPath = utils.getResourcesFolderPath(context, platform, platformConfig);
   var sourceFolderPath = utils.getSourceFolderPath(context, wwwPath);
 
+  console.log(
+    "🔍 FirebasePlugin: Looking for google-services.zip in:",
+    sourceFolderPath
+  );
+
   var googleServicesZipFile = utils.getZipFile(
     sourceFolderPath,
     constants.googleServices
@@ -52,13 +57,20 @@ module.exports = function (context) {
     );
   }
 
+  console.log(
+    "✅ FirebasePlugin: Found google-services.zip:",
+    googleServicesZipFile
+  );
+
   var zip = new AdmZip(googleServicesZipFile);
 
   var targetPath = path.join(wwwPath, constants.googleServices);
+  console.log("📦 FirebasePlugin: Extracting to:", targetPath);
   zip.extractAllTo(targetPath, true);
 
   var files = utils.getFilesFromPath(targetPath);
   if (!files) {
+    console.log("❌ FirebasePlugin: No files found in extracted directory");
     utils.handleError("No directory found", defer);
   }
 
@@ -66,12 +78,19 @@ module.exports = function (context) {
     return name.endsWith(platformConfig.firebaseFileExtension);
   });
   if (!fileName) {
+    console.log(
+      "❌ FirebasePlugin: No file found with extension:",
+      platformConfig.firebaseFileExtension
+    );
     utils.handleError("No file found", defer);
   }
+
+  console.log("✅ FirebasePlugin: Found configuration file:", fileName);
 
   var sourceFilePath = path.join(targetPath, fileName);
   var destFilePath = path.join(context.opts.plugin.dir, fileName);
 
+  console.log("📋 FirebasePlugin: Copying to plugin directory:", destFilePath);
   utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
 
   if (cordovaAbove7) {
@@ -81,11 +100,29 @@ module.exports = function (context) {
       platform,
       "app"
     );
+    console.log("📱 FirebasePlugin: Copying to platform directory:", destPath);
+
     if (utils.checkIfFolderExists(destPath)) {
       var destFilePath = path.join(destPath, fileName);
+      console.log(
+        "✅ FirebasePlugin: Platform directory exists, copying to:",
+        destFilePath
+      );
+      utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
+    } else {
+      // Create the directory if it doesn't exist
+      console.log("📁 FirebasePlugin: Creating platform directory:", destPath);
+      utils.createOrCheckIfFolderExists(destPath);
+      var destFilePath = path.join(destPath, fileName);
+      console.log(
+        "📋 FirebasePlugin: Copying to created directory:",
+        destFilePath
+      );
       utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
     }
   }
+
+  console.log("🎉 FirebasePlugin: Configuration setup completed successfully!");
 
   return defer.promise;
 };
