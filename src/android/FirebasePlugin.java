@@ -24,8 +24,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
+// import com.google.firebase.perf.FirebasePerformance; // Removed - Performance disabled
+// import com.google.firebase.perf.metrics.Trace; // Removed - Performance disabled
 // import me.leolin.shortcutbadger.ShortcutBadger; // Removed - not available
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -192,7 +192,8 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("setDefaults")) {
       //this.setDefaults(callbackContext, args.getJSONObject(0));
       return true;
-    } else if (action.equals("startTrace")) {
+    // Performance monitoring methods - DISABLED
+    /*} else if (action.equals("startTrace")) {
       this.startTrace(callbackContext, args.getString(0));
       return true;
     } else if (action.equals("incrementCounter")) {
@@ -204,12 +205,9 @@ public class FirebasePlugin extends CordovaPlugin {
     } else if (action.equals("addTraceAttribute")) {
       this.addTraceAttribute(callbackContext, args.getString(0), args.getString(1), args.getString(2));
       return true;  
-    /*} else if (action.equals("forceCrashlytics")) {
-      this.forceCrashlytics(callbackContext);
-      return true;*/
     } else if (action.equals("setPerformanceCollectionEnabled")) {
       this.setPerformanceCollectionEnabled(callbackContext, args.getBoolean(0));
-      return true;
+      return true;*/
     } else if (action.equals("setAnalyticsCollectionEnabled")) {
       this.setAnalyticsCollectionEnabled(callbackContext, args.getBoolean(0));
       return true;
@@ -782,10 +780,12 @@ public class FirebasePlugin extends CordovaPlugin {
   }
 
   // 
-  // Performance monitoring
+  // Performance monitoring - DISABLED
   //
-  private HashMap<String,Trace> traces = new HashMap<String,Trace>();
+  // private HashMap<String,Trace> traces = new HashMap<String,Trace>(); // Removed - Performance disabled
 
+  // Performance monitoring methods - DISABLED
+  /*
   private void startTrace(final CallbackContext callbackContext, final String name) {
     Log.d(TAG, "startTrace called. name: " + name);
     final FirebasePlugin self = this;
@@ -811,7 +811,9 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 
+  /*
   private void incrementCounter(final CallbackContext callbackContext, final String name, final String counterNamed) {
     Log.d(TAG, "incrementCounter called. name: " + name + " counterNamed: " + counterNamed);
     final FirebasePlugin self = this;
@@ -838,7 +840,9 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 
+  /*
   private void stopTrace(final CallbackContext callbackContext, final String name) {
     Log.d(TAG, "stopTrace called. name: " + name);
     final FirebasePlugin self = this;
@@ -866,7 +870,9 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 
+  /*
   private void addTraceAttribute(final CallbackContext callbackContext, final String traceName, final String attribute, final String value) {
     Log.d(TAG, "addTraceAttribute called. traceName: " + traceName + " attribute: " + attribute + " value: " + value);
     final FirebasePlugin self = this;
@@ -893,7 +899,9 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 
+  /*
   private void setPerformanceCollectionEnabled(final CallbackContext callbackContext, final boolean enabled) {
     Log.d(TAG, "setPerformanceCollectionEnabled called. enabled: " + (enabled ? "true" : "false"));
     final FirebasePlugin self = this;
@@ -911,6 +919,7 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 }
   // 
   // Crashlytics
