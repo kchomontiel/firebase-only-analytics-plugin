@@ -83,8 +83,11 @@ public class FirebasePlugin extends CordovaPlugin {
     
     Log.d(TAG, "Starting Firebase plugin initialization");
     
-    // ✅ RESTORED: Use the working logic from _old version - simple and direct
+    // ✅ CRITICAL FIX: Ensure Firebase is initialized early to prevent Performance issues
     try {
+      // Use the early initialization method from FirebaseApplication
+      org.apache.cordova.firebase.FirebaseApplication.initializeFirebaseEarly(context);
+      
       // Inicialización síncrona para asegurar que esté disponible (from _old)
       mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
       mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
