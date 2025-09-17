@@ -69,7 +69,6 @@
         <framework src="com.google.firebase:firebase-iid:21.1.0" />
         <framework src="com.google.firebase:firebase-crashlytics:18.2.7" />
         <framework src="com.google.firebase:firebase-installations:17.0.0" />
-        <framework src="me.leolin:ShortcutBadger:1.1.22" />
 
         <resource-file src="google-services.json" target="app/google-services.json" />
     </platform>
