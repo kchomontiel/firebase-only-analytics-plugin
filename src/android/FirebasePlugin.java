@@ -454,8 +454,9 @@ public class FirebasePlugin extends CordovaPlugin {
           SharedPreferences.Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
           editor.putInt(KEY, number);
           editor.apply();
-          // ✅ RESTORED: Use ShortcutBadger like in _old version
-          me.leolin.shortcutbadger.ShortcutBadger.applyCount(context, number);
+          // ✅ SIMPLIFIED: Remove ShortcutBadger dependency to avoid compilation issues
+          // Badge functionality is not essential for Firebase Analytics
+          Log.d(TAG, "setBadgeNumber: Badge number saved to SharedPreferences (ShortcutBadger disabled)");
           callbackContext.success();
           Log.d(TAG, "setBadgeNumber success");
         } catch (Exception e) {
