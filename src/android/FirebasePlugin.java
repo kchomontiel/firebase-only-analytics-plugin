@@ -399,6 +399,14 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
+          // ✅ CRITICAL FIX: Ensure Firebase is initialized before getId
+          Context context = cordova.getActivity().getApplicationContext();
+          if (FirebaseApp.getApps(context).isEmpty()) {
+            Log.d(TAG, "Firebase App not initialized in getId, initializing now...");
+            FirebaseApp.initializeApp(context);
+            Log.d(TAG, "Firebase App initialized successfully in getId");
+          }
+          
           // ✅ UPDATED: Use new FirebaseInstallations API instead of deprecated FirebaseInstanceId
           com.google.firebase.installations.FirebaseInstallations.getInstance().getId()
             .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
@@ -429,6 +437,14 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
+          // ✅ CRITICAL FIX: Ensure Firebase is initialized before getToken
+          Context context = cordova.getActivity().getApplicationContext();
+          if (FirebaseApp.getApps(context).isEmpty()) {
+            Log.d(TAG, "Firebase App not initialized in getToken, initializing now...");
+            FirebaseApp.initializeApp(context);
+            Log.d(TAG, "Firebase App initialized successfully in getToken");
+          }
+          
           // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
           FirebaseMessaging.getInstance().getToken()
             .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
