@@ -83,10 +83,16 @@ public class FirebasePlugin extends CordovaPlugin {
     
     Log.d(TAG, "Starting Firebase plugin initialization");
     
-    // ✅ CRITICAL FIX: Ensure Firebase is initialized early to prevent Performance issues
+    // ✅ CRITICAL FIX: Initialize Firebase App directly to prevent initialization issues
     try {
-      // Use the early initialization method from FirebaseApplication
-      org.apache.cordova.firebase.FirebaseApplication.initializeFirebaseEarly(context);
+      // Initialize Firebase App directly if not already initialized
+      if (FirebaseApp.getApps(context).isEmpty()) {
+        Log.d(TAG, "Firebase App not initialized, calling initializeApp directly");
+        FirebaseApp.initializeApp(context);
+        Log.d(TAG, "Firebase App initialized successfully");
+      } else {
+        Log.d(TAG, "Firebase App already initialized");
+      }
       
       // Inicialización síncrona para asegurar que esté disponible (from _old)
       mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
