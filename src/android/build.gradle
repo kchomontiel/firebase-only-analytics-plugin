@@ -96,6 +96,21 @@ cdvPluginPostBuildExtras.add({
                 if (!plugins.hasPlugin('com.google.gms.google-services')) {
                     apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
                 }
+                // Disable Firebase Performance to prevent initialization issues
+                android {
+                    buildTypes {
+                        debug {
+                            firebasePerformance {
+                                instrumentationEnabled false
+                            }
+                        }
+                        release {
+                            firebasePerformance {
+                                instrumentationEnabled false
+                            }
+                        }
+                    }
+                }
             }
         }
     }
