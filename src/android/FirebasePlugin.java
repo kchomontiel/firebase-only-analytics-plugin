@@ -122,8 +122,37 @@ public class FirebasePlugin extends CordovaPlugin {
     });
   }
 
+  // ✅ CRITICAL FIX: Ensure Firebase is initialized before any operation
+  private void ensureFirebaseInitialized() {
+    try {
+      Context context = this.cordova.getActivity().getApplicationContext();
+      
+      // Check if Firebase App is already initialized
+      if (FirebaseApp.getApps(context).isEmpty()) {
+        Log.d(TAG, "Firebase App not initialized, initializing now...");
+        FirebaseApp.initializeApp(context);
+        Log.d(TAG, "Firebase App initialized successfully in ensureFirebaseInitialized");
+      } else {
+        Log.d(TAG, "Firebase App already initialized");
+      }
+      
+      // Ensure Firebase Analytics is initialized
+      if (mFirebaseAnalytics == null) {
+        Log.d(TAG, "Firebase Analytics not initialized, initializing now...");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+        mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+        Log.d(TAG, "Firebase Analytics initialized successfully in ensureFirebaseInitialized");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to ensure Firebase initialization: " + e.getMessage(), e);
+    }
+  }
+
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    // ✅ CRITICAL FIX: Ensure Firebase is initialized before any operation
+    ensureFirebaseInitialized();
+    
     if (action.equals("getId")) {
       this.getId(callbackContext);
       return true;      
