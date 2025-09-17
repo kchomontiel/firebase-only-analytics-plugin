@@ -94,32 +94,52 @@ module.exports = function (context) {
   utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
 
   if (cordovaAbove7) {
+    // Copy to platforms/android/app/ (for newer Android projects)
     var destPath = path.join(
       context.opts.projectRoot,
       "platforms",
       platform,
       "app"
     );
-    console.log("📱 FirebasePlugin: Copying to platform directory:", destPath);
+    console.log(
+      "📱 FirebasePlugin: Copying to platform app directory:",
+      destPath
+    );
 
     if (utils.checkIfFolderExists(destPath)) {
       var destFilePath = path.join(destPath, fileName);
       console.log(
-        "✅ FirebasePlugin: Platform directory exists, copying to:",
+        "✅ FirebasePlugin: Platform app directory exists, copying to:",
         destFilePath
       );
       utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
     } else {
       // Create the directory if it doesn't exist
-      console.log("📁 FirebasePlugin: Creating platform directory:", destPath);
+      console.log(
+        "📁 FirebasePlugin: Creating platform app directory:",
+        destPath
+      );
       utils.createOrCheckIfFolderExists(destPath);
       var destFilePath = path.join(destPath, fileName);
       console.log(
-        "📋 FirebasePlugin: Copying to created directory:",
+        "📋 FirebasePlugin: Copying to created app directory:",
         destFilePath
       );
       utils.copyFromSourceToDestPath(defer, sourceFilePath, destFilePath);
     }
+
+    // Also copy to platforms/android/ (for Firebase to find it)
+    var rootDestPath = path.join(
+      context.opts.projectRoot,
+      "platforms",
+      platform
+    );
+    var rootDestFilePath = path.join(rootDestPath, fileName);
+    console.log(
+      "📋 FirebasePlugin: Also copying to platform root:",
+      rootDestFilePath
+    );
+    utils.copyFromSourceToDestPath(defer, sourceFilePath, rootDestFilePath);
   }
 
   console.log("🎉 FirebasePlugin: Configuration setup completed successfully!");
