@@ -19,14 +19,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
-// import me.leolin.shortcutbadger.ShortcutBadger; // Removed - not available
+import me.leolin.shortcutbadger.ShortcutBadger;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -43,16 +42,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// Firebase PhoneAuth - REMOVED (not needed for analytics only)
-// import java.util.concurrent.TimeUnit;
-// import com.google.firebase.auth.FirebaseAuth;
-// import com.google.firebase.auth.AuthResult;
-// import com.google.firebase.FirebaseException;
-// import com.google.firebase.auth.FirebaseAuthException;
-// import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-// import com.google.firebase.FirebaseTooManyRequestsException;
-// import com.google.firebase.auth.PhoneAuthCredential;
-// import com.google.firebase.auth.PhoneAuthProvider;
+// Firebase PhoneAuth
+import java.util.concurrent.TimeUnit;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 
 // Crashlytics
 //import com.crashlytics.android.Crashlytics;
@@ -83,15 +83,14 @@ public class FirebasePlugin extends CordovaPlugin {
     
     Log.d(TAG, "Starting Firebase plugin initialization");
     
-    // ✅ RESTORED: Use the working logic from _old version - simple and direct
+    // Inicialización síncrona para asegurar que esté disponible
     try {
-      // Inicialización síncrona para asegurar que esté disponible (from _old)
       mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
       mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
       Log.d(TAG, "Firebase Analytics initialized successfully");
     } catch (Exception e) {
       Log.e(TAG, "Failed to initialize Firebase Analytics: " + e.getMessage(), e);
-      // Intentar usar la instancia global si existe (from _old)
+      // Intentar usar la instancia global si existe
       try {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         Log.d(TAG, "Using global Firebase Analytics instance");
@@ -334,27 +333,14 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
-          FirebaseMessaging.getInstance().getToken()
-            .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
-              @Override
-              public void onComplete(com.google.android.gms.tasks.Task<String> task) {
-                if (!task.isSuccessful()) {
-                  Log.e(TAG, "Fetching FCM registration token failed", task.getException());
-                  callbackContext.error("Failed to get token: " + task.getException().getMessage());
-                  return;
-                }
-
-                // Get new FCM registration token
-                String currentToken = task.getResult();
-                if (currentToken != null) {
-                  FirebasePlugin.sendToken(currentToken);
-                  Log.d(TAG, "onTokenRefresh success. token: " + currentToken);
-                }
-              }
-            });
+          String currentToken = FirebaseInstanceId.getInstance().getToken();
+          if (currentToken != null) {
+            FirebasePlugin.sendToken(currentToken);
+            Log.d(TAG, "onTokenRefresh success. token: " + currentToken);
+          }
         } catch (Exception e) {
-          Log.e(TAG, "onTokenRefresh failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -366,25 +352,12 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ UPDATED: Use new FirebaseInstallations API instead of deprecated FirebaseInstanceId
-          com.google.firebase.installations.FirebaseInstallations.getInstance().getId()
-            .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
-              @Override
-              public void onComplete(com.google.android.gms.tasks.Task<String> task) {
-                if (!task.isSuccessful()) {
-                  Log.e(TAG, "Fetching Firebase Installation ID failed", task.getException());
-                  callbackContext.error("Failed to get ID: " + task.getException().getMessage());
-                  return;
-                }
-
-                // Get Firebase Installation ID
-                String id = task.getResult();
-                Log.d(TAG, "getId success. id: " + id);
-                callbackContext.success(id);
-              }
-            });
+          String id = FirebaseInstanceId.getInstance().getId();
+          callbackContext.success(id);
+          Log.d(TAG, "getId success. id: " + id);
         } catch (Exception e) {
-          Log.e(TAG, "getId failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -396,25 +369,12 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
-          FirebaseMessaging.getInstance().getToken()
-            .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
-              @Override
-              public void onComplete(com.google.android.gms.tasks.Task<String> task) {
-                if (!task.isSuccessful()) {
-                  Log.e(TAG, "Fetching FCM registration token failed", task.getException());
-                  callbackContext.error("Failed to get token: " + task.getException().getMessage());
-                  return;
-                }
-
-                // Get new FCM registration token
-                String token = task.getResult();
-                Log.d(TAG, "getToken success. token: " + token);
-                callbackContext.success(token);
-              }
-            });
+          String token = FirebaseInstanceId.getInstance().getToken();
+          callbackContext.success(token);
+          Log.d(TAG, "getToken success. token: " + token);
         } catch (Exception e) {
-          Log.e(TAG, "getToken failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -434,8 +394,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(object);
           Log.d(TAG, "hasPermission success. areEnabled: " + (areNotificationsEnabled ? "true" : "false"));
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -451,12 +411,12 @@ public class FirebasePlugin extends CordovaPlugin {
           SharedPreferences.Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
           editor.putInt(KEY, number);
           editor.apply();
-          // ✅ RESTORED: Use ShortcutBadger like in _old version
-          me.leolin.shortcutbadger.ShortcutBadger.applyCount(context, number);
+          ShortcutBadger.applyCount(context, number);
           callbackContext.success();
           Log.d(TAG, "setBadgeNumber success");
         } catch (Exception e) {
-          Log.e(TAG, "setBadgeNumber failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -474,8 +434,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(number);
           Log.d(TAG, "getBadgeNumber success. number: " + Integer.toString(number));
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -491,8 +451,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "subscribe success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -508,8 +468,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "unsubscribe success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -521,39 +481,16 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
-          FirebaseMessaging.getInstance().deleteToken()
-            .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<Void>() {
-              @Override
-              public void onComplete(com.google.android.gms.tasks.Task<Void> task) {
-                if (!task.isSuccessful()) {
-                  Log.e(TAG, "Failed to delete FCM token", task.getException());
-                  callbackContext.error("Failed to delete token: " + task.getException().getMessage());
-                  return;
-                }
-
-                // After deleting, get a new token
-                FirebaseMessaging.getInstance().getToken()
-                  .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(com.google.android.gms.tasks.Task<String> tokenTask) {
-                      if (tokenTask.isSuccessful()) {
-                        String currentToken = tokenTask.getResult();
-                        if (currentToken != null) {
-                          FirebasePlugin.sendToken(currentToken);
-                        }
-                        Log.d(TAG, "unregister success. currentToken: " + currentToken);
-                        callbackContext.success();
-                      } else {
-                        Log.e(TAG, "Failed to get new token after deletion", tokenTask.getException());
-                        callbackContext.error("Failed to get new token: " + tokenTask.getException().getMessage());
-                      }
-                    }
-                  });
-              }
-            });
+          FirebaseInstanceId.getInstance().deleteInstanceId();
+          String currentToken = FirebaseInstanceId.getInstance().getToken();
+          if (currentToken != null) {
+            FirebasePlugin.sendToken(currentToken);
+          }
+          callbackContext.success();
+          Log.d(TAG, "unregister success. currentToken: " + currentToken);
         } catch (Exception e) {
-          Log.e(TAG, "unregister failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -580,7 +517,6 @@ public class FirebasePlugin extends CordovaPlugin {
 
   private void isFirebaseInitialized(final CallbackContext callbackContext) {
     Log.d(TAG, "isFirebaseInitialized called");
-    // ✅ RESTORED: Use the working logic from _old version
     boolean isInitialized = (mFirebaseAnalytics != null);
     Log.d(TAG, "Firebase Analytics initialized: " + isInitialized);
     
@@ -651,7 +587,6 @@ public class FirebasePlugin extends CordovaPlugin {
   private void logEvent(final CallbackContext callbackContext, final String name, final JSONObject params) throws JSONException {
     Log.d(TAG, "logEvent called. name: " + name);
     
-    // ✅ RESTORED: Use the working logic from _old version
     // Verificar que Firebase Analytics esté inicializado
     if (mFirebaseAnalytics == null) {
       Log.e(TAG, "Firebase Analytics not initialized yet");
@@ -677,7 +612,6 @@ public class FirebasePlugin extends CordovaPlugin {
         try {
           Log.d(TAG, "Sending event to Firebase: " + name + " with bundle: " + bundle.toString());
           
-          // ✅ RESTORED: Use the working logic from _old version
           // Usar la instancia del plugin si está disponible, sino usar la global
           FirebaseAnalytics analyticsInstance = mFirebaseAnalytics;
           if (analyticsInstance == null) {
@@ -696,7 +630,7 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "logEvent success - Event sent to Firebase Analytics");
         } catch (Exception e) {
           Log.e(TAG, "logEvent failed: " + e.getMessage(), e);
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
+          //Crashlytics.logException(e);
           FirebaseCrashlytics.getInstance().log(e.getMessage());
           callbackContext.error(e.getMessage());
         }
@@ -709,16 +643,12 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getActivity().runOnUiThread(new Runnable() {
       public void run() {
         try {
-          // ✅ UPDATED: Use logEvent instead of deprecated setCurrentScreen
-          // Firebase 20+ removed setCurrentScreen, use logEvent with screen_view
-          Bundle bundle = new Bundle();
-          bundle.putString("screen_name", name);
-          bundle.putString("screen_class", "Screen");
-          mFirebaseAnalytics.logEvent("screen_view", bundle);
+          mFirebaseAnalytics.setCurrentScreen(cordova.getActivity(), name, null);
           callbackContext.success();
           Log.d(TAG, "setScreenName success");
         } catch (Exception e) {
-          Log.e(TAG, "setScreenName failed: " + e.getMessage(), e);
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -734,8 +664,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserId success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -751,8 +681,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserProperty success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -769,8 +699,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setAnalyticsCollectionEnabled success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -800,8 +730,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "startTrace success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -827,8 +757,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "incrementCounter trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -855,8 +785,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "stopTrace trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -882,8 +812,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "addTraceAttribute trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }
@@ -900,8 +830,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setPerformanceCollectionEnabled success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          //Crashlytics.logException(e);
+          // FirebaseCrashlytics.getInstance().log(e.getMessage()); // Removed to avoid compilation conflicts
           callbackContext.error(e.getMessage());
         }
       }

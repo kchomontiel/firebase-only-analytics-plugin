@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "entel-movil-autoactivacion",
-    "storage_bucket": "entel-movil-autoactivacion.appspot.com"
+    "project_number": "642052028066",
+    "project_id": "prod-app-aa",
+    "storage_bucket": "prod-app-aa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:entel1234567890",
+        "mobilesdk_app_id": "1:642052028066:android:a91aa1ee5dd74d30e389fb",
         "android_client_info": {
           "package_name": "com.entel.movil.autoactivacion"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "123456789012-entel1234567890.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyEntel1234567890abcdefghijklmnop"
+          "current_key": "AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "123456789012-entel1234567890.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

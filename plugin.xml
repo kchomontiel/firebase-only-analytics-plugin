@@ -66,6 +66,7 @@
         <framework src="com.google.firebase:firebase-dynamic-links:21.0.0" />
         <framework src="com.google.firebase:firebase-iid:21.1.0" />
         <framework src="com.google.firebase:firebase-crashlytics:18.2.7" />
+        <framework src="com.google.firebase:firebase-installations:17.0.0" />
 
         <resource-file src="google-services.json" target="app/google-services.json" />
     </platform>
