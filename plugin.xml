@@ -47,10 +47,6 @@
             <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
         </config-file>
         
-        <!-- Configure custom Application class for early Firebase initialization -->
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <application android:name="org.apache.cordova.firebase.FirebaseApplication" />
-        </config-file>
 
         <source-file src="src/android/FirebasePlugin.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/FirebaseApplication.java" target-dir="src/org/apache/cordova/firebase" />

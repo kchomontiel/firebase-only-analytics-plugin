@@ -138,6 +138,41 @@ module.exports = function (context) {
         "FirebasePlugin: MainActivity.java not found, skipping Firebase initialization"
       );
     }
+
+    // ✅ CRITICAL FIX: Configure custom Application class in AndroidManifest.xml
+    var androidManifestPath = path.join(androidProjectPath, "app", "src", "main", "AndroidManifest.xml");
+    if (fs.existsSync(androidManifestPath)) {
+      console.log("FirebasePlugin: Configuring custom Application class in AndroidManifest.xml");
+      
+      var manifestContent = fs.readFileSync(androidManifestPath, "utf8");
+      
+      // Check if custom Application class is already configured
+      if (manifestContent.includes('android:name="org.apache.cordova.firebase.FirebaseApplication"')) {
+        console.log("FirebasePlugin: Custom Application class already configured in AndroidManifest.xml");
+      } else {
+        // Find the application tag and add the custom class
+        var applicationRegex = /<application([^>]*)>/;
+        if (applicationRegex.test(manifestContent)) {
+          manifestContent = manifestContent.replace(applicationRegex, function(match, attributes) {
+            // Check if android:name is already present
+            if (attributes.includes('android:name=')) {
+              // Replace existing android:name
+              return match.replace(/android:name="[^"]*"/, 'android:name="org.apache.cordova.firebase.FirebaseApplication"');
+            } else {
+              // Add android:name attribute
+              return '<application' + attributes + ' android:name="org.apache.cordova.firebase.FirebaseApplication">';
+            }
+          });
+          
+          fs.writeFileSync(androidManifestPath, manifestContent, "utf8");
+          console.log("FirebasePlugin: Custom Application class configured in AndroidManifest.xml");
+        } else {
+          console.log("FirebasePlugin: No application tag found in AndroidManifest.xml");
+        }
+      }
+    } else {
+      console.log("FirebasePlugin: AndroidManifest.xml not found, skipping Application class configuration");
+    }
   }
 
   deferral.resolve();
