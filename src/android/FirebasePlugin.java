@@ -128,8 +128,16 @@ public class FirebasePlugin extends CordovaPlugin {
         
         // Only initialize manually if automatic initialization failed
         try {
-          FirebaseApp.initializeApp(context);
-          Log.d(TAG, "Firebase App manually initialized as fallback");
+          // Try manual initialization with explicit options from google-services.json
+          FirebaseOptions options = new FirebaseOptions.Builder()
+            .setProjectId("prod-app-aa")
+            .setApplicationId("1:642052028066:android:a91aa1ee5dd74d30e389fb")
+            .setApiKey("AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc")
+            .setStorageBucket("prod-app-aa.firebasestorage.app")
+            .build();
+          
+          FirebaseApp.initializeApp(context, options);
+          Log.d(TAG, "Firebase App manually initialized with explicit options");
         } catch (Exception e) {
           Log.e(TAG, "Manual Firebase initialization failed: " + e.getMessage(), e);
           throw new RuntimeException("Firebase initialization failed. Check google-services.json and Google Services plugin configuration.", e);
@@ -445,8 +453,15 @@ public class FirebasePlugin extends CordovaPlugin {
           Context context = cordova.getActivity().getApplicationContext();
           if (FirebaseApp.getApps(context).isEmpty()) {
             Log.d(TAG, "Firebase App not initialized in getToken, initializing now...");
-            FirebaseApp.initializeApp(context);
-            Log.d(TAG, "Firebase App initialized successfully in getToken");
+            // Use explicit options for manual initialization
+            FirebaseOptions options = new FirebaseOptions.Builder()
+              .setProjectId("prod-app-aa")
+              .setApplicationId("1:642052028066:android:a91aa1ee5dd74d30e389fb")
+              .setApiKey("AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc")
+              .setStorageBucket("prod-app-aa.firebasestorage.app")
+              .build();
+            FirebaseApp.initializeApp(context, options);
+            Log.d(TAG, "Firebase App initialized successfully in getToken with explicit options");
           }
           
           // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
