@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -130,8 +131,24 @@ public class FirebasePlugin extends CordovaPlugin {
       // Check if Firebase App is already initialized
       if (FirebaseApp.getApps(context).isEmpty()) {
         Log.d(TAG, "Firebase App not initialized, initializing now...");
-        FirebaseApp.initializeApp(context);
-        Log.d(TAG, "Firebase App initialized successfully in ensureFirebaseInitialized");
+        Log.d(TAG, "Context: " + context.getClass().getSimpleName());
+        Log.d(TAG, "Package name: " + context.getPackageName());
+        
+        // Try to initialize with explicit options
+        try {
+          FirebaseApp.initializeApp(context);
+          Log.d(TAG, "Firebase App initialized successfully in ensureFirebaseInitialized");
+        } catch (Exception initError) {
+          Log.e(TAG, "Failed to initialize Firebase App: " + initError.getMessage(), initError);
+          // Try alternative initialization
+          try {
+            FirebaseApp.initializeApp(context, FirebaseOptions.fromResource(context));
+            Log.d(TAG, "Firebase App initialized with explicit options");
+          } catch (Exception altError) {
+            Log.e(TAG, "Alternative initialization also failed: " + altError.getMessage(), altError);
+            throw altError;
+          }
+        }
       } else {
         Log.d(TAG, "Firebase App already initialized");
       }
