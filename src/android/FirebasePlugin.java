@@ -19,13 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.installations.FirebaseInstallations;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 // import com.google.firebase.perf.FirebasePerformance; // Removed - Performance disabled
 // import com.google.firebase.perf.metrics.Trace; // Removed - Performance disabled
 // import me.leolin.shortcutbadger.ShortcutBadger; // Removed - not available
@@ -61,10 +56,7 @@ import java.util.Set;
 //import io.fabric.sdk.android.Fabric;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
-// Dynamic Links
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+// Dynamic Links - REMOVED (not included in dependencies)
 
 public class FirebasePlugin extends CordovaPlugin {
 
@@ -255,7 +247,8 @@ public class FirebasePlugin extends CordovaPlugin {
       this.setAnalyticsCollectionEnabled(callbackContext, args.getBoolean(0));
       return true;
     } else if (action.equals("onDynamicLink")) {
-      this.onDynamicLink(callbackContext);
+      // Dynamic Links not available - feature removed
+      callbackContext.error("Dynamic Links not available");
       return true;
     } else if (action.equals("clearAllNotifications")) {
       this.clearAllNotifications(callbackContext);
@@ -289,7 +282,7 @@ public class FirebasePlugin extends CordovaPlugin {
     super.onNewIntent(intent);
     final Bundle data = intent.getExtras();
     if (this.dynamicLinkCallback != null) {
-      respondWithDynamicLink(intent);
+      // respondWithDynamicLink(intent); // Dynamic Links removed
     }
     if (data != null && data.containsKey("google.message_id")) {
       data.putBoolean("tap", true);
@@ -662,12 +655,16 @@ public class FirebasePlugin extends CordovaPlugin {
     //
   // Dynamic Links
   //
+  // Dynamic Links removed - feature not available
+  /*
   private void onDynamicLink(final CallbackContext callbackContext) {
     this.dynamicLinkCallback = callbackContext;
 
     respondWithDynamicLink(cordova.getActivity().getIntent());
   }
+  */
 
+  /*
   private void respondWithDynamicLink(Intent intent) {
     FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
       .addOnSuccessListener(cordova.getActivity(), new OnSuccessListener<PendingDynamicLinkData>() {
@@ -695,7 +692,9 @@ public class FirebasePlugin extends CordovaPlugin {
         }
       });
   }
+  */
 
+  /*
   private void doOnDynamicLink(final String dynamicLink) {
     cordova.getActivity().runOnUiThread(new Runnable() {
       @Override
@@ -705,6 +704,7 @@ public class FirebasePlugin extends CordovaPlugin {
       }
     });
   }
+  */
 
   // 
   // Analytics
