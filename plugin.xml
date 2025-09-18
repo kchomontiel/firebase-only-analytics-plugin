@@ -61,8 +61,8 @@
         <source-file src="src/android/build.gradle" target-dir="." />
         <source-file src="src/android/build-extras.gradle" target-dir="." />
         
-        <!-- Apply Google Services plugin directly -->
-        <framework src="com.google.gms:google-services:4.4.2" custom="true" />
+        <!-- Apply Google Services plugin via build.gradle -->
+        <framework src="com.google.gms:google-services:4.4.2" />
 
         <!-- ✅ FIREBASE DEPENDENCIES: Use specific versions for Cordova compatibility -->
         <framework src="com.google.firebase:firebase-analytics:21.5.1" />
