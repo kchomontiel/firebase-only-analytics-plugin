@@ -54,7 +54,7 @@ import java.util.Set;
 // Crashlytics
 //import com.crashlytics.android.Crashlytics;
 //import io.fabric.sdk.android.Fabric;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
+// import com.google.firebase.crashlytics.FirebaseCrashlytics; // Removed - Crashlytics disabled
 
 // Dynamic Links - REMOVED (not included in dependencies)
 
@@ -503,8 +503,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(object);
           Log.d(TAG, "hasPermission success. areEnabled: " + (areNotificationsEnabled ? "true" : "false"));
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -544,8 +544,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success(number);
           Log.d(TAG, "getBadgeNumber success. number: " + Integer.toString(number));
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -561,8 +561,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "subscribe success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -578,8 +578,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "unsubscribe success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -773,8 +773,8 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "logEvent success - Event sent to Firebase Analytics");
         } catch (Exception e) {
           Log.e(TAG, "logEvent failed: " + e.getMessage(), e);
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -811,8 +811,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserId success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -828,8 +828,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setUserProperty success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -846,8 +846,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setAnalyticsCollectionEnabled success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -879,8 +879,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "startTrace success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -908,8 +908,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "incrementCounter trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -938,8 +938,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "stopTrace trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -967,8 +967,8 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "addTraceAttribute trace not found");
           }
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -987,8 +987,8 @@ public class FirebasePlugin extends CordovaPlugin {
           callbackContext.success();
           Log.d(TAG, "setPerformanceCollectionEnabled success");
         } catch (Exception e) {
-          // ✅ RESTORED: Use FirebaseCrashlytics like in _old version
-          FirebaseCrashlytics.getInstance().log(e.getMessage());
+          // ✅ Crashlytics disabled - use standard logging
+          Log.e(TAG, "Error: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -1006,7 +1006,8 @@ public class FirebasePlugin extends CordovaPlugin {
     final FirebasePlugin self = this;
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
-        FirebaseCrashlytics.getInstance().crash();
+        // FirebaseCrashlytics.getInstance().crash(); // Crashlytics disabled
+        Log.e(TAG, "Crashlytics crash() called - Crashlytics disabled");
       }
     });
   }
@@ -1016,11 +1017,13 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          FirebaseCrashlytics.logException(new Exception(message));
+          // FirebaseCrashlytics.logException(new Exception(message)); // Crashlytics disabled
+          Log.e(TAG, "Crashlytics logException called: " + message);
           callbackContext.success(1);
           Log.d(TAG, "logError success");
         } catch (Exception e) {
-          FirebaseCrashlytics.log(e.getMessage());
+          // FirebaseCrashlytics.log(e.getMessage()); // Crashlytics disabled
+          Log.e(TAG, "Error in logError: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
@@ -1032,11 +1035,13 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getActivity().runOnUiThread(new Runnable() {
       public void run() {
         try {
-          FirebaseCrashlytics.setUserIdentifier(userId);
+          // FirebaseCrashlytics.setUserIdentifier(userId); // Crashlytics disabled
+          Log.d(TAG, "Crashlytics setUserIdentifier called: " + userId);
           callbackContext.success();
           Log.d(TAG, "setCrashlyticsUserId success");
         } catch (Exception e) {
-          FirebaseCrashlytics.logException(e);
+          // FirebaseCrashlytics.logException(e); // Crashlytics disabled
+          Log.e(TAG, "Error in setCrashlyticsUserId: " + e.getMessage(), e);
           callbackContext.error(e.getMessage());
         }
       }
