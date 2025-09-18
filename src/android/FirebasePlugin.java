@@ -123,45 +123,39 @@ public class FirebasePlugin extends CordovaPlugin {
     });
   }
 
-  // ✅ CRITICAL FIX: Ensure Firebase is initialized before any operation
+  // ✅ OFFICIAL FIREBASE APPROACH: Check if Firebase is initialized (should be automatic)
   private void ensureFirebaseInitialized() {
     try {
       Context context = this.cordova.getActivity().getApplicationContext();
       
-      // Check if Firebase App is already initialized
+      // Check if Firebase App is already initialized (should be automatic with Google Services plugin)
       if (FirebaseApp.getApps(context).isEmpty()) {
-        Log.d(TAG, "Firebase App not initialized, initializing now...");
+        Log.w(TAG, "Firebase App not initialized - this should happen automatically with Google Services plugin");
         Log.d(TAG, "Context: " + context.getClass().getSimpleName());
         Log.d(TAG, "Package name: " + context.getPackageName());
         
-        // Try to initialize with explicit options
+        // Only initialize manually if automatic initialization failed
         try {
           FirebaseApp.initializeApp(context);
-          Log.d(TAG, "Firebase App initialized successfully in ensureFirebaseInitialized");
-        } catch (Exception initError) {
-          Log.e(TAG, "Failed to initialize Firebase App: " + initError.getMessage(), initError);
-          // Try alternative initialization
-          try {
-            FirebaseApp.initializeApp(context, FirebaseOptions.fromResource(context));
-            Log.d(TAG, "Firebase App initialized with explicit options");
-          } catch (Exception altError) {
-            Log.e(TAG, "Alternative initialization also failed: " + altError.getMessage(), altError);
-            throw altError;
-          }
+          Log.d(TAG, "Firebase App manually initialized as fallback");
+        } catch (Exception e) {
+          Log.e(TAG, "Manual Firebase initialization failed: " + e.getMessage(), e);
+          throw new RuntimeException("Firebase initialization failed. Check google-services.json and Google Services plugin configuration.", e);
         }
       } else {
-        Log.d(TAG, "Firebase App already initialized");
+        Log.d(TAG, "Firebase App already initialized (automatic initialization working)");
       }
       
       // Ensure Firebase Analytics is initialized
       if (mFirebaseAnalytics == null) {
-        Log.d(TAG, "Firebase Analytics not initialized, initializing now...");
+        Log.d(TAG, "Initializing Firebase Analytics...");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        Log.d(TAG, "Firebase Analytics initialized successfully in ensureFirebaseInitialized");
+        Log.d(TAG, "Firebase Analytics initialized successfully");
       }
     } catch (Exception e) {
       Log.e(TAG, "Failed to ensure Firebase initialization: " + e.getMessage(), e);
+      throw new RuntimeException("Firebase initialization failed", e);
     }
   }
 
