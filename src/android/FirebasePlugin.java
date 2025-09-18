@@ -140,7 +140,8 @@ public class FirebasePlugin extends CordovaPlugin {
           Log.d(TAG, "Firebase App manually initialized with explicit options");
         } catch (Exception e) {
           Log.e(TAG, "Manual Firebase initialization failed: " + e.getMessage(), e);
-          throw new RuntimeException("Firebase initialization failed. Check google-services.json and Google Services plugin configuration.", e);
+          // Don't throw exception, just log the error and continue
+          Log.w(TAG, "Continuing without manual Firebase initialization");
         }
       } else {
         Log.d(TAG, "Firebase App already initialized (automatic initialization working)");
