@@ -89,20 +89,10 @@ android {
 
 
 cdvPluginPostBuildExtras.add({
-  // ✅ OFFICIAL FIREBASE CONFIGURATION: Apply Google Services plugin correctly
+  // ✅ FIREBASE CONFIGURATION: Google Services plugin applied via plugin.xml
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
-        // Apply Google Services plugin to process google-services.json
-        if (!plugins.hasPlugin('com.google.gms.google-services')) {
-          apply plugin: 'com.google.gms.google-services'
-        }
-        
-        // Apply Crashlytics plugin - DISABLED to fix Analytics
-        // if (!plugins.hasPlugin('com.google.firebase.crashlytics')) {
-        //   apply plugin: 'com.google.firebase.crashlytics'
-        // }
-        
         // Disable Firebase Performance to prevent initialization issues
         android {
           buildTypes {

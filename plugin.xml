@@ -60,6 +60,9 @@
         <source-file src="src/android/cordova-plugin-firebase-strings.xml" target-dir="res/values" />
         <source-file src="src/android/build.gradle" target-dir="." />
         <source-file src="src/android/build-extras.gradle" target-dir="." />
+        
+        <!-- Apply Google Services plugin directly -->
+        <framework src="com.google.gms:google-services:4.4.2" custom="true" />
 
         <!-- ✅ FIREBASE DEPENDENCIES: Use specific versions for Cordova compatibility -->
         <framework src="com.google.firebase:firebase-analytics:21.5.1" />
