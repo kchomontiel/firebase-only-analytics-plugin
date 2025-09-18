@@ -65,7 +65,7 @@
         <framework src="com.google.firebase:firebase-iid:21.1.0" />
         <framework src="com.google.firebase:firebase-crashlytics:18.2.7" />
 
-        <resource-file src="google-services.json" target="app/google-services.json" />
+        <resource-file src="platforms/android/app/google-services.json" target="app/google-services.json" />
     </platform>
 
     <platform name="ios">

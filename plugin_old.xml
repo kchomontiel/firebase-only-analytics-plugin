@@ -70,7 +70,7 @@
       <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/default_notification_channel_id"/>
     </config-file>
 
-    <resource-file src="google-services.json" target="./google-services.json" />
+    <resource-file src="platforms/android/app/google-services.json" target="app/google-services.json" />
     <resource-file src="src/android/cordova-plugin-firebase-strings.xml" target="res/values/cordova-plugin-firebase-strings.xml" />
     <resource-file src="src/android/cordova-plugin-firebase-colors.xml" target="res/values/cordova-plugin-firebase-colors.xml" />
 
