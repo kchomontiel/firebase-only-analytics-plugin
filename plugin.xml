@@ -61,12 +61,11 @@
         <source-file src="src/android/build.gradle" target-dir="." />
         <source-file src="src/android/build-extras.gradle" target-dir="." />
 
-        <!-- ✅ OFFICIAL FIREBASE CONFIGURATION: Use Firebase BoM for version management -->
-        <framework src="com.google.firebase:firebase-bom:33.7.0" />
-        <framework src="com.google.firebase:firebase-analytics" />
-        <framework src="com.google.firebase:firebase-messaging" />
-        <framework src="com.google.firebase:firebase-crashlytics" />
-        <framework src="com.google.firebase:firebase-installations" />
+        <!-- ✅ FIREBASE DEPENDENCIES: Use specific versions for Cordova compatibility -->
+        <framework src="com.google.firebase:firebase-analytics:21.5.1" />
+        <framework src="com.google.firebase:firebase-messaging:23.4.1" />
+        <framework src="com.google.firebase:firebase-crashlytics:18.6.4" />
+        <framework src="com.google.firebase:firebase-installations:17.2.0" />
         <framework src="com.google.gms:google-services:4.4.2" />
 
         <resource-file src="platforms/android/app/google-services.json" target="app/google-services.json" />
