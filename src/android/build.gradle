@@ -88,10 +88,10 @@ android {
 }
 
 
+// Apply Google Services plugin early
+apply plugin: 'com.google.gms.google-services'
+
 cdvPluginPostBuildExtras.add({
-  // ✅ FIREBASE CONFIGURATION: Apply Google Services plugin
-  apply plugin: 'com.google.gms.google-services'
-  
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
