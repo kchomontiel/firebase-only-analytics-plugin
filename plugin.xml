@@ -20,6 +20,7 @@
     <hook type="after_plugin_install" src="scripts/ios/removeAppDelegateFile.js" />
     <hook type="after_plugin_install" src="scripts/ios/cleanProjectReferences.js" />
     <hook type="after_plugin_install" src="scripts/android/initializeFirebase.js" />
+    <hook type="after_plugin_install" src="scripts/android/copyGoogleServices.js" />
     <hook type="after_plugin_install" src="scripts/ios/initializeFirebase.js" />
     <hook type="after_plugin_install" src="scripts/ios/forceFixAllSettings.js" />
     <hook type="after_plugin_install" src="scripts/ios/fixSwiftSettings.js" />
