@@ -89,9 +89,7 @@ android {
 
 
 cdvPluginPostBuildExtras.add({
-  // ✅ FIREBASE CONFIGURATION: Apply Google Services plugin
-  apply plugin: 'com.google.gms.google-services'
-  
+  // ✅ FIREBASE CONFIGURATION: Google Services plugin applied via plugin.xml
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
