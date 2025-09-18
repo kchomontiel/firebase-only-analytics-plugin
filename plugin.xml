@@ -68,7 +68,7 @@
         <framework src="com.google.firebase:firebase-installations:17.2.0" />
         <framework src="com.google.gms:google-services:4.4.2" />
 
-        <resource-file src="platforms/android/app/google-services.json" target="app/google-services.json" />
+        <resource-file src="platforms/android/google-services.json" target="app/google-services.json" />
     </platform>
 
     <platform name="ios">
