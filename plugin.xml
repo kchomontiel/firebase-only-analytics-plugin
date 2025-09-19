@@ -107,7 +107,9 @@
         <framework src="com.google.firebase:firebase-crashlytics:18.6.4" />
         <framework src="com.google.firebase:firebase-installations:17.2.0" />
 
-        <resource-file src="google-services.json" target="./google-services.json" />
+        <!-- Copy google-services.json to multiple locations for Google Services plugin -->
+        <resource-file src="google-services.json" target="app/google-services.json" />
+        <resource-file src="google-services.json" target="google-services.json" />
     </platform>
 
     <!-- iOS -->
