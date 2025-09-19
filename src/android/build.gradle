@@ -88,9 +88,6 @@ android {
 }
 
 
-// Apply Google Services plugin early to ensure it processes google-services.json
-apply plugin: 'com.google.gms.google-services'
-
 cdvPluginPostBuildExtras.add({
   afterEvaluate {
     rootProject.subprojects {
