@@ -104,7 +104,6 @@
         <framework src="com.google.firebase:firebase-perf:20.5.1" />
         <framework src="com.google.firebase:firebase-dynamic-links:21.2.0" />
         <framework src="com.google.firebase:firebase-iid:21.1.0" />
-        <framework src="com.google.firebase:firebase-crashlytics:18.6.4" />
         <framework src="com.google.firebase:firebase-installations:17.2.0" />
 
         <!-- Copy google-services.json to multiple locations for Google Services plugin -->
