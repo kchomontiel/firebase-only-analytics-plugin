@@ -44,6 +44,20 @@
             <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
         </config-file>
         
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementService" />
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="$APP_DOMAIN" android:pathPrefix="$APP_PATH"/>
+                <data android:scheme="https" android:host="$APP_DOMAIN" android:pathPrefix="$APP_PATH"/>
+            </intent-filter>
+        </config-file>
+        
         <source-file src="src/android/FirebasePlugin.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/FirebaseApplication.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/OnNotificationOpenReceiver.java" target-dir="src/org/apache/cordova/firebase" />
@@ -56,6 +70,25 @@
         <source-file src="src/android/cordova-plugin-firebase-strings.xml" target-dir="res/values" />
         <source-file src="src/android/build.gradle" target-dir="." />
         <source-file src="src/android/build-extras.gradle" target-dir="." />
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="org.apache.cordova.firebase.FirebasePluginMessagingService" android:exported="false" android:stopWithTask="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                </intent-filter>
+            </service>
+            <service android:name="org.apache.cordova.firebase.FirebasePluginInstanceIDService" android:exported="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                </intent-filter>
+            </service>
+            <receiver android:name="org.apache.cordova.firebase.OnNotificationOpenReceiver" />
+            <activity android:name="org.apache.cordova.firebase.OnNotificationOpenActivity" />
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/default_notification_channel_id"/>
+        </config-file>
 
         <!-- ✅ FIREBASE DEPENDENCIES: Use specific versions for Cordova compatibility -->
         <framework src="com.google.firebase:firebase-analytics:21.5.1" />
@@ -63,8 +96,7 @@
         <framework src="com.google.firebase:firebase-installations:17.2.0" />
         <framework src="com.google.gms:google-services:4.4.2" />
 
-        <resource-file src="google-services.json" target="app/google-services.json" />
-        <resource-file src="google-services.json" target="google-services.json" />
+        <resource-file src="google-services.json" target="./google-services.json" />
     </platform>
 
     <!-- iOS -->
