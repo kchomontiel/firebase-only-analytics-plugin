@@ -89,14 +89,12 @@ android {
 
 
 cdvPluginPostBuildExtras.add({
+  // Apply Google Services plugin directly (like master version but more direct)
+  apply plugin: 'com.google.gms.google-services'
+  
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
-        // Apply Google Services plugin conditionally (like master version)
-        if (!plugins.hasPlugin('com.google.gms.google-services')) {
-          apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
-        }
-        
         // Disable Firebase Performance to prevent initialization issues
         android {
           buildTypes {
