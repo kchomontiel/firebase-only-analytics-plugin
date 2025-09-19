@@ -88,11 +88,10 @@ android {
 }
 
 
+// Apply Google Services plugin early to ensure it processes google-services.json
+apply plugin: 'com.google.gms.google-services'
+
 cdvPluginPostBuildExtras.add({
-  // Apply Google Services plugin to app module
-  if (project.hasProperty('android')) {
-    apply plugin: 'com.google.gms.google-services'
-  }
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
