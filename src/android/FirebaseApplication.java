@@ -20,8 +20,9 @@ public class FirebaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         
-        Log.d(TAG, "FirebaseApplication onCreate - Initializing Firebase early");
-        initializeFirebaseEarly(this);
+        Log.d(TAG, "FirebaseApplication onCreate - Firebase will be initialized by Google Services plugin");
+        // Firebase will be initialized automatically by Google Services plugin
+        // No need to initialize here to avoid multiple initializations
     }
     
     /**

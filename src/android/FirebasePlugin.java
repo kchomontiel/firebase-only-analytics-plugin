@@ -107,24 +107,8 @@ public class FirebasePlugin extends CordovaPlugin {
         Log.w(TAG, "Firebase App not initialized - this should happen automatically with Google Services plugin");
         Log.d(TAG, "Context: " + context.getClass().getSimpleName());
         Log.d(TAG, "Package name: " + context.getPackageName());
-        
-        // Only initialize manually if automatic initialization failed
-        try {
-          // Try manual initialization with explicit options from google-services.json
-          FirebaseOptions options = new FirebaseOptions.Builder()
-            .setProjectId("prod-app-aa")
-            .setApplicationId("1:642052028066:android:a91aa1ee5dd74d30e389fb")
-            .setApiKey("AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc")
-            .setStorageBucket("prod-app-aa.firebasestorage.app")
-            .build();
-          
-          FirebaseApp.initializeApp(context, options);
-          Log.d(TAG, "Firebase App manually initialized with explicit options");
-        } catch (Exception e) {
-          Log.e(TAG, "Manual Firebase initialization failed: " + e.getMessage(), e);
-          // Don't throw exception, just log the error and continue
-          Log.w(TAG, "Continuing without manual Firebase initialization");
-        }
+        // Don't initialize manually to avoid multiple initializations
+        Log.w(TAG, "Skipping manual initialization to avoid conflicts");
       } else {
         Log.d(TAG, "Firebase App already initialized (automatic initialization working)");
       }
