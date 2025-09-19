@@ -13,12 +13,6 @@ buildscript {
     //}
     mavenCentral()
   }
-  /*dependencies {
-    classpath 'com.google.gms:google-services:4.3.3'
-    classpath 'com.android.tools.build:gradle:3.5.2'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
-  }*/
-
   dependencies{
     // ✅ OFFICIAL FIREBASE CONFIGURATION: Latest versions
     classpath 'com.google.gms:google-services:4.4.2'
@@ -89,15 +83,17 @@ android {
 
 
 cdvPluginPostBuildExtras.add({
-  // Apply Crashlytics plugin (like master version)
-  apply plugin: com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
-  
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
         // Apply Google Services plugin conditionally (like master version)
         if (!plugins.hasPlugin('com.google.gms.google-services')) {
           apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
+        }
+        
+        // Apply Crashlytics plugin (like master version)
+        if (!plugins.hasPlugin('com.google.firebase.crashlytics')) {
+          apply plugin: com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
         }
         
         // Disable Firebase Performance to prevent initialization issues
