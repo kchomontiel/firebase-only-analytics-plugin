@@ -32,6 +32,9 @@
         <clobbers target="FirebasePlugin" />
     </js-module>
 
+    <preference name="APP_DOMAIN" default="/" />
+    <preference name="APP_PATH" default="/" />
+
     <!-- Android -->
     <platform name="android">
         <config-file target="AndroidManifest.xml" parent="/manifest">
