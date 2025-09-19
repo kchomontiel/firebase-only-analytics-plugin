@@ -60,6 +60,11 @@ public class FirebasePlugin extends CordovaPlugin {
   private FirebaseAnalytics mFirebaseAnalytics;
   private static final String TAG = "FirebasePlugin";
   protected static final String KEY = "badge";
+  
+  // Constructor - se llama cuando se instancia el plugin
+  public FirebasePlugin() {
+    Log.d(TAG, "🔥 FirebasePlugin constructor called - Plugin instance created!");
+  }
 
   private static boolean inBackground = true;
   private static ArrayList<Bundle> notificationStack = null;
@@ -69,21 +74,31 @@ public class FirebasePlugin extends CordovaPlugin {
 
   @Override
   protected void pluginInitialize() {
+    Log.d(TAG, "🔥 FirebasePlugin pluginInitialize() called - Plugin is loading!");
     final Context context = this.cordova.getActivity().getApplicationContext();
     final Bundle extras = this.cordova.getActivity().getIntent().getExtras();
+    Log.d(TAG, "🔥 FirebasePlugin context: " + context.getClass().getSimpleName());
+    
     this.cordova.getThreadPool().execute(new Runnable() {
       public void run() {
-        Log.d(TAG, "Starting Firebase plugin");
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        if (extras != null && extras.size() > 1) {
-          if (FirebasePlugin.notificationStack == null) {
-            FirebasePlugin.notificationStack = new ArrayList<Bundle>();
+        Log.d(TAG, "🔥 Starting Firebase plugin initialization");
+        try {
+          mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+          mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
+          Log.d(TAG, "🔥 Firebase Analytics initialized successfully");
+          
+          if (extras != null && extras.size() > 1) {
+            if (FirebasePlugin.notificationStack == null) {
+              FirebasePlugin.notificationStack = new ArrayList<Bundle>();
+            }
+            if (extras.containsKey("google.message_id")) {
+              extras.putBoolean("tap", true);
+              notificationStack.add(extras);
+            }
           }
-          if (extras.containsKey("google.message_id")) {
-            extras.putBoolean("tap", true);
-            notificationStack.add(extras);
-          }
+          Log.d(TAG, "🔥 Firebase plugin initialization completed successfully");
+        } catch (Exception e) {
+          Log.e(TAG, "🔥 Firebase plugin initialization failed: " + e.getMessage(), e);
         }
       }
     });
@@ -243,6 +258,7 @@ public class FirebasePlugin extends CordovaPlugin {
 
   @Override
   public void onResume(boolean multitasking) {
+    Log.d(TAG, "🔥 FirebasePlugin onResume() called - Plugin is active!");
     FirebasePlugin.inBackground = false;
   }
 
