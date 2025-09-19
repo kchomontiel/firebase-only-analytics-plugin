@@ -25,8 +25,10 @@
     <hook type="after_plugin_install" src="scripts/ios/fixDeploymentTargets.js" />
     <hook type="after_plugin_install" src="scripts/ios/verifyPluginFiles.js" />
 
-    <!-- Android Hooks - REMOVED to match master version -->
-    <!-- Master version has NO Android hooks, only applies Google Services from build.gradle -->
+    <!-- Configuration Hooks - RESTORED from master version -->
+    <hook type="before_plugin_install" src="scripts/configurations/installDependencies.js" />
+    <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopyConfigurations.js" />
+    <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
 
     <js-module src="www/firebase.js" name="FirebasePlugin">
         <clobbers target="FirebasePlugin" />
