@@ -85,7 +85,7 @@ cdvPluginPostBuildExtras.add({
       if (name == "app") {
         // Apply Google Services plugin conditionally (like master version)
         if (!plugins.hasPlugin('com.google.gms.google-services')) {
-          apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
+          apply plugin: 'com.google.gms.google-services'
         }
         
         
