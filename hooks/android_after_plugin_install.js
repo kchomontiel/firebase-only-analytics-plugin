@@ -1,0 +1,138 @@
+#!/usr/bin/env node
+
+/**
+ * Android Post-Install Hook for Firebase Analytics Plugin
+ * Ensures Google Services plugin is properly configured in build.gradle
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+module.exports = function (context) {
+  const Q = context.requireCordovaModule("q");
+  const deferral = Q.defer();
+
+  console.log(
+    "Firebase Analytics Plugin: Running Android post-install hook..."
+  );
+
+  // Check if we're running on Android platform
+  if (context.opts.platforms.indexOf("android") === -1) {
+    console.log(
+      "Firebase Analytics Plugin: Not Android platform, skipping hook"
+    );
+    deferral.resolve();
+    return deferral.promise;
+  }
+
+  const platformPath = path.join(
+    context.opts.projectRoot,
+    "platforms",
+    "android"
+  );
+  const buildGradlePath = path.join(platformPath, "build.gradle");
+  const appBuildGradlePath = path.join(platformPath, "app", "build.gradle");
+  const googleServicesSourcePath = path.join(
+    context.opts.projectRoot,
+    "google-services.json"
+  );
+  const googleServicesTargetPath = path.join(
+    platformPath,
+    "app",
+    "google-services.json"
+  );
+
+  // Check if platform exists
+  if (!fs.existsSync(platformPath)) {
+    console.log(
+      "Firebase Analytics Plugin: Android platform not found, skipping hook"
+    );
+    deferral.resolve();
+    return deferral.promise;
+  }
+
+  try {
+    // Configure root build.gradle
+    if (fs.existsSync(buildGradlePath)) {
+      let buildGradleContent = fs.readFileSync(buildGradlePath, "utf8");
+
+      // Add Google Services classpath if not already present
+      if (!buildGradleContent.includes("com.google.gms:google-services")) {
+        const classpathRegex =
+          /(classpath\s+['"]com\.android\.tools\.build:gradle:[^'"]*['"])/;
+        if (classpathRegex.test(buildGradleContent)) {
+          buildGradleContent = buildGradleContent.replace(
+            classpathRegex,
+            "$1\n        classpath 'com.google.gms:google-services:4.4.0'"
+          );
+          fs.writeFileSync(buildGradlePath, buildGradleContent);
+          console.log(
+            "Firebase Analytics Plugin: Added Google Services classpath to build.gradle"
+          );
+        }
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: Google Services classpath already present"
+        );
+      }
+    }
+
+    // Configure app build.gradle
+    if (fs.existsSync(appBuildGradlePath)) {
+      let appBuildGradleContent = fs.readFileSync(appBuildGradlePath, "utf8");
+
+      // Add Google Services plugin if not already present
+      if (!appBuildGradleContent.includes("com.google.gms.google-services")) {
+        // Find the plugins section and add Google Services plugin
+        const pluginsRegex =
+          /(apply plugin: ['"]com\.android\.application['"])/;
+        if (pluginsRegex.test(appBuildGradleContent)) {
+          appBuildGradleContent = appBuildGradleContent.replace(
+            pluginsRegex,
+            "$1\napply plugin: 'com.google.gms.google-services'"
+          );
+          fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+          console.log(
+            "Firebase Analytics Plugin: Added Google Services plugin to app/build.gradle"
+          );
+        }
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: Google Services plugin already present"
+        );
+      }
+    }
+
+    // Copy google-services.json to the correct location
+    if (fs.existsSync(googleServicesSourcePath)) {
+      // Ensure the app directory exists
+      const appDir = path.dirname(googleServicesTargetPath);
+      if (!fs.existsSync(appDir)) {
+        fs.mkdirSync(appDir, { recursive: true });
+      }
+
+      // Copy the file
+      fs.copyFileSync(googleServicesSourcePath, googleServicesTargetPath);
+      console.log(
+        "Firebase Analytics Plugin: Copied google-services.json to platforms/android/app/"
+      );
+    } else {
+      console.log(
+        "Firebase Analytics Plugin: google-services.json not found in project root"
+      );
+    }
+
+    console.log(
+      "Firebase Analytics Plugin: Android post-install hook completed successfully"
+    );
+    deferral.resolve();
+  } catch (error) {
+    console.error(
+      "Firebase Analytics Plugin: Error in Android post-install hook:",
+      error.message
+    );
+    deferral.reject(error);
+  }
+
+  return deferral.promise;
+};

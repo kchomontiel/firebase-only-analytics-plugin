@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-firebase-analytics"
+    version="1.0.0">
+
+    <name>Firebase Analytics</name>
+    <description>Cordova plugin for Firebase Analytics with iOS Privacy Manifest support</description>
+    <license>MIT</license>
+    <keywords>cordova,firebase,analytics,ios,android,privacy</keywords>
+    <repo>https://github.com/kchomontiel/firebase-only-analytics-plugin</repo>
+    <issue>https://github.com/kchomontiel/firebase-only-analytics-plugin/issues</issue>
+
+    <engines>
+        <engine name="cordova" version=">=7.0.0" />
+        <engine name="cordova-android" version=">=6.0.0" />
+        <engine name="cordova-ios" version=">=4.0.0" />
+    </engines>
+
+    <js-module src="www/firebase-analytics.js" name="FirebaseAnalytics">
+        <clobbers target="cordova.plugins.firebase.analytics" />
+    </js-module>
+
+    <!-- Android Platform -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="FirebaseAnalytics">
+                <param name="android-package" value="com.yourcompany.cordova.firebase.FirebaseAnalyticsPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        </config-file>
+
+        <source-file src="src/android/FirebaseAnalyticsPlugin.java" target-dir="src/com/yourcompany/cordova/firebase" />
+
+        <framework src="com.google.firebase:firebase-analytics:21.6.0" />
+        <framework src="com.google.firebase:firebase-core:21.1.1" />
+        
+        <!-- Google Services plugin for processing google-services.json -->
+        <framework src="com.google.gms:google-services:4.4.0" />
+        
+        <hook type="after_plugin_install" src="hooks/android_after_plugin_install.js" />
+    </platform>
+
+    <!-- iOS Platform -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="FirebaseAnalytics">
+                <param name="ios-package" value="FirebaseAnalyticsPlugin" />
+            </feature>
+        </config-file>
+
+        <config-file target="config.xml" parent="/*">
+            <preference name="FirebaseAnalyticsConfigurationFile" value="GoogleService-Info.plist" />
+        </config-file>
+
+        <source-file src="src/ios/FirebaseAnalyticsPlugin.swift" />
+
+        <framework src="FirebaseAnalytics" type="podspec" spec="~> 10.26.0" />
+        <framework src="FirebaseCore" type="podspec" spec="~> 10.26.0" />
+        
+        <hook type="after_plugin_install" src="hooks/ios_after_plugin_install.js" />
+    </platform>
+</plugin>

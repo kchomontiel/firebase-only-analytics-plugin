@@ -1,0 +1,44 @@
+{
+  "name": "cordova-plugin-firebase-analytics",
+  "version": "1.0.0",
+  "description": "Cordova plugin for Firebase Analytics with iOS Privacy Manifest support",
+  "main": "www/firebase-analytics.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kchomontiel/firebase-only-analytics-plugin.git"
+  },
+  "keywords": [
+    "cordova",
+    "firebase",
+    "analytics",
+    "ios",
+    "android",
+    "privacy",
+    "manifest",
+    "swift",
+    "java"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kchomontiel/firebase-only-analytics-plugin/issues"
+  },
+  "homepage": "https://github.com/kchomontiel/firebase-only-analytics-plugin#readme",
+  "cordova": {
+    "id": "cordova-plugin-firebase-analytics",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "engines": {
+    "cordova": ">=7.0.0",
+    "cordova-android": ">=6.0.0",
+    "cordova-ios": ">=4.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
