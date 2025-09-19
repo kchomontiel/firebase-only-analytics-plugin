@@ -93,6 +93,7 @@ public class FirebasePlugin extends CordovaPlugin {
   private void ensureFirebaseInitialized() {
     try {
       Context context = this.cordova.getActivity().getApplicationContext();
+      Log.d(TAG, "ensureFirebaseInitialized called - Context: " + context.getClass().getSimpleName());
       
       // Firebase Analytics should already be initialized in pluginInitialize()
       if (mFirebaseAnalytics == null) {
@@ -103,6 +104,16 @@ public class FirebasePlugin extends CordovaPlugin {
       } else {
         Log.d(TAG, "Firebase Analytics already initialized");
       }
+      
+      // Verify Firebase App is initialized
+      try {
+        FirebaseApp app = FirebaseApp.getInstance();
+        Log.d(TAG, "Firebase App instance verified: " + app.getName());
+      } catch (Exception e) {
+        Log.e(TAG, "Firebase App not initialized: " + e.getMessage(), e);
+        throw new RuntimeException("Firebase App not initialized", e);
+      }
+      
     } catch (Exception e) {
       Log.e(TAG, "Failed to ensure Firebase initialization: " + e.getMessage(), e);
       throw new RuntimeException("Firebase initialization failed", e);
@@ -111,8 +122,17 @@ public class FirebasePlugin extends CordovaPlugin {
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    Log.d(TAG, "execute called with action: " + action);
+    
     // ✅ CRITICAL FIX: Ensure Firebase is initialized before any operation
-    ensureFirebaseInitialized();
+    try {
+      ensureFirebaseInitialized();
+      Log.d(TAG, "Firebase initialization verified for action: " + action);
+    } catch (Exception e) {
+      Log.e(TAG, "Firebase initialization failed for action: " + action + " - " + e.getMessage(), e);
+      callbackContext.error("Firebase initialization failed: " + e.getMessage());
+      return false;
+    }
     
     if (action.equals("getId")) {
       this.getId(callbackContext);
@@ -650,13 +670,31 @@ public class FirebasePlugin extends CordovaPlugin {
   //
   private void logEvent(final CallbackContext callbackContext, final String name, final JSONObject params) throws JSONException {
     Log.d(TAG, "logEvent called. name: " + name);
+    Log.d(TAG, "logEvent params: " + params.toString());
     
     // ✅ RESTORED: Use the working logic from _old version
     // Verificar que Firebase Analytics esté inicializado
     if (mFirebaseAnalytics == null) {
-      Log.e(TAG, "Firebase Analytics not initialized yet");
-      callbackContext.error("Firebase Analytics not initialized");
-      return;
+      Log.e(TAG, "Firebase Analytics not initialized yet - mFirebaseAnalytics is null");
+      
+      // Try to get global instance as fallback
+      try {
+        FirebaseAnalytics globalInstance = FirebaseAnalytics.getInstance(cordova.getActivity().getApplicationContext());
+        if (globalInstance != null) {
+          Log.d(TAG, "Using global Firebase Analytics instance as fallback");
+          mFirebaseAnalytics = globalInstance;
+        } else {
+          Log.e(TAG, "Global Firebase Analytics instance also null");
+          callbackContext.error("Firebase Analytics not initialized");
+          return;
+        }
+      } catch (Exception e) {
+        Log.e(TAG, "Failed to get global Firebase Analytics instance: " + e.getMessage(), e);
+        callbackContext.error("Firebase Analytics not initialized");
+        return;
+      }
+    } else {
+      Log.d(TAG, "Firebase Analytics instance is available");
     }
     
     final Bundle bundle = new Bundle();
