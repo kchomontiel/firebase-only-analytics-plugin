@@ -30,8 +30,6 @@
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopyConfigurations.js" />
     <hook type="before_plugin_install" src="scripts/configurations/unzipAndCopySound.js" />
     
-    <!-- Manual Google Services Copy Hook -->
-    <hook type="after_plugin_install" src="scripts/android/copyGoogleServicesManually.js" />
 
     <js-module src="www/firebase.js" name="FirebasePlugin">
         <clobbers target="FirebasePlugin" />
