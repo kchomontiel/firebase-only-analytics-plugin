@@ -77,27 +77,9 @@ public class FirebasePlugin extends CordovaPlugin {
     
     Log.d(TAG, "Starting Firebase plugin initialization");
     
-    // ✅ CRITICAL FIX: Initialize Firebase App directly like iOS does
-    try {
-      // Initialize Firebase App directly (similar to iOS FirebaseApp.configure())
-      Log.d(TAG, "Initializing Firebase App directly");
-      FirebaseApp.initializeApp(context);
-      Log.d(TAG, "Firebase App initialized successfully");
-      
-      // Inicialización síncrona para asegurar que esté disponible (from _old)
-      mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-      mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
-      Log.d(TAG, "Firebase Analytics initialized successfully");
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to initialize Firebase Analytics: " + e.getMessage(), e);
-      // Intentar usar la instancia global si existe (from _old)
-      try {
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        Log.d(TAG, "Using global Firebase Analytics instance");
-      } catch (Exception e2) {
-        Log.e(TAG, "No global Firebase Analytics instance available: " + e2.getMessage(), e2);
-      }
-    }
+    // Firebase will be initialized automatically by Google Services plugin
+    // We just need to get the instance when needed to avoid multiple initializations
+    Log.d(TAG, "Firebase plugin initialization completed - will initialize on demand");
     
     this.cordova.getThreadPool().execute(new Runnable() {
       public void run() {
@@ -147,12 +129,12 @@ public class FirebasePlugin extends CordovaPlugin {
         Log.d(TAG, "Firebase App already initialized (automatic initialization working)");
       }
       
-      // Ensure Firebase Analytics is initialized
+      // Ensure Firebase Analytics is initialized (only if not already initialized)
       if (mFirebaseAnalytics == null) {
-        Log.d(TAG, "Initializing Firebase Analytics...");
+        Log.d(TAG, "Getting Firebase Analytics instance...");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        Log.d(TAG, "Firebase Analytics initialized successfully");
+        Log.d(TAG, "Firebase Analytics instance obtained successfully");
       }
     } catch (Exception e) {
       Log.e(TAG, "Failed to ensure Firebase initialization: " + e.getMessage(), e);
@@ -450,19 +432,11 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ CRITICAL FIX: Ensure Firebase is initialized before getToken
+          // Firebase should already be initialized by Google Services plugin
           Context context = cordova.getActivity().getApplicationContext();
           if (FirebaseApp.getApps(context).isEmpty()) {
-            Log.d(TAG, "Firebase App not initialized in getToken, initializing now...");
-            // Use explicit options for manual initialization
-            FirebaseOptions options = new FirebaseOptions.Builder()
-              .setProjectId("prod-app-aa")
-              .setApplicationId("1:642052028066:android:a91aa1ee5dd74d30e389fb")
-              .setApiKey("AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc")
-              .setStorageBucket("prod-app-aa.firebasestorage.app")
-              .build();
-            FirebaseApp.initializeApp(context, options);
-            Log.d(TAG, "Firebase App initialized successfully in getToken with explicit options");
+            Log.w(TAG, "Firebase App not initialized in getToken - this should not happen");
+            // Don't initialize here to avoid multiple initializations
           }
           
           // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
