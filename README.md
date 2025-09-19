@@ -56,6 +56,8 @@ cordova build
 
 ### JavaScript API
 
+#### Forma 1: Usando cordova.plugins.firebase.analytics
+
 ```javascript
 // Logear un evento personalizado
 cordova.plugins.firebase.analytics.logEvent("custom_event", {
@@ -77,6 +79,33 @@ cordova.plugins.firebase.analytics.setAnalyticsCollectionEnabled(true);
 
 // Resetear datos de analytics
 cordova.plugins.firebase.analytics.resetAnalyticsData();
+```
+
+#### Forma 2: Usando window.fp (compatible con código existente)
+
+```javascript
+// Verificar inicialización primero
+window.fp.isFirebaseInitialized(function(isInit) {
+    if (isInit) {
+        // Firebase está listo, enviar evento
+        window.fp.logEvent("custom_event", {
+            parameter_name: "parameter_value",
+            score: 100
+        }, success, error);
+    } else {
+        console.log("Firebase not initialized");
+    }
+}, function(err) {
+    console.log("Error checking Firebase initialization: " + err);
+});
+
+function success() {
+    console.log("Event logged successfully");
+}
+
+function error(err) {
+    console.log("Error logging event: " + err);
+}
 ```
 
 ### Ejemplo completo
@@ -151,6 +180,13 @@ Habilita o deshabilita la recolección de analytics.
 Resetea los datos de analytics del usuario.
 
 - **successCallback** (function, opcional): Callback de éxito
+- **errorCallback** (function, opcional): Callback de error
+
+### `isFirebaseInitialized(successCallback, errorCallback)`
+
+Verifica si Firebase Analytics está inicializado.
+
+- **successCallback** (function, opcional): Callback de éxito que recibe un boolean
 - **errorCallback** (function, opcional): Callback de error
 
 ## iOS Privacy Manifest

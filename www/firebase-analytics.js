@@ -140,6 +140,63 @@ var FirebaseAnalytics = {
       []
     );
   },
+
+  /**
+   * Check if Firebase Analytics is initialized
+   * @param {Function} successCallback - Success callback function (receives boolean)
+   * @param {Function} errorCallback - Error callback function
+   */
+  isFirebaseInitialized: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback =
+      errorCallback ||
+      function (error) {
+        console.error("Firebase Analytics Error:", error);
+      };
+
+    // Firebase is considered initialized if the plugin is loaded
+    // We can make a simple call to verify
+    exec(
+      function() {
+        successCallback(true);
+      },
+      function() {
+        successCallback(false);
+      },
+      "FirebaseAnalytics",
+      "logEvent",
+      ["_init_check", {}]
+    );
+  },
 };
 
 module.exports = FirebaseAnalytics;
+
+// Create window.fp interface for compatibility
+if (typeof window !== 'undefined') {
+  window.fp = {
+    logEvent: function(eventName, parameters, successCallback, errorCallback) {
+      return FirebaseAnalytics.logEvent(eventName, parameters, successCallback, errorCallback);
+    },
+    
+    setUserProperty: function(name, value, successCallback, errorCallback) {
+      return FirebaseAnalytics.setUserProperty(name, value, successCallback, errorCallback);
+    },
+    
+    setUserId: function(userId, successCallback, errorCallback) {
+      return FirebaseAnalytics.setUserId(userId, successCallback, errorCallback);
+    },
+    
+    setAnalyticsCollectionEnabled: function(enabled, successCallback, errorCallback) {
+      return FirebaseAnalytics.setAnalyticsCollectionEnabled(enabled, successCallback, errorCallback);
+    },
+    
+    resetAnalyticsData: function(successCallback, errorCallback) {
+      return FirebaseAnalytics.resetAnalyticsData(successCallback, errorCallback);
+    },
+    
+    isFirebaseInitialized: function(successCallback, errorCallback) {
+      return FirebaseAnalytics.isFirebaseInitialized(successCallback, errorCallback);
+    }
+  };
+}
