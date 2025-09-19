@@ -2,4 +2,6 @@
 <resources>
   <string name="default_notification_channel_id">fcm_default_channel</string>
   <string name="default_notification_channel_name">default</string>
+  <string name="google_app_id">@string/google_app_id</string>
+  <string name="google_api_key">@string/google_api_key</string>
 </resources>
