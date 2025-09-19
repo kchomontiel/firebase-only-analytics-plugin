@@ -1,2 +1,1 @@
 // apply plugin: 'com.google.gms.google-services' // Applied in build.gradle instead
-//apply plugin: 'com.google.firebase.crashlytics'

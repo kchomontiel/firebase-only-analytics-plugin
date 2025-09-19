@@ -55,7 +55,6 @@ dependencies {
   // Firebase dependencies are managed by plugin.xml frameworks
   // implementation 'com.google.firebase:firebase-auth:17.0.0' // Removed - not needed for analytics only
   // implementation 'com.google.firebase:firebase-core:16.0.9' // Removed - deprecated
-  ///implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
     //transitive = true
   //}
   //Added
@@ -68,7 +67,6 @@ dependencies {
 /*
 cdvPluginPostBuildExtras.add({
   apply plugin: 'com.google.gms.google-services'
-  apply plugin: 'com.google.firebase.crashlytics'
 })
 */
 

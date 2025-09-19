@@ -51,10 +51,7 @@ import java.util.Set;
 // import com.google.firebase.auth.PhoneAuthCredential;
 // import com.google.firebase.auth.PhoneAuthProvider;
 
-// Crashlytics
-//import com.crashlytics.android.Crashlytics;
 //import io.fabric.sdk.android.Fabric;
-// import com.google.firebase.crashlytics.FirebaseCrashlytics; // Removed - Crashlytics disabled
 
 // Dynamic Links - REMOVED (not included in dependencies)
 
@@ -154,9 +151,6 @@ public class FirebasePlugin extends CordovaPlugin {
       this.logError(callbackContext, args.getString(0));
       return true;*/
 
-    /*} else if (action.equals("setCrashlyticsUserId")) {
-      this.setCrashlyticsUserId(callbackContext, args.getString(0));
-      return true;*/
     } else if (action.equals("setScreenName")) {
       this.setScreenName(callbackContext, args.getString(0));
       return true;
@@ -925,60 +919,6 @@ public class FirebasePlugin extends CordovaPlugin {
   }
   */
 }
-  // 
-  // Crashlytics
-  //
-  /* CRASHLITYCS COMMENTED
-
-  private void forceCrashlytics(final CallbackContext callbackContext) {
-    Log.d(TAG, "forceCrashlytics called");
-    final FirebasePlugin self = this;
-    cordova.getThreadPool().execute(new Runnable() {
-      public void run() {
-        // FirebaseCrashlytics.getInstance().crash(); // Crashlytics disabled
-        Log.e(TAG, "Crashlytics crash() called - Crashlytics disabled");
-      }
-    });
-  }
-  
-  private void logError(final CallbackContext callbackContext, final String message) throws JSONException {
-    Log.d(TAG, "logError called. message: " + message);
-    cordova.getThreadPool().execute(new Runnable() {
-      public void run() {
-        try {
-          // FirebaseCrashlytics.logException(new Exception(message)); // Crashlytics disabled
-          Log.e(TAG, "Crashlytics logException called: " + message);
-          callbackContext.success(1);
-          Log.d(TAG, "logError success");
-        } catch (Exception e) {
-          // FirebaseCrashlytics.log(e.getMessage()); // Crashlytics disabled
-          Log.e(TAG, "Error in logError: " + e.getMessage(), e);
-          callbackContext.error(e.getMessage());
-        }
-      }
-    });
-  }
-
-  private void setCrashlyticsUserId(final CallbackContext callbackContext, final String userId) {
-    Log.d(TAG, "setCrashlyticsUserId called. userId: " + userId);
-    cordova.getActivity().runOnUiThread(new Runnable() {
-      public void run() {
-        try {
-          // FirebaseCrashlytics.setUserIdentifier(userId); // Crashlytics disabled
-          Log.d(TAG, "Crashlytics setUserIdentifier called: " + userId);
-          callbackContext.success();
-          Log.d(TAG, "setCrashlyticsUserId success");
-        } catch (Exception e) {
-          // FirebaseCrashlytics.logException(e); // Crashlytics disabled
-          Log.e(TAG, "Error in setCrashlyticsUserId: " + e.getMessage(), e);
-          callbackContext.error(e.getMessage());
-        }
-      }
-    });
-  }
-}
-
-*/
 
 
 /*
