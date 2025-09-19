@@ -10,7 +10,8 @@
         "mobilesdk_app_id": "1:642052028066:android:a91aa1ee5dd74d30e389fb",
         "android_client_info": {
           "package_name": "com.entel.movil.autoactivacion"
-        }
+        },
+        "google_app_id": "1:642052028066:android:a91aa1ee5dd74d30e389fb"
       },
       "oauth_client": [],
       "api_key": [
