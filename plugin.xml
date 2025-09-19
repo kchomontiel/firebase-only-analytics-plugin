@@ -25,9 +25,8 @@
     <hook type="after_plugin_install" src="scripts/ios/fixDeploymentTargets.js" />
     <hook type="after_plugin_install" src="scripts/ios/verifyPluginFiles.js" />
 
-    <!-- Android Hooks -->
-    <hook type="after_plugin_install" src="scripts/android/initializeFirebase.js" />
-    <hook type="after_plugin_install" src="scripts/android/applyGoogleServicesPlugin.js" />
+    <!-- Android Hooks - REMOVED to match master version -->
+    <!-- Master version has NO Android hooks, only applies Google Services from build.gradle -->
 
     <js-module src="www/firebase.js" name="FirebasePlugin">
         <clobbers target="FirebasePlugin" />
@@ -59,7 +58,6 @@
         </config-file>
         
         <source-file src="src/android/FirebasePlugin.java" target-dir="src/org/apache/cordova/firebase" />
-        <source-file src="src/android/FirebaseApplication.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/OnNotificationOpenReceiver.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/FirebasePluginInstanceIDService.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/FirebasePluginMessagingService.java" target-dir="src/org/apache/cordova/firebase" />
@@ -90,12 +88,16 @@
             <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="@string/default_notification_channel_id"/>
         </config-file>
 
-        <!-- ✅ FIREBASE DEPENDENCIES: Use specific versions for Cordova compatibility -->
+        <!-- ✅ FIREBASE DEPENDENCIES: Match master version with updated versions -->
+        <framework src="com.google.gms:google-services:4.4.2" />
         <framework src="com.google.firebase:firebase-analytics:21.5.1" />
         <framework src="com.google.firebase:firebase-messaging:23.4.1" />
-        <framework src="com.google.firebase:firebase-installations:17.2.0" />
+        <framework src="com.google.firebase:firebase-config:21.6.0" />
+        <framework src="com.google.firebase:firebase-perf:20.5.1" />
+        <framework src="com.google.firebase:firebase-dynamic-links:21.2.0" />
+        <framework src="com.google.firebase:firebase-iid:21.1.0" />
         <framework src="com.google.firebase:firebase-crashlytics:18.6.4" />
-        <framework src="com.google.gms:google-services:4.4.2" />
+        <framework src="com.google.firebase:firebase-installations:17.2.0" />
 
         <resource-file src="google-services.json" target="./google-services.json" />
     </platform>
