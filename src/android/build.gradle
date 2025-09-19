@@ -93,7 +93,7 @@ cdvPluginPostBuildExtras.add({
         
         // Apply Crashlytics plugin (like master version)
         if (!plugins.hasPlugin('com.google.firebase.crashlytics')) {
-          apply plugin: com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin
+          apply plugin: 'com.google.firebase.crashlytics'
         }
         
         // Disable Firebase Performance to prevent initialization issues
