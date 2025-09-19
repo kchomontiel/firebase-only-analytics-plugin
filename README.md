@@ -85,29 +85,42 @@ cordova.plugins.firebase.analytics.resetAnalyticsData();
 
 ```javascript
 // Verificar inicialización primero
-window.fp.isFirebaseInitialized(function(isInit) {
+window.fp.isFirebaseInitialized(
+  function (isInit) {
     if (isInit) {
-        // Firebase está listo, enviar evento
-        window.fp.logEvent("custom_event", {
-            parameter_name: "parameter_value",
-            score: 100
-        }, success, error);
-        
-        // Establecer nombre de pantalla
-        window.fp.setScreenName("HomeScreen", success, error);
-    } else {
-        console.log("Firebase not initialized");
-    }
-}, function(err) {
-    console.log("Error checking Firebase initialization: " + err);
-});
+      // Firebase está listo, enviar evento
+      window.fp.logEvent(
+        "custom_event",
+        {
+          parameter_name: "parameter_value",
+          score: 100,
+        },
+        success,
+        error
+      );
+
+       // Establecer nombre de pantalla
+       window.fp.setScreenName("HomeScreen", success, error);
+       
+       // Verificar permisos de analytics
+       window.fp.hasPermission(function(hasPermission) {
+         console.log("Has analytics permission:", hasPermission);
+       }, error);
+     } else {
+       console.log("Firebase not initialized");
+     }
+   },
+   function (err) {
+     console.log("Error checking Firebase initialization: " + err);
+   }
+ );
 
 function success() {
-    console.log("Operation completed successfully");
+  console.log("Operation completed successfully");
 }
 
 function error(err) {
-    console.log("Error: " + err);
+  console.log("Error: " + err);
 }
 ```
 
@@ -198,6 +211,13 @@ Establece el nombre de la pantalla para rastreo de analytics.
 
 - **screenName** (string): Nombre de la pantalla
 - **successCallback** (function, opcional): Callback de éxito
+- **errorCallback** (function, opcional): Callback de error
+
+### `hasPermission(successCallback, errorCallback)`
+
+Verifica si la aplicación tiene permisos para recopilar datos de analytics.
+
+- **successCallback** (function, opcional): Callback de éxito que recibe un boolean
 - **errorCallback** (function, opcional): Callback de error
 
 ## iOS Privacy Manifest

@@ -157,10 +157,10 @@ var FirebaseAnalytics = {
     // Firebase is considered initialized if the plugin is loaded
     // We can make a simple call to verify
     exec(
-      function() {
+      function () {
         successCallback(true);
       },
-      function() {
+      function () {
         successCallback(false);
       },
       "FirebaseAnalytics",
@@ -190,12 +190,39 @@ var FirebaseAnalytics = {
     }
 
     // Log a screen_view event with the screen name
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "logEvent", [
+      "screen_view",
+      { screen_name: screenName },
+    ]);
+  },
+
+  /**
+   * Check if the app has permission to collect analytics data
+   * @param {Function} successCallback - Success callback function (receives boolean)
+   * @param {Function} errorCallback - Error callback function
+   */
+  hasPermission: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback =
+      errorCallback ||
+      function (error) {
+        console.error("Firebase Analytics Error:", error);
+      };
+
+    // Check if analytics collection is enabled
     exec(
-      successCallback,
-      errorCallback,
+      function (result) {
+        // result should be true/false indicating if analytics is enabled
+        successCallback(!!result);
+      },
+      function (error) {
+        // If there's an error, assume no permission
+        console.warn("Error checking analytics permission:", error);
+        successCallback(false);
+      },
       "FirebaseAnalytics",
-      "logEvent",
-      ["screen_view", { screen_name: screenName }]
+      "setAnalyticsCollectionEnabled",
+      [true]
     );
   },
 };
@@ -203,34 +230,73 @@ var FirebaseAnalytics = {
 module.exports = FirebaseAnalytics;
 
 // Create window.fp interface for compatibility
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.fp = {
-    logEvent: function(eventName, parameters, successCallback, errorCallback) {
-      return FirebaseAnalytics.logEvent(eventName, parameters, successCallback, errorCallback);
+    logEvent: function (eventName, parameters, successCallback, errorCallback) {
+      return FirebaseAnalytics.logEvent(
+        eventName,
+        parameters,
+        successCallback,
+        errorCallback
+      );
     },
-    
-    setUserProperty: function(name, value, successCallback, errorCallback) {
-      return FirebaseAnalytics.setUserProperty(name, value, successCallback, errorCallback);
+
+    setUserProperty: function (name, value, successCallback, errorCallback) {
+      return FirebaseAnalytics.setUserProperty(
+        name,
+        value,
+        successCallback,
+        errorCallback
+      );
     },
-    
-    setUserId: function(userId, successCallback, errorCallback) {
-      return FirebaseAnalytics.setUserId(userId, successCallback, errorCallback);
+
+    setUserId: function (userId, successCallback, errorCallback) {
+      return FirebaseAnalytics.setUserId(
+        userId,
+        successCallback,
+        errorCallback
+      );
     },
-    
-    setAnalyticsCollectionEnabled: function(enabled, successCallback, errorCallback) {
-      return FirebaseAnalytics.setAnalyticsCollectionEnabled(enabled, successCallback, errorCallback);
+
+    setAnalyticsCollectionEnabled: function (
+      enabled,
+      successCallback,
+      errorCallback
+    ) {
+      return FirebaseAnalytics.setAnalyticsCollectionEnabled(
+        enabled,
+        successCallback,
+        errorCallback
+      );
     },
-    
-    resetAnalyticsData: function(successCallback, errorCallback) {
-      return FirebaseAnalytics.resetAnalyticsData(successCallback, errorCallback);
+
+    resetAnalyticsData: function (successCallback, errorCallback) {
+      return FirebaseAnalytics.resetAnalyticsData(
+        successCallback,
+        errorCallback
+      );
     },
-    
-    isFirebaseInitialized: function(successCallback, errorCallback) {
-      return FirebaseAnalytics.isFirebaseInitialized(successCallback, errorCallback);
+
+    isFirebaseInitialized: function (successCallback, errorCallback) {
+      return FirebaseAnalytics.isFirebaseInitialized(
+        successCallback,
+        errorCallback
+      );
     },
-    
-    setScreenName: function(screenName, successCallback, errorCallback) {
-      return FirebaseAnalytics.setScreenName(screenName, successCallback, errorCallback);
-    }
-  };
-}
+
+     setScreenName: function (screenName, successCallback, errorCallback) {
+       return FirebaseAnalytics.setScreenName(
+         screenName,
+         successCallback,
+         errorCallback
+       );
+     },
+
+     hasPermission: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.hasPermission(
+         successCallback,
+         errorCallback
+       );
+     },
+   };
+ }
