@@ -89,6 +89,9 @@ android {
 
 
 cdvPluginPostBuildExtras.add({
+  // Apply Google Services plugin for Firebase
+  apply plugin: 'com.google.gms.google-services'
+  
   afterEvaluate {
     rootProject.subprojects {
       if (name == "app") {
