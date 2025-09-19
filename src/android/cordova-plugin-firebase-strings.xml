@@ -2,6 +2,10 @@
 <resources>
   <string name="default_notification_channel_id">fcm_default_channel</string>
   <string name="default_notification_channel_name">default</string>
-  <string name="google_app_id">@string/google_app_id</string>
-  <string name="google_api_key">@string/google_api_key</string>
+  <string name="google_app_id">1:642052028066:android:a91aa1ee5dd74d30e389fb</string>
+  <string name="google_api_key">AIzaSyA2cH4h2bCEf-9oB-9gr7XDqA7SdNIratc</string>
+  <string name="firebase_database_url">https://prod-app-aa-default-rtdb.firebaseio.com</string>
+  <string name="gcm_defaultSenderId">642052028066</string>
+  <string name="google_storage_bucket">prod-app-aa.firebasestorage.app</string>
+  <string name="project_id">prod-app-aa</string>
 </resources>
