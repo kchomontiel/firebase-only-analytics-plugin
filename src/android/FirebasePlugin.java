@@ -74,16 +74,11 @@ public class FirebasePlugin extends CordovaPlugin {
   protected void pluginInitialize() {
     final Context context = this.cordova.getActivity().getApplicationContext();
     final Bundle extras = this.cordova.getActivity().getIntent().getExtras();
-    
-    Log.d(TAG, "Starting Firebase plugin initialization");
-    
-    // Firebase will be initialized automatically by Google Services plugin
-    // We just need to get the instance when needed to avoid multiple initializations
-    Log.d(TAG, "Firebase plugin initialization completed - will initialize on demand");
-    
     this.cordova.getThreadPool().execute(new Runnable() {
       public void run() {
-        Log.d(TAG, "Firebase plugin background initialization");
+        Log.d(TAG, "Starting Firebase plugin");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+        mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
         if (extras != null && extras.size() > 1) {
           if (FirebasePlugin.notificationStack == null) {
             FirebasePlugin.notificationStack = new ArrayList<Bundle>();
@@ -97,28 +92,19 @@ public class FirebasePlugin extends CordovaPlugin {
     });
   }
 
-  // ✅ OFFICIAL FIREBASE APPROACH: Check if Firebase is initialized (should be automatic)
+  // ✅ SIMPLIFIED: Firebase Analytics is initialized in pluginInitialize()
   private void ensureFirebaseInitialized() {
     try {
       Context context = this.cordova.getActivity().getApplicationContext();
       
-      // Check if Firebase App is already initialized (should be automatic with Google Services plugin)
-      if (FirebaseApp.getApps(context).isEmpty()) {
-        Log.w(TAG, "Firebase App not initialized - this should happen automatically with Google Services plugin");
-        Log.d(TAG, "Context: " + context.getClass().getSimpleName());
-        Log.d(TAG, "Package name: " + context.getPackageName());
-        // Don't initialize manually to avoid multiple initializations
-        Log.w(TAG, "Skipping manual initialization to avoid conflicts");
-      } else {
-        Log.d(TAG, "Firebase App already initialized (automatic initialization working)");
-      }
-      
-      // Ensure Firebase Analytics is initialized (only if not already initialized)
+      // Firebase Analytics should already be initialized in pluginInitialize()
       if (mFirebaseAnalytics == null) {
-        Log.d(TAG, "Getting Firebase Analytics instance...");
+        Log.d(TAG, "Firebase Analytics not initialized, getting instance...");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         mFirebaseAnalytics.setAnalyticsCollectionEnabled(true);
         Log.d(TAG, "Firebase Analytics instance obtained successfully");
+      } else {
+        Log.d(TAG, "Firebase Analytics already initialized");
       }
     } catch (Exception e) {
       Log.e(TAG, "Failed to ensure Firebase initialization: " + e.getMessage(), e);
@@ -378,14 +364,6 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // ✅ CRITICAL FIX: Ensure Firebase is initialized before getId
-          Context context = cordova.getActivity().getApplicationContext();
-          if (FirebaseApp.getApps(context).isEmpty()) {
-            Log.d(TAG, "Firebase App not initialized in getId, initializing now...");
-            FirebaseApp.initializeApp(context);
-            Log.d(TAG, "Firebase App initialized successfully in getId");
-          }
-          
           // ✅ UPDATED: Use new FirebaseInstallations API instead of deprecated FirebaseInstanceId
           com.google.firebase.installations.FirebaseInstallations.getInstance().getId()
             .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
@@ -416,13 +394,6 @@ public class FirebasePlugin extends CordovaPlugin {
     cordova.getThreadPool().execute(new Runnable() {
       public void run() {
         try {
-          // Firebase should already be initialized by Google Services plugin
-          Context context = cordova.getActivity().getApplicationContext();
-          if (FirebaseApp.getApps(context).isEmpty()) {
-            Log.w(TAG, "Firebase App not initialized in getToken - this should not happen");
-            // Don't initialize here to avoid multiple initializations
-          }
-          
           // ✅ UPDATED: Use new FirebaseMessaging API instead of deprecated FirebaseInstanceId
           FirebaseMessaging.getInstance().getToken()
             .addOnCompleteListener(new com.google.android.gms.tasks.OnCompleteListener<String>() {
