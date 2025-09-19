@@ -168,6 +168,36 @@ var FirebaseAnalytics = {
       ["_init_check", {}]
     );
   },
+
+  /**
+   * Set screen name for analytics tracking
+   * @param {string} screenName - The name of the screen
+   * @param {Function} successCallback - Success callback function
+   * @param {Function} errorCallback - Error callback function
+   */
+  setScreenName: function (screenName, successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback =
+      errorCallback ||
+      function (error) {
+        console.error("Firebase Analytics Error:", error);
+      };
+
+    // Validate screen name
+    if (!screenName || typeof screenName !== "string") {
+      errorCallback("Screen name must be a non-empty string");
+      return;
+    }
+
+    // Log a screen_view event with the screen name
+    exec(
+      successCallback,
+      errorCallback,
+      "FirebaseAnalytics",
+      "logEvent",
+      ["screen_view", { screen_name: screenName }]
+    );
+  },
 };
 
 module.exports = FirebaseAnalytics;
@@ -197,6 +227,10 @@ if (typeof window !== 'undefined') {
     
     isFirebaseInitialized: function(successCallback, errorCallback) {
       return FirebaseAnalytics.isFirebaseInitialized(successCallback, errorCallback);
+    },
+    
+    setScreenName: function(screenName, successCallback, errorCallback) {
+      return FirebaseAnalytics.setScreenName(screenName, successCallback, errorCallback);
     }
   };
 }

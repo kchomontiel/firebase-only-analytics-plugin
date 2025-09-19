@@ -92,6 +92,9 @@ window.fp.isFirebaseInitialized(function(isInit) {
             parameter_name: "parameter_value",
             score: 100
         }, success, error);
+        
+        // Establecer nombre de pantalla
+        window.fp.setScreenName("HomeScreen", success, error);
     } else {
         console.log("Firebase not initialized");
     }
@@ -100,11 +103,11 @@ window.fp.isFirebaseInitialized(function(isInit) {
 });
 
 function success() {
-    console.log("Event logged successfully");
+    console.log("Operation completed successfully");
 }
 
 function error(err) {
-    console.log("Error logging event: " + err);
+    console.log("Error: " + err);
 }
 ```
 
@@ -187,6 +190,14 @@ Resetea los datos de analytics del usuario.
 Verifica si Firebase Analytics está inicializado.
 
 - **successCallback** (function, opcional): Callback de éxito que recibe un boolean
+- **errorCallback** (function, opcional): Callback de error
+
+### `setScreenName(screenName, successCallback, errorCallback)`
+
+Establece el nombre de la pantalla para rastreo de analytics.
+
+- **screenName** (string): Nombre de la pantalla
+- **successCallback** (function, opcional): Callback de éxito
 - **errorCallback** (function, opcional): Callback de error
 
 ## iOS Privacy Manifest
