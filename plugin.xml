@@ -38,6 +38,7 @@
             <meta-data android:name="firebase_analytics_collection_enabled" android:value="true" />
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="false" />
             <meta-data android:name="firebase_analytics_debug_enabled" android:value="true" />
+            <meta-data android:name="com.google.firebase.analytics.app_id" android:value="1:642052028066:android:a91aa1ee5dd74d30e389fb" />
         </config-file>
 
         <source-file src="src/android/FirebaseAnalyticsPlugin.java" target-dir="src/com/yourcompany/cordova/firebase" />
