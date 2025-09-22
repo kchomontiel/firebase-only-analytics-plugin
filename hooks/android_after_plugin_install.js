@@ -16,7 +16,7 @@ module.exports = function (context) {
   );
 
   // Check if we're running on Android platform
-  if (context.opts.platforms.indexOf("android") === -1) {
+  if (!context.opts.platforms || context.opts.platforms.indexOf("android") === -1) {
     console.log(
       "Firebase Analytics Plugin: Not Android platform, skipping hook"
     );

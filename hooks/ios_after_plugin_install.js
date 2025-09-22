@@ -14,7 +14,7 @@ module.exports = function (context) {
   console.log("Firebase Analytics Plugin: Running iOS post-install hook...");
 
   // Check if we're running on iOS platform
-  if (context.opts.platforms.indexOf("ios") === -1) {
+  if (!context.opts.platforms || context.opts.platforms.indexOf("ios") === -1) {
     console.log("Firebase Analytics Plugin: Not iOS platform, skipping hook");
     return;
   }
