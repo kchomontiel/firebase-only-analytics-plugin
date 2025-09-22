@@ -9,8 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = function (context) {
-  const Q = context.requireCordovaModule("q");
-  const deferral = Q.defer();
+  const deferral = { resolve: () => {}, reject: () => {} };
 
   console.log(
     "Firebase Analytics Plugin: Running Android post-install hook..."
@@ -21,8 +20,7 @@ module.exports = function (context) {
     console.log(
       "Firebase Analytics Plugin: Not Android platform, skipping hook"
     );
-    deferral.resolve();
-    return deferral.promise;
+    return;
   }
 
   const platformPath = path.join(
@@ -47,8 +45,7 @@ module.exports = function (context) {
     console.log(
       "Firebase Analytics Plugin: Android platform not found, skipping hook"
     );
-    deferral.resolve();
-    return deferral.promise;
+    return;
   }
 
   try {
@@ -125,14 +122,10 @@ module.exports = function (context) {
     console.log(
       "Firebase Analytics Plugin: Android post-install hook completed successfully"
     );
-    deferral.resolve();
   } catch (error) {
     console.error(
       "Firebase Analytics Plugin: Error in Android post-install hook:",
       error.message
     );
-    deferral.reject(error);
   }
-
-  return deferral.promise;
 };

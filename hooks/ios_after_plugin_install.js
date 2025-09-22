@@ -9,16 +9,14 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = function (context) {
-  const Q = context.requireCordovaModule("q");
-  const deferral = Q.defer();
+  const deferral = { resolve: () => {}, reject: () => {} };
 
   console.log("Firebase Analytics Plugin: Running iOS post-install hook...");
 
   // Check if we're running on iOS platform
   if (context.opts.platforms.indexOf("ios") === -1) {
     console.log("Firebase Analytics Plugin: Not iOS platform, skipping hook");
-    deferral.resolve();
-    return deferral.promise;
+    return;
   }
 
   const platformPath = path.join(context.opts.projectRoot, "platforms", "ios");
@@ -36,8 +34,7 @@ module.exports = function (context) {
     console.log(
       "Firebase Analytics Plugin: GoogleService-Info.plist not found in project root"
     );
-    deferral.resolve();
-    return deferral.promise;
+    return;
   }
 
   // Copy GoogleService-Info.plist to the iOS platform directory
@@ -51,14 +48,10 @@ module.exports = function (context) {
       "Firebase Analytics Plugin: Error copying GoogleService-Info.plist:",
       error.message
     );
-    deferral.reject(error);
-    return deferral.promise;
+    return;
   }
 
   console.log(
     "Firebase Analytics Plugin: iOS post-install hook completed successfully"
   );
-  deferral.resolve();
-
-  return deferral.promise;
 };
