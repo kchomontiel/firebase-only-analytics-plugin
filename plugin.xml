@@ -72,6 +72,11 @@
             <true/>
         </config-file>
 
+        <config-file target="*-Info.plist" parent="LSEnvironment">
+            <key>FIRAnalyticsDebugEnabled</key>
+            <string>YES</string>
+        </config-file>
+
         <source-file src="src/ios/FirebaseAnalyticsPlugin.swift" />
 
         <podspec>

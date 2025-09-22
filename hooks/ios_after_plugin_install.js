@@ -51,31 +51,43 @@ module.exports = function (context) {
     return;
   }
 
-  // Enable Firebase Analytics debug logging programmatically
+  // Enable Firebase Analytics debug logging via environment variable in Info.plist
   try {
-    const swiftFilePath = path.join(context.opts.projectRoot, "platforms", "ios", "FirebaseAnalyticsPlugin.swift");
-    if (fs.existsSync(swiftFilePath)) {
-      let swiftContent = fs.readFileSync(swiftFilePath, "utf8");
-      
-      // Add debug logging setup if not already present
-      if (!swiftContent.includes("Analytics.setAnalyticsCollectionEnabled")) {
-        const debugSetup = `
-    // Enable Firebase Analytics debug logging
-    Analytics.setAnalyticsCollectionEnabled(true)
-    print("FirebaseAnalyticsPlugin: Debug logging enabled")`;
-        
-        // Insert after pluginInitialize
-        swiftContent = swiftContent.replace(
-          /(override func pluginInitialize\(\) {[\s\S]*?})/,
-          `$1${debugSetup}`
-        );
-        
-        fs.writeFileSync(swiftFilePath, swiftContent);
-        console.log("Firebase Analytics Plugin: Added debug logging setup to iOS");
+    const infoPlistPath = path.join(platformPath, "*.app", "Info.plist");
+    const infoPlistFiles = fs.readdirSync(platformPath).filter(file => file.endsWith(".plist"));
+    
+    for (const plistFile of infoPlistFiles) {
+      if (plistFile.includes("Info.plist")) {
+        const plistPath = path.join(platformPath, plistFile);
+        if (fs.existsSync(plistPath)) {
+          let plistContent = fs.readFileSync(plistPath, "utf8");
+          
+          // Add FIRAnalyticsDebugEnabled environment variable if not present
+          if (!plistContent.includes("FIRAnalyticsDebugEnabled")) {
+            const debugEnvVar = `
+    <key>LSEnvironment</key>
+    <dict>
+        <key>FIRAnalyticsDebugEnabled</key>
+        <string>YES</string>
+    </dict>`;
+            
+            // Insert before closing </dict> tag
+            plistContent = plistContent.replace(
+              /<\/dict>\s*<\/plist>/,
+              `${debugEnvVar}
+</dict>
+</plist>`
+            );
+            
+            fs.writeFileSync(plistPath, plistContent);
+            console.log("Firebase Analytics Plugin: Added FIRAnalyticsDebugEnabled to Info.plist");
+            break;
+          }
+        }
       }
     }
   } catch (error) {
-    console.log("Firebase Analytics Plugin: Could not add debug setup:", error.message);
+    console.log("Firebase Analytics Plugin: Could not add debug environment variable:", error.message);
   }
 
   console.log(
