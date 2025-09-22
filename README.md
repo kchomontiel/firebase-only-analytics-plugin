@@ -252,8 +252,7 @@ cordova-plugin-firebase-analytics/
 └── src/
     ├── android/
     │   ├── FirebaseAnalyticsPlugin.java
-    │   ├── firebase-analytics.gradle    # Configuración JNA para resolver conflictos
-    │   └── jna-conflict-resolver.gradle # Resolver adicional para conflictos JNA
+    │   └── build.gradle                 # Configuración JNA para resolver conflictos (como master)
     └── ios/
         └── FirebaseAnalyticsPlugin.swift
 ```
@@ -292,10 +291,8 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
    ```
    Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts
    Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts
-   Firebase Analytics Plugin: Copied firebase-analytics.gradle configuration
-   Firebase Analytics Plugin: Applied firebase-analytics.gradle to build.gradle
-   Firebase Analytics Plugin: Copied jna-conflict-resolver.gradle configuration
-   Firebase Analytics Plugin: Applied jna-conflict-resolver.gradle to build.gradle
+   Firebase Analytics Plugin: Main configuration handled by build.gradle framework
+   Firebase Analytics Plugin: JNA conflict resolution handled by build.gradle framework
    ```
 
 4. **Solución manual alternativa** - Agrega esto a `platforms/android/app/build.gradle`:

@@ -178,119 +178,17 @@ configurations.all {
         );
       }
 
-      // Alternative solution: Apply Firebase Analytics Gradle configuration
-      const firebaseGradleConfigPath = path.join(
-        platformPath,
-        "app",
-        "firebase-analytics.gradle"
-      );
-      const pluginGradleConfigPath = path.join(
-        context.opts.projectRoot,
-        "plugins",
-        "cordova-plugin-firebase-analytics",
-        "src",
-        "android",
-        "firebase-analytics.gradle"
+      // Note: The main configuration is now handled by build.gradle framework via gradleReference
+      // This hook section is kept as fallback for additional configurations if needed
+      console.log(
+        "Firebase Analytics Plugin: Main configuration handled by build.gradle framework"
       );
 
-      // Copy the Firebase Analytics Gradle configuration
-      if (fs.existsSync(pluginGradleConfigPath)) {
-        fs.copyFileSync(pluginGradleConfigPath, firebaseGradleConfigPath);
-        console.log(
-          "Firebase Analytics Plugin: Copied firebase-analytics.gradle configuration"
-        );
-      }
-
-      // Apply the Firebase Analytics configuration to build.gradle
-      if (
-        !appBuildGradleContent.includes(
-          "apply from: 'firebase-analytics.gradle'"
-        )
-      ) {
-        const applyConfig = `apply from: 'firebase-analytics.gradle'`;
-
-        // Add after the plugins section
-        const pluginsRegex =
-          /(apply plugin: ['"]com\.android\.application['"])/;
-        if (pluginsRegex.test(appBuildGradleContent)) {
-          appBuildGradleContent = appBuildGradleContent.replace(
-            pluginsRegex,
-            `$1\n${applyConfig}`
-          );
-
-          fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
-          console.log(
-            "Firebase Analytics Plugin: Applied firebase-analytics.gradle to build.gradle"
-          );
-        }
-      } else {
-        console.log(
-          "Firebase Analytics Plugin: Firebase Analytics Gradle configuration already applied"
-        );
-      }
-
-      // Additional solution: Apply JNA conflict resolver configuration
-      const jnaResolverConfigPath = path.join(
-        platformPath,
-        "app",
-        "jna-conflict-resolver.gradle"
+      // Note: JNA conflict resolution is now handled by the build.gradle framework
+      // which is automatically included via gradleReference in plugin.xml
+      console.log(
+        "Firebase Analytics Plugin: JNA conflict resolution handled by build.gradle framework"
       );
-      const pluginJnaResolverPath = path.join(
-        context.opts.projectRoot,
-        "plugins",
-        "cordova-plugin-firebase-analytics",
-        "src",
-        "android",
-        "jna-conflict-resolver.gradle"
-      );
-
-      // Copy the JNA conflict resolver configuration
-      if (fs.existsSync(pluginJnaResolverPath)) {
-        fs.copyFileSync(pluginJnaResolverPath, jnaResolverConfigPath);
-        console.log(
-          "Firebase Analytics Plugin: Copied jna-conflict-resolver.gradle configuration"
-        );
-      }
-
-      // Apply the JNA conflict resolver to build.gradle
-      if (
-        !appBuildGradleContent.includes(
-          "apply from: 'jna-conflict-resolver.gradle'"
-        )
-      ) {
-        const applyJnaConfig = `apply from: 'jna-conflict-resolver.gradle'`;
-
-        // Add after the existing apply statements
-        if (
-          appBuildGradleContent.includes(
-            "apply from: 'firebase-analytics.gradle'"
-          )
-        ) {
-          appBuildGradleContent = appBuildGradleContent.replace(
-            "apply from: 'firebase-analytics.gradle'",
-            `apply from: 'firebase-analytics.gradle'\n${applyJnaConfig}`
-          );
-        } else {
-          // Add after the plugins section
-          const pluginsRegex =
-            /(apply plugin: ['"]com\.android\.application['"])/;
-          if (pluginsRegex.test(appBuildGradleContent)) {
-            appBuildGradleContent = appBuildGradleContent.replace(
-              pluginsRegex,
-              `$1\n${applyJnaConfig}`
-            );
-          }
-        }
-
-        fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
-        console.log(
-          "Firebase Analytics Plugin: Applied jna-conflict-resolver.gradle to build.gradle"
-        );
-      } else {
-        console.log(
-          "Firebase Analytics Plugin: JNA conflict resolver already applied"
-        );
-      }
     }
 
     // Copy google-services.json to the correct location
