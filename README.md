@@ -264,6 +264,7 @@ cordova-plugin-firebase-analytics/
 Este error es común cuando hay conflictos entre dependencias JNA (Java Native Access) en proyectos Cordova con múltiples plugins. El plugin incluye automáticamente múltiples soluciones para resolver este conflicto:
 
 #### Soluciones Automáticas:
+
 1. **Configuración de packaging** con `pickFirst` y `exclude`
 2. **Exclusión de dependencias JNA** con `configurations.all`
 3. **Archivo Gradle dedicado** (`firebase-analytics.gradle`) con configuración completa
@@ -285,6 +286,7 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
    ```
 
 3. **Verifica que los hooks se ejecutaron** buscando en los logs:
+
    ```
    Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts
    Firebase Analytics Plugin: Copied firebase-analytics.gradle configuration
@@ -292,6 +294,7 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
    ```
 
 4. **Solución manual alternativa** - Agrega esto a `platforms/android/app/build.gradle`:
+
    ```gradle
    android {
        packagingOptions {
@@ -299,7 +302,7 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
            pickFirst 'META-INF/LGPL2.1'
        }
    }
-   
+
    configurations.all {
        exclude group: 'net.java.dev.jna', module: 'jna'
        exclude group: 'net.java.dev.jna', module: 'jna-platform'

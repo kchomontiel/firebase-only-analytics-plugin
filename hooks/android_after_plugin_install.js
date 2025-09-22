@@ -116,7 +116,7 @@ module.exports = function (context) {
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
     }`;
-        
+
         // Find the android block and insert packagingOptions before its closing brace
         const androidBlockRegex = /(android\s*\{[^}]*)(\})/s;
         if (androidBlockRegex.test(appBuildGradleContent)) {
@@ -124,7 +124,7 @@ module.exports = function (context) {
             androidBlockRegex,
             `$1${packagingConfig}\n    $2`
           );
-          
+
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
             "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
@@ -164,17 +164,22 @@ module.exports = function (context) {
       }
 
       // Apply the Firebase Analytics configuration to build.gradle
-      if (!appBuildGradleContent.includes("apply from: 'firebase-analytics.gradle'")) {
+      if (
+        !appBuildGradleContent.includes(
+          "apply from: 'firebase-analytics.gradle'"
+        )
+      ) {
         const applyConfig = `apply from: 'firebase-analytics.gradle'`;
-        
+
         // Add after the plugins section
-        const pluginsRegex = /(apply plugin: ['"]com\.android\.application['"])/;
+        const pluginsRegex =
+          /(apply plugin: ['"]com\.android\.application['"])/;
         if (pluginsRegex.test(appBuildGradleContent)) {
           appBuildGradleContent = appBuildGradleContent.replace(
             pluginsRegex,
             `$1\n${applyConfig}`
           );
-          
+
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
             "Firebase Analytics Plugin: Applied firebase-analytics.gradle to build.gradle"
