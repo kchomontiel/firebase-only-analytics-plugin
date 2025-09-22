@@ -104,7 +104,7 @@ module.exports = function (context) {
 
       // Add JNA conflict resolution directly to build.gradle
       let configAdded = false;
-      
+
       // Check if packaging configuration is already present
       if (!appBuildGradleContent.includes("packagingOptions")) {
         const packagingConfig = `
@@ -117,7 +117,7 @@ module.exports = function (context) {
         pickFirst 'META-INF/NOTICE'
         pickFirst 'META-INF/NOTICE.txt'
     }`;
-        
+
         // Try multiple approaches to add the configuration
         const androidBlockRegex = /(android\s*\{[^}]*?)(\n\s*\})/s;
         if (androidBlockRegex.test(appBuildGradleContent)) {
@@ -137,7 +137,7 @@ module.exports = function (context) {
             configAdded = true;
           }
         }
-        
+
         if (configAdded) {
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
@@ -153,7 +153,7 @@ module.exports = function (context) {
           "Firebase Analytics Plugin: Packaging configuration already present"
         );
       }
-      
+
       // Add configurations exclusion for JNA
       if (!appBuildGradleContent.includes("configurations.all")) {
         const configurationsConfig = `
@@ -161,13 +161,13 @@ configurations.all {
     exclude group: 'net.java.dev.jna', module: 'jna'
     exclude group: 'net.java.dev.jna', module: 'jna-platform'
 }`;
-        
+
         // Add at the end of the file before any closing braces
         appBuildGradleContent = appBuildGradleContent.replace(
           /(\s*)(}\s*$)/m,
           `$1${configurationsConfig}\n$1$2`
         );
-        
+
         fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
         console.log(
           "Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts"
@@ -253,18 +253,27 @@ configurations.all {
       }
 
       // Apply the JNA conflict resolver to build.gradle
-      if (!appBuildGradleContent.includes("apply from: 'jna-conflict-resolver.gradle'")) {
+      if (
+        !appBuildGradleContent.includes(
+          "apply from: 'jna-conflict-resolver.gradle'"
+        )
+      ) {
         const applyJnaConfig = `apply from: 'jna-conflict-resolver.gradle'`;
-        
+
         // Add after the existing apply statements
-        if (appBuildGradleContent.includes("apply from: 'firebase-analytics.gradle'")) {
+        if (
+          appBuildGradleContent.includes(
+            "apply from: 'firebase-analytics.gradle'"
+          )
+        ) {
           appBuildGradleContent = appBuildGradleContent.replace(
             "apply from: 'firebase-analytics.gradle'",
             `apply from: 'firebase-analytics.gradle'\n${applyJnaConfig}`
           );
         } else {
           // Add after the plugins section
-          const pluginsRegex = /(apply plugin: ['"]com\.android\.application['"])/;
+          const pluginsRegex =
+            /(apply plugin: ['"]com\.android\.application['"])/;
           if (pluginsRegex.test(appBuildGradleContent)) {
             appBuildGradleContent = appBuildGradleContent.replace(
               pluginsRegex,
@@ -272,7 +281,7 @@ configurations.all {
             );
           }
         }
-        
+
         fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
         console.log(
           "Firebase Analytics Plugin: Applied jna-conflict-resolver.gradle to build.gradle"

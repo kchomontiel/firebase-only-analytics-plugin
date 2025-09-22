@@ -264,12 +264,12 @@ cordova-plugin-firebase-analytics/
 
 Este error es común cuando hay conflictos entre dependencias JNA (Java Native Access) en proyectos Cordova con múltiples plugins. El plugin incluye automáticamente múltiples soluciones para resolver este conflicto:
 
-#### Soluciones Automáticas:
+#### Soluciones Automáticas (Basadas en Proyecto Master Funcional):
 
-1. **Hook mejorado** con múltiples métodos de inserción (más confiable)
-2. **Configuración de packaging** con `pickFirst` y `exclude`
+1. **Framework Gradle** con `gradleReference` (método del master que funciona)
+2. **Configuración de packaging** con `exclude` y `pickFirst` (probado y funcional)
 3. **Exclusión de dependencias JNA** con `configurations.all`
-4. **Archivo Gradle dedicado** (`firebase-analytics.gradle`) con configuración completa
+4. **Hook de respaldo** para casos adicionales
 
 #### Si aún experimentas este error:
 

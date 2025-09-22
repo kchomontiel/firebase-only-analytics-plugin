@@ -1,18 +1,15 @@
 // Firebase Analytics Plugin - JNA Conflict Resolution
-// This file is automatically included in the app's build.gradle
+// Based on working master project configuration
 
-// Add packaging options to resolve META-INF conflicts
 android {
     packagingOptions {
-        pickFirst 'META-INF/AL2.0'
-        pickFirst 'META-INF/LGPL2.1'
-        pickFirst 'META-INF/DEPENDENCIES'
-        pickFirst 'META-INF/LICENSE'
-        pickFirst 'META-INF/LICENSE.txt'
-        pickFirst 'META-INF/NOTICE'
-        pickFirst 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
+        pickFirst 'META-INF/DEPENDENCIES'
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/NOTICE.txt'
     }
 }
 
