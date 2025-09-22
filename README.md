@@ -233,7 +233,7 @@ Verifica si la aplicación tiene permisos para recopilar datos de analytics.
 
 ## Versiones de Firebase
 
-- **Firebase Analytics**: 10.26.0 (iOS) / 21.6.0 (Android)
+- **Firebase Analytics**: 10.26.0 (iOS) / 21.5.0 (Android)
 - **Firebase Core**: 10.26.0 (iOS) / 21.1.1 (Android)
 - **Google Services Plugin**: 4.4.0 (Android)
 
