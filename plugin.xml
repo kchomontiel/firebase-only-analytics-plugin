@@ -67,10 +67,24 @@
             <preference name="FirebaseAnalyticsConfigurationFile" value="GoogleService-Info.plist" />
         </config-file>
 
+        <config-file target="*-Info.plist" parent="CFBundleShortVersionString">
+            <key>FirebaseAnalyticsCollectionEnabled</key>
+            <true/>
+            <key>FirebaseAnalyticsDebugEnabled</key>
+            <true/>
+        </config-file>
+
         <source-file src="src/ios/FirebaseAnalyticsPlugin.swift" />
 
-        <framework src="FirebaseAnalytics" type="podspec" spec="~> 10.26.0" />
-        <framework src="FirebaseCore" type="podspec" spec="~> 10.26.0" />
+        <podspec>
+            <config>
+                <source url="https://github.com/CocoaPods/Specs.git"/>
+            </config>
+            <pods use-frameworks="true">
+                <pod name="FirebaseAnalytics" spec="~> 10.26.0" />
+                <pod name="FirebaseCore" spec="~> 10.26.0" />
+            </pods>
+        </podspec>
         
         <hook type="after_plugin_install" src="hooks/ios_after_plugin_install.js" />
     </platform>
