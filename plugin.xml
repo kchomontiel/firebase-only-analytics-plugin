@@ -84,8 +84,8 @@
                 <source url="https://github.com/CocoaPods/Specs.git"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="FirebaseAnalytics" spec="~> 10.26.0" />
-                <pod name="FirebaseCore" spec="~> 10.26.0" />
+                <pod name="FirebaseAnalytics" spec="~> 10.25.0" />
+                <pod name="FirebaseCore" spec="~> 10.25.0" />
             </pods>
         </podspec>
         
