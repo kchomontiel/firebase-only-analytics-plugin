@@ -54,14 +54,16 @@ module.exports = function (context) {
   // Enable Firebase Analytics debug logging via environment variable in Info.plist
   try {
     const infoPlistPath = path.join(platformPath, "*.app", "Info.plist");
-    const infoPlistFiles = fs.readdirSync(platformPath).filter(file => file.endsWith(".plist"));
-    
+    const infoPlistFiles = fs
+      .readdirSync(platformPath)
+      .filter((file) => file.endsWith(".plist"));
+
     for (const plistFile of infoPlistFiles) {
       if (plistFile.includes("Info.plist")) {
         const plistPath = path.join(platformPath, plistFile);
         if (fs.existsSync(plistPath)) {
           let plistContent = fs.readFileSync(plistPath, "utf8");
-          
+
           // Add FIRAnalyticsDebugEnabled environment variable if not present
           if (!plistContent.includes("FIRAnalyticsDebugEnabled")) {
             const debugEnvVar = `
@@ -70,7 +72,7 @@ module.exports = function (context) {
         <key>FIRAnalyticsDebugEnabled</key>
         <string>YES</string>
     </dict>`;
-            
+
             // Insert before closing </dict> tag
             plistContent = plistContent.replace(
               /<\/dict>\s*<\/plist>/,
@@ -78,16 +80,21 @@ module.exports = function (context) {
 </dict>
 </plist>`
             );
-            
+
             fs.writeFileSync(plistPath, plistContent);
-            console.log("Firebase Analytics Plugin: Added FIRAnalyticsDebugEnabled to Info.plist");
+            console.log(
+              "Firebase Analytics Plugin: Added FIRAnalyticsDebugEnabled to Info.plist"
+            );
             break;
           }
         }
       }
     }
   } catch (error) {
-    console.log("Firebase Analytics Plugin: Could not add debug environment variable:", error.message);
+    console.log(
+      "Firebase Analytics Plugin: Could not add debug environment variable:",
+      error.message
+    );
   }
 
   console.log(
