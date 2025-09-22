@@ -98,6 +98,31 @@ module.exports = function (context) {
           "Firebase Analytics Plugin: Google Services plugin already present"
         );
       }
+
+      // Add packaging configuration to resolve JNA conflicts
+      if (!appBuildGradleContent.includes("packagingOptions")) {
+        const packagingConfig = `
+    packagingOptions {
+        pickFirst 'META-INF/AL2.0'
+        pickFirst 'META-INF/LGPL2.1'
+        pickFirst 'META-INF/DEPENDENCIES'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/NOTICE'
+        pickFirst 'META-INF/NOTICE.txt'
+    }`;
+        
+        // Insert before the closing brace of android block
+        appBuildGradleContent = appBuildGradleContent.replace(
+          /(\s+)(}\s*$)/m,
+          `$1${packagingConfig}\n$1$2`
+        );
+        
+        fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+        console.log(
+          "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
+        );
+      }
     }
 
     // Copy google-services.json to the correct location

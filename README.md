@@ -247,7 +247,7 @@ cordova-plugin-firebase-analytics/
 ├── www/
 │   └── firebase-analytics.js
 ├── hooks/
-│   ├── android_after_plugin_install.js   # Configura Google Services y copia google-services.json
+│   ├── android_after_plugin_install.js   # Configura Google Services, copia google-services.json y resuelve conflictos JNA
 │   └── ios_after_plugin_install.js       # Copia GoogleService-Info.plist
 └── src/
     ├── android/
@@ -255,6 +255,31 @@ cordova-plugin-firebase-analytics/
     └── ios/
         └── FirebaseAnalyticsPlugin.swift
 ```
+
+## Troubleshooting
+
+### Error de Build: "2 files found with path 'META-INF/AL2.0'"
+
+Este error es común cuando hay conflictos entre dependencias JNA (Java Native Access) en proyectos Cordova con múltiples plugins. El plugin incluye automáticamente una configuración de packaging que resuelve este conflicto.
+
+Si aún experimentas este error:
+
+1. **Reinstala el plugin**:
+   ```bash
+   cordova plugin remove cordova-plugin-firebase-analytics
+   cordova plugin add https://github.com/kchomontiel/firebase-only-analytics-plugin.git#from0
+   ```
+
+2. **Limpia el proyecto**:
+   ```bash
+   cordova clean android
+   cordova build android
+   ```
+
+3. **Verifica que el hook se ejecutó** buscando en los logs:
+   ```
+   Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts
+   ```
 
 ## Troubleshooting
 
