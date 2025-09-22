@@ -70,8 +70,6 @@
         <config-file target="*-Info.plist" parent="CFBundleShortVersionString">
             <key>FirebaseAnalyticsCollectionEnabled</key>
             <true/>
-            <key>FirebaseAnalyticsDebugEnabled</key>
-            <true/>
         </config-file>
 
         <source-file src="src/ios/FirebaseAnalyticsPlugin.swift" />

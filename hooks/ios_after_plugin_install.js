@@ -51,6 +51,33 @@ module.exports = function (context) {
     return;
   }
 
+  // Enable Firebase Analytics debug logging programmatically
+  try {
+    const swiftFilePath = path.join(context.opts.projectRoot, "platforms", "ios", "FirebaseAnalyticsPlugin.swift");
+    if (fs.existsSync(swiftFilePath)) {
+      let swiftContent = fs.readFileSync(swiftFilePath, "utf8");
+      
+      // Add debug logging setup if not already present
+      if (!swiftContent.includes("Analytics.setAnalyticsCollectionEnabled")) {
+        const debugSetup = `
+    // Enable Firebase Analytics debug logging
+    Analytics.setAnalyticsCollectionEnabled(true)
+    print("FirebaseAnalyticsPlugin: Debug logging enabled")`;
+        
+        // Insert after pluginInitialize
+        swiftContent = swiftContent.replace(
+          /(override func pluginInitialize\(\) {[\s\S]*?})/,
+          `$1${debugSetup}`
+        );
+        
+        fs.writeFileSync(swiftFilePath, swiftContent);
+        console.log("Firebase Analytics Plugin: Added debug logging setup to iOS");
+      }
+    }
+  } catch (error) {
+    console.log("Firebase Analytics Plugin: Could not add debug setup:", error.message);
+  }
+
   console.log(
     "Firebase Analytics Plugin: iOS post-install hook completed successfully"
   );
