@@ -116,23 +116,38 @@ module.exports = function (context) {
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
     }`;
-
+        
         // Find the android block and insert packagingOptions before its closing brace
-        const androidBlockRegex = /(android\s*\{[^}]*)(\})/s;
+        // Use a more specific regex to find the android block
+        const androidBlockRegex = /(android\s*\{[^}]*?)(\n\s*\})/s;
         if (androidBlockRegex.test(appBuildGradleContent)) {
           appBuildGradleContent = appBuildGradleContent.replace(
             androidBlockRegex,
             `$1${packagingConfig}\n    $2`
           );
-
+          
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
             "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
           );
         } else {
-          console.log(
-            "Firebase Analytics Plugin: Warning - Could not find android block in build.gradle"
-          );
+          // Fallback: try to add at the end of the android block
+          const androidFallbackRegex = /(android\s*\{[^}]*)(\})/s;
+          if (androidFallbackRegex.test(appBuildGradleContent)) {
+            appBuildGradleContent = appBuildGradleContent.replace(
+              androidFallbackRegex,
+              `$1${packagingConfig}\n    $2`
+            );
+            
+            fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+            console.log(
+              "Firebase Analytics Plugin: Added packaging configuration (fallback method)"
+            );
+          } else {
+            console.log(
+              "Firebase Analytics Plugin: Warning - Could not find android block in build.gradle"
+            );
+          }
         }
       } else {
         console.log(
