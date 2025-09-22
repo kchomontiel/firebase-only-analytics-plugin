@@ -251,7 +251,8 @@ cordova-plugin-firebase-analytics/
 │   └── ios_after_plugin_install.js       # Copia GoogleService-Info.plist
 └── src/
     ├── android/
-    │   └── FirebaseAnalyticsPlugin.java
+    │   ├── FirebaseAnalyticsPlugin.java
+    │   └── firebase-analytics.gradle    # Configuración JNA para resolver conflictos
     └── ios/
         └── FirebaseAnalyticsPlugin.swift
 ```
@@ -265,6 +266,7 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
 #### Soluciones Automáticas:
 1. **Configuración de packaging** con `pickFirst` y `exclude`
 2. **Exclusión de dependencias JNA** con `configurations.all`
+3. **Archivo Gradle dedicado** (`firebase-analytics.gradle`) con configuración completa
 
 #### Si aún experimentas este error:
 
@@ -285,7 +287,8 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
 3. **Verifica que los hooks se ejecutaron** buscando en los logs:
    ```
    Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts
-   Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts
+   Firebase Analytics Plugin: Copied firebase-analytics.gradle configuration
+   Firebase Analytics Plugin: Applied firebase-analytics.gradle to build.gradle
    ```
 
 4. **Solución manual alternativa** - Agrega esto a `platforms/android/app/build.gradle`:

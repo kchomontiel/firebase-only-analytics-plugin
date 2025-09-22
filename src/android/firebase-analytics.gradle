@@ -1,0 +1,21 @@
+// Firebase Analytics Plugin - JNA Conflict Resolution
+// This file is automatically included in the app's build.gradle
+
+android {
+    packagingOptions {
+        pickFirst 'META-INF/AL2.0'
+        pickFirst 'META-INF/LGPL2.1'
+        pickFirst 'META-INF/DEPENDENCIES'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/NOTICE'
+        pickFirst 'META-INF/NOTICE.txt'
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/LGPL2.1'
+    }
+}
+
+configurations.all {
+    exclude group: 'net.java.dev.jna', module: 'jna'
+    exclude group: 'net.java.dev.jna', module: 'jna-platform'
+}

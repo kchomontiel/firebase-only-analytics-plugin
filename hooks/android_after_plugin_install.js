@@ -140,23 +140,49 @@ module.exports = function (context) {
         );
       }
 
-      // Alternative solution: Add configurations block to exclude conflicting JNA files
-      if (!appBuildGradleContent.includes("configurations.all")) {
-        const configurationsConfig = `
-configurations.all {
-    exclude group: 'net.java.dev.jna', module: 'jna'
-    exclude group: 'net.java.dev.jna', module: 'jna-platform'
-}`;
-        
-        // Add configurations block at the end of the file before any closing braces
-        appBuildGradleContent = appBuildGradleContent.replace(
-          /(\s*)(}\s*$)/m,
-          `$1${configurationsConfig}\n$1$2`
-        );
-        
-        fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+      // Alternative solution: Apply Firebase Analytics Gradle configuration
+      const firebaseGradleConfigPath = path.join(
+        platformPath,
+        "app",
+        "firebase-analytics.gradle"
+      );
+      const pluginGradleConfigPath = path.join(
+        context.opts.projectRoot,
+        "plugins",
+        "cordova-plugin-firebase-analytics",
+        "src",
+        "android",
+        "firebase-analytics.gradle"
+      );
+
+      // Copy the Firebase Analytics Gradle configuration
+      if (fs.existsSync(pluginGradleConfigPath)) {
+        fs.copyFileSync(pluginGradleConfigPath, firebaseGradleConfigPath);
         console.log(
-          "Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts"
+          "Firebase Analytics Plugin: Copied firebase-analytics.gradle configuration"
+        );
+      }
+
+      // Apply the Firebase Analytics configuration to build.gradle
+      if (!appBuildGradleContent.includes("apply from: 'firebase-analytics.gradle'")) {
+        const applyConfig = `apply from: 'firebase-analytics.gradle'`;
+        
+        // Add after the plugins section
+        const pluginsRegex = /(apply plugin: ['"]com\.android\.application['"])/;
+        if (pluginsRegex.test(appBuildGradleContent)) {
+          appBuildGradleContent = appBuildGradleContent.replace(
+            pluginsRegex,
+            `$1\n${applyConfig}`
+          );
+          
+          fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+          console.log(
+            "Firebase Analytics Plugin: Applied firebase-analytics.gradle to build.gradle"
+          );
+        }
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: Firebase Analytics Gradle configuration already applied"
         );
       }
     }
