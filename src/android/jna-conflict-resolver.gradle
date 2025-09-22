@@ -1,5 +1,5 @@
-// Firebase Analytics Plugin - JNA Conflict Resolution
-// This file is automatically included in the app's build.gradle
+// JNA Conflict Resolver for Firebase Analytics Plugin
+// This file resolves META-INF conflicts between JNA dependencies
 
 // Add packaging options to resolve META-INF conflicts
 android {

@@ -102,7 +102,10 @@ module.exports = function (context) {
         );
       }
 
-      // Add packaging configuration to resolve JNA conflicts
+      // Add JNA conflict resolution directly to build.gradle
+      let configAdded = false;
+      
+      // Check if packaging configuration is already present
       if (!appBuildGradleContent.includes("packagingOptions")) {
         const packagingConfig = `
     packagingOptions {
@@ -113,45 +116,65 @@ module.exports = function (context) {
         pickFirst 'META-INF/LICENSE.txt'
         pickFirst 'META-INF/NOTICE'
         pickFirst 'META-INF/NOTICE.txt'
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/LGPL2.1'
     }`;
         
-        // Find the android block and insert packagingOptions before its closing brace
-        // Use a more specific regex to find the android block
+        // Try multiple approaches to add the configuration
         const androidBlockRegex = /(android\s*\{[^}]*?)(\n\s*\})/s;
         if (androidBlockRegex.test(appBuildGradleContent)) {
           appBuildGradleContent = appBuildGradleContent.replace(
             androidBlockRegex,
             `$1${packagingConfig}\n    $2`
           );
-          
+          configAdded = true;
+        } else {
+          // Alternative: add before the closing brace of android block
+          const androidAltRegex = /(android\s*\{[^}]*)(\})/s;
+          if (androidAltRegex.test(appBuildGradleContent)) {
+            appBuildGradleContent = appBuildGradleContent.replace(
+              androidAltRegex,
+              `$1${packagingConfig}\n    $2`
+            );
+            configAdded = true;
+          }
+        }
+        
+        if (configAdded) {
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
             "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
           );
         } else {
-          // Fallback: try to add at the end of the android block
-          const androidFallbackRegex = /(android\s*\{[^}]*)(\})/s;
-          if (androidFallbackRegex.test(appBuildGradleContent)) {
-            appBuildGradleContent = appBuildGradleContent.replace(
-              androidFallbackRegex,
-              `$1${packagingConfig}\n    $2`
-            );
-            
-            fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
-            console.log(
-              "Firebase Analytics Plugin: Added packaging configuration (fallback method)"
-            );
-          } else {
-            console.log(
-              "Firebase Analytics Plugin: Warning - Could not find android block in build.gradle"
-            );
-          }
+          console.log(
+            "Firebase Analytics Plugin: Warning - Could not find android block in build.gradle"
+          );
         }
       } else {
         console.log(
           "Firebase Analytics Plugin: Packaging configuration already present"
+        );
+      }
+      
+      // Add configurations exclusion for JNA
+      if (!appBuildGradleContent.includes("configurations.all")) {
+        const configurationsConfig = `
+configurations.all {
+    exclude group: 'net.java.dev.jna', module: 'jna'
+    exclude group: 'net.java.dev.jna', module: 'jna-platform'
+}`;
+        
+        // Add at the end of the file before any closing braces
+        appBuildGradleContent = appBuildGradleContent.replace(
+          /(\s*)(}\s*$)/m,
+          `$1${configurationsConfig}\n$1$2`
+        );
+        
+        fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+        console.log(
+          "Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts"
+        );
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: Configurations exclusion already present"
         );
       }
 
@@ -203,6 +226,60 @@ module.exports = function (context) {
       } else {
         console.log(
           "Firebase Analytics Plugin: Firebase Analytics Gradle configuration already applied"
+        );
+      }
+
+      // Additional solution: Apply JNA conflict resolver configuration
+      const jnaResolverConfigPath = path.join(
+        platformPath,
+        "app",
+        "jna-conflict-resolver.gradle"
+      );
+      const pluginJnaResolverPath = path.join(
+        context.opts.projectRoot,
+        "plugins",
+        "cordova-plugin-firebase-analytics",
+        "src",
+        "android",
+        "jna-conflict-resolver.gradle"
+      );
+
+      // Copy the JNA conflict resolver configuration
+      if (fs.existsSync(pluginJnaResolverPath)) {
+        fs.copyFileSync(pluginJnaResolverPath, jnaResolverConfigPath);
+        console.log(
+          "Firebase Analytics Plugin: Copied jna-conflict-resolver.gradle configuration"
+        );
+      }
+
+      // Apply the JNA conflict resolver to build.gradle
+      if (!appBuildGradleContent.includes("apply from: 'jna-conflict-resolver.gradle'")) {
+        const applyJnaConfig = `apply from: 'jna-conflict-resolver.gradle'`;
+        
+        // Add after the existing apply statements
+        if (appBuildGradleContent.includes("apply from: 'firebase-analytics.gradle'")) {
+          appBuildGradleContent = appBuildGradleContent.replace(
+            "apply from: 'firebase-analytics.gradle'",
+            `apply from: 'firebase-analytics.gradle'\n${applyJnaConfig}`
+          );
+        } else {
+          // Add after the plugins section
+          const pluginsRegex = /(apply plugin: ['"]com\.android\.application['"])/;
+          if (pluginsRegex.test(appBuildGradleContent)) {
+            appBuildGradleContent = appBuildGradleContent.replace(
+              pluginsRegex,
+              `$1\n${applyJnaConfig}`
+            );
+          }
+        }
+        
+        fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+        console.log(
+          "Firebase Analytics Plugin: Applied jna-conflict-resolver.gradle to build.gradle"
+        );
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: JNA conflict resolver already applied"
         );
       }
     }
