@@ -99,21 +99,21 @@ window.fp.isFirebaseInitialized(
         error
       );
 
-       // Establecer nombre de pantalla
-       window.fp.setScreenName("HomeScreen", success, error);
-       
-       // Verificar permisos de analytics
-       window.fp.hasPermission(function(hasPermission) {
-         console.log("Has analytics permission:", hasPermission);
-       }, error);
-     } else {
-       console.log("Firebase not initialized");
-     }
-   },
-   function (err) {
-     console.log("Error checking Firebase initialization: " + err);
-   }
- );
+      // Establecer nombre de pantalla
+      window.fp.setScreenName("HomeScreen", success, error);
+
+      // Verificar permisos de analytics
+      window.fp.hasPermission(function (hasPermission) {
+        console.log("Has analytics permission:", hasPermission);
+      }, error);
+    } else {
+      console.log("Firebase not initialized");
+    }
+  },
+  function (err) {
+    console.log("Error checking Firebase initialization: " + err);
+  }
+);
 
 function success() {
   console.log("Operation completed successfully");
@@ -265,12 +265,14 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
 Si aún experimentas este error:
 
 1. **Reinstala el plugin**:
+
    ```bash
    cordova plugin remove cordova-plugin-firebase-analytics
    cordova plugin add https://github.com/kchomontiel/firebase-only-analytics-plugin.git#from0
    ```
 
 2. **Limpia el proyecto**:
+
    ```bash
    cordova clean android
    cordova build android

@@ -16,7 +16,10 @@ module.exports = function (context) {
   );
 
   // Check if we're running on Android platform
-  if (!context.opts.platforms || context.opts.platforms.indexOf("android") === -1) {
+  if (
+    !context.opts.platforms ||
+    context.opts.platforms.indexOf("android") === -1
+  ) {
     console.log(
       "Firebase Analytics Plugin: Not Android platform, skipping hook"
     );
@@ -111,13 +114,13 @@ module.exports = function (context) {
         pickFirst 'META-INF/NOTICE'
         pickFirst 'META-INF/NOTICE.txt'
     }`;
-        
+
         // Insert before the closing brace of android block
         appBuildGradleContent = appBuildGradleContent.replace(
           /(\s+)(}\s*$)/m,
           `$1${packagingConfig}\n$1$2`
         );
-        
+
         fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
         console.log(
           "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
