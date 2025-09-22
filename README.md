@@ -265,9 +265,10 @@ Este error es común cuando hay conflictos entre dependencias JNA (Java Native A
 
 #### Soluciones Automáticas:
 
-1. **Configuración de packaging** con `pickFirst` y `exclude`
-2. **Exclusión de dependencias JNA** con `configurations.all`
-3. **Archivo Gradle dedicado** (`firebase-analytics.gradle`) con configuración completa
+1. **Configuración directa en plugin.xml** con `config-file` (más confiable)
+2. **Configuración de packaging** con `pickFirst` y `exclude`
+3. **Exclusión de dependencias JNA** con `configurations.all`
+4. **Archivo Gradle dedicado** (`firebase-analytics.gradle`) con configuración completa
 
 #### Si aún experimentas este error:
 

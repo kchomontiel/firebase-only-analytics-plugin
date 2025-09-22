@@ -48,6 +48,27 @@
         <!-- Google Services plugin for processing google-services.json -->
         <framework src="com.google.gms:google-services:4.4.0" />
         
+        <!-- Add packaging configuration directly to resolve JNA conflicts -->
+        <config-file target="app/build.gradle" parent="/android">
+            <packagingOptions>
+                <pickFirst>META-INF/AL2.0</pickFirst>
+                <pickFirst>META-INF/LGPL2.1</pickFirst>
+                <pickFirst>META-INF/DEPENDENCIES</pickFirst>
+                <pickFirst>META-INF/LICENSE</pickFirst>
+                <pickFirst>META-INF/LICENSE.txt</pickFirst>
+                <pickFirst>META-INF/NOTICE</pickFirst>
+                <pickFirst>META-INF/NOTICE.txt</pickFirst>
+            </packagingOptions>
+        </config-file>
+
+        <!-- Add configurations exclusion for JNA -->
+        <config-file target="app/build.gradle" parent="/">
+            <configurations.all>
+                <exclude group="net.java.dev.jna" module="jna" />
+                <exclude group="net.java.dev.jna" module="jna-platform" />
+            </configurations.all>
+        </config-file>
+
         <hook type="after_plugin_install" src="hooks/android_after_plugin_install.js" />
     </platform>
 
