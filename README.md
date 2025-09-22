@@ -260,9 +260,13 @@ cordova-plugin-firebase-analytics/
 
 ### Error de Build: "2 files found with path 'META-INF/AL2.0'"
 
-Este error es común cuando hay conflictos entre dependencias JNA (Java Native Access) en proyectos Cordova con múltiples plugins. El plugin incluye automáticamente una configuración de packaging que resuelve este conflicto.
+Este error es común cuando hay conflictos entre dependencias JNA (Java Native Access) en proyectos Cordova con múltiples plugins. El plugin incluye automáticamente múltiples soluciones para resolver este conflicto:
 
-Si aún experimentas este error:
+#### Soluciones Automáticas:
+1. **Configuración de packaging** con `pickFirst` y `exclude`
+2. **Exclusión de dependencias JNA** con `configurations.all`
+
+#### Si aún experimentas este error:
 
 1. **Reinstala el plugin**:
 
@@ -278,9 +282,25 @@ Si aún experimentas este error:
    cordova build android
    ```
 
-3. **Verifica que el hook se ejecutó** buscando en los logs:
+3. **Verifica que los hooks se ejecutaron** buscando en los logs:
    ```
    Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts
+   Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts
+   ```
+
+4. **Solución manual alternativa** - Agrega esto a `platforms/android/app/build.gradle`:
+   ```gradle
+   android {
+       packagingOptions {
+           pickFirst 'META-INF/AL2.0'
+           pickFirst 'META-INF/LGPL2.1'
+       }
+   }
+   
+   configurations.all {
+       exclude group: 'net.java.dev.jna', module: 'jna'
+       exclude group: 'net.java.dev.jna', module: 'jna-platform'
+   }
    ```
 
 ## Troubleshooting

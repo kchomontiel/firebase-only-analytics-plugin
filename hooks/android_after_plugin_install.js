@@ -113,17 +113,50 @@ module.exports = function (context) {
         pickFirst 'META-INF/LICENSE.txt'
         pickFirst 'META-INF/NOTICE'
         pickFirst 'META-INF/NOTICE.txt'
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/LGPL2.1'
     }`;
-
-        // Insert before the closing brace of android block
-        appBuildGradleContent = appBuildGradleContent.replace(
-          /(\s+)(}\s*$)/m,
-          `$1${packagingConfig}\n$1$2`
+        
+        // Find the android block and insert packagingOptions before its closing brace
+        const androidBlockRegex = /(android\s*\{[^}]*)(\})/s;
+        if (androidBlockRegex.test(appBuildGradleContent)) {
+          appBuildGradleContent = appBuildGradleContent.replace(
+            androidBlockRegex,
+            `$1${packagingConfig}\n    $2`
+          );
+          
+          fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
+          console.log(
+            "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
+          );
+        } else {
+          console.log(
+            "Firebase Analytics Plugin: Warning - Could not find android block in build.gradle"
+          );
+        }
+      } else {
+        console.log(
+          "Firebase Analytics Plugin: Packaging configuration already present"
         );
+      }
 
+      // Alternative solution: Add configurations block to exclude conflicting JNA files
+      if (!appBuildGradleContent.includes("configurations.all")) {
+        const configurationsConfig = `
+configurations.all {
+    exclude group: 'net.java.dev.jna', module: 'jna'
+    exclude group: 'net.java.dev.jna', module: 'jna-platform'
+}`;
+        
+        // Add configurations block at the end of the file before any closing braces
+        appBuildGradleContent = appBuildGradleContent.replace(
+          /(\s*)(}\s*$)/m,
+          `$1${configurationsConfig}\n$1$2`
+        );
+        
         fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
         console.log(
-          "Firebase Analytics Plugin: Added packaging configuration to resolve JNA conflicts"
+          "Firebase Analytics Plugin: Added configurations exclusion for JNA conflicts"
         );
       }
     }
