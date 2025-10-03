@@ -62,9 +62,16 @@ module.exports = function (context) {
   );
 
   // First try to copy from www/ (where OutSystems places it) to project root
-  const wwwGoogleServicesPath = path.join(context.opts.projectRoot, "www", "GoogleService-Info.plist");
-  const projectRootGoogleServicesPath = path.join(context.opts.projectRoot, "GoogleService-Info.plist");
-  
+  const wwwGoogleServicesPath = path.join(
+    context.opts.projectRoot,
+    "www",
+    "GoogleService-Info.plist"
+  );
+  const projectRootGoogleServicesPath = path.join(
+    context.opts.projectRoot,
+    "GoogleService-Info.plist"
+  );
+
   // Try to copy from www/ to project root first
   if (fs.existsSync(wwwGoogleServicesPath)) {
     try {

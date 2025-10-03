@@ -228,9 +228,16 @@ configurations.all {
 
     // Copy google-services.json to the correct location
     // First try to copy from www/ (where OutSystems places it) to project root
-    const wwwGoogleServicesPath = path.join(context.opts.projectRoot, "www", "google-services.json");
-    const projectRootGoogleServicesPath = path.join(context.opts.projectRoot, "google-services.json");
-    
+    const wwwGoogleServicesPath = path.join(
+      context.opts.projectRoot,
+      "www",
+      "google-services.json"
+    );
+    const projectRootGoogleServicesPath = path.join(
+      context.opts.projectRoot,
+      "google-services.json"
+    );
+
     // Try to copy from www/ to project root first
     if (fs.existsSync(wwwGoogleServicesPath)) {
       fs.copyFileSync(wwwGoogleServicesPath, projectRootGoogleServicesPath);
@@ -238,7 +245,7 @@ configurations.all {
         "Firebase Analytics Plugin: Copied google-services.json from www/ to project root"
       );
     }
-    
+
     // Then copy from project root to platforms/android/app/
     if (fs.existsSync(googleServicesSourcePath)) {
       // Ensure the app directory exists
