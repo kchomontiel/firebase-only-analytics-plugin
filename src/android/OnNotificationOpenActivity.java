@@ -1,4 +1,4 @@
-package com.yourcompany.cordova.firebase;
+package org.apache.cordova.firebase;
 
 import android.app.Activity;
 import android.content.Intent;
