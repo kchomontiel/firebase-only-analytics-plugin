@@ -29,8 +29,10 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
         Log.d(TAG, "Executing action: " + action);
 
         // Initialize Firebase Analytics if not already done
+        // Firebase App is automatically initialized by google-services.json
         if (mFirebaseAnalytics == null) {
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.cordova.getActivity());
+            Log.d(TAG, "Firebase Analytics initialized");
         }
 
         switch (action) {
@@ -99,12 +101,12 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
 
         try {
             mFirebaseAnalytics.logEvent(eventName, parameters);
-            Log.d(TAG, "Event logged successfully: " + eventName);
+            Log.d(TAG, "Event logged successfully: " + eventName + " with " + parameters.size() + " parameters");
             PluginResult result = new PluginResult(PluginResult.Status.OK, "Event logged successfully");
             callbackContext.sendPluginResult(result);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error logging event: " + e.getMessage());
+            Log.e(TAG, "Error logging event '" + eventName + "': " + e.getMessage(), e);
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error logging event: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;
@@ -135,7 +137,7 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
             callbackContext.sendPluginResult(result);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error setting user property: " + e.getMessage());
+            Log.e(TAG, "Error setting user property '" + name + "' = '" + value + "': " + e.getMessage(), e);
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error setting user property: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;
@@ -160,7 +162,7 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
             callbackContext.sendPluginResult(result);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error setting user ID: " + e.getMessage());
+            Log.e(TAG, "Error setting user ID '" + userId + "': " + e.getMessage(), e);
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error setting user ID: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;
@@ -185,7 +187,7 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
             callbackContext.sendPluginResult(result);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error setting analytics collection enabled: " + e.getMessage());
+            Log.e(TAG, "Error setting analytics collection enabled to '" + enabled + "': " + e.getMessage(), e);
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error setting analytics collection enabled: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;
@@ -203,7 +205,7 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
             callbackContext.sendPluginResult(result);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Error resetting analytics data: " + e.getMessage());
+            Log.e(TAG, "Error resetting analytics data: " + e.getMessage(), e);
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error resetting analytics data: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;

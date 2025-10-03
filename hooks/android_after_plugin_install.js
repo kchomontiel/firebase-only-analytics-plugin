@@ -69,6 +69,10 @@ module.exports = function (context) {
           console.log(
             "Firebase Analytics Plugin: Added Google Services classpath to build.gradle"
           );
+        } else {
+          console.log(
+            "Firebase Analytics Plugin: Warning - Could not find android gradle classpath to add Google Services classpath"
+          );
         }
       } else {
         console.log(
@@ -83,7 +87,7 @@ module.exports = function (context) {
 
       // Add Google Services plugin if not already present
       if (!appBuildGradleContent.includes("com.google.gms.google-services")) {
-        // Find the plugins section and add Google Services plugin
+        // Add Google Services plugin after android application plugin
         const pluginsRegex =
           /(apply plugin: ['"]com\.android\.application['"])/;
         if (pluginsRegex.test(appBuildGradleContent)) {
@@ -94,6 +98,10 @@ module.exports = function (context) {
           fs.writeFileSync(appBuildGradlePath, appBuildGradleContent);
           console.log(
             "Firebase Analytics Plugin: Added Google Services plugin to app/build.gradle"
+          );
+        } else {
+          console.log(
+            "Firebase Analytics Plugin: Warning - Could not find android application plugin to add Google Services plugin"
           );
         }
       } else {
