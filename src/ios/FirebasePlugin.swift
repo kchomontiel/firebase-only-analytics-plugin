@@ -36,6 +36,12 @@ class FirebasePlugin: CDVPlugin {
             return
         }
         
+        // Firebase Analytics event names should be max 40 characters
+        guard eventName.count <= 40 else {
+            sendErrorResult(command, message: "Event name cannot exceed 40 characters")
+            return
+        }
+        
         var parameters: [String: Any] = [:]
         
         // Parse parameters if provided
@@ -68,7 +74,19 @@ class FirebasePlugin: CDVPlugin {
             return
         }
         
+        // Firebase Analytics property names should be max 24 characters
+        guard name.count <= 24 else {
+            sendErrorResult(command, message: "Property name cannot exceed 24 characters")
+            return
+        }
+        
         let value = command.argument(at: 1) as? String ?? ""
+        
+        // Firebase Analytics property values should be max 36 characters
+        guard value.count <= 36 else {
+            sendErrorResult(command, message: "Property value cannot exceed 36 characters")
+            return
+        }
         
         Analytics.setUserProperty(value, forName: name)
         print("FirebasePlugin: User property set successfully: \(name) = \(value)")
@@ -120,26 +138,38 @@ class FirebasePlugin: CDVPlugin {
     
     /**
      * Convert parameters to Firebase-compatible types
+     * According to Firebase Analytics documentation, parameters can be:
+     * - String (up to 100 characters)
+     * - Number (Int, Double, Float)
+     * - Boolean
      */
     private func convertToFirebaseParameters(_ parameters: [String: Any]) -> [String: Any] {
         var firebaseParameters: [String: Any] = [:]
         
         for (key, value) in parameters {
             switch value {
-            case is String:
-                firebaseParameters[key] = value as! String
-            case is NSNumber:
-                let number = value as! NSNumber
-                if CFNumberIsFloatType(number) {
-                    firebaseParameters[key] = number.doubleValue
+            case let stringValue as String:
+                // Firebase Analytics parameter strings should be max 100 characters
+                let truncatedString = String(stringValue.prefix(100))
+                firebaseParameters[key] = truncatedString
+            case let numberValue as NSNumber:
+                if CFNumberIsFloatType(numberValue) {
+                    firebaseParameters[key] = numberValue.doubleValue
                 } else {
-                    firebaseParameters[key] = number.intValue
+                    firebaseParameters[key] = numberValue.intValue
                 }
-            case is Bool:
-                firebaseParameters[key] = value as! Bool
+            case let boolValue as Bool:
+                firebaseParameters[key] = boolValue
+            case let intValue as Int:
+                firebaseParameters[key] = intValue
+            case let doubleValue as Double:
+                firebaseParameters[key] = doubleValue
+            case let floatValue as Float:
+                firebaseParameters[key] = floatValue
             default:
-                // Convert other types to string
-                firebaseParameters[key] = String(describing: value)
+                // Convert other types to string (truncated to 100 chars)
+                let stringValue = String(describing: value)
+                firebaseParameters[key] = String(stringValue.prefix(100))
             }
         }
         
