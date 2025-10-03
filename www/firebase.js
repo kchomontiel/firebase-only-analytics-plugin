@@ -1,6 +1,6 @@
-var exec = require('cordova/exec');
+var exec = require("cordova/exec");
 
-var PLUGIN_NAME = 'FirebasePlugin';
+var PLUGIN_NAME = "FirebasePlugin";
 
 //
 // Cloud Messaging FCM
