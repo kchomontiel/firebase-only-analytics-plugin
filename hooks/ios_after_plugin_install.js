@@ -12,12 +12,24 @@ module.exports = function (context) {
   const deferral = { resolve: () => {}, reject: () => {} };
 
   console.log("Firebase Analytics Plugin: Running iOS post-install hook...");
+  
+  // Debug logging for OutSystems builds
+  console.log("Firebase Analytics Plugin: context.opts.projectRoot:", context.opts.projectRoot);
+  console.log("Firebase Analytics Plugin: context.opts.platforms:", context.opts.platforms);
 
   // Check if we're running on iOS platform
-  if (!context.opts.platforms || context.opts.platforms.indexOf("ios") === -1) {
-    console.log("Firebase Analytics Plugin: Not iOS platform, skipping hook");
+  // For OutSystems builds, context.opts.platforms might not be set correctly
+  // So we'll check if the ios platform directory exists instead
+  const iosPlatformPath = path.join(context.opts.projectRoot, "platforms", "ios");
+  console.log("Firebase Analytics Plugin: Checking iOS platform at:", iosPlatformPath);
+  console.log("Firebase Analytics Plugin: iOS platform exists:", fs.existsSync(iosPlatformPath));
+  
+  if (!fs.existsSync(iosPlatformPath)) {
+    console.log("Firebase Analytics Plugin: iOS platform not found, skipping hook");
     return;
   }
+  
+  console.log("Firebase Analytics Plugin: iOS platform found, continuing with hook execution");
 
   const platformPath = path.join(context.opts.projectRoot, "platforms", "ios");
   const googleServicesSourcePath = path.join(
