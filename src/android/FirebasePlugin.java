@@ -31,9 +31,9 @@ import java.util.Iterator;
  * Firebase Analytics Cordova Plugin for Android
  * Provides Firebase Analytics functionality for Cordova applications
  */
-public class FirebaseAnalyticsPlugin extends CordovaPlugin {
+public class FirebasePlugin extends CordovaPlugin {
 
-    private static final String TAG = "FirebaseAnalyticsPlugin";
+    private static final String TAG = "FirebasePlugin";
     private FirebaseAnalytics mFirebaseAnalytics;
     private static final String KEY = "badge";
     private static CallbackContext notificationCallbackContext;

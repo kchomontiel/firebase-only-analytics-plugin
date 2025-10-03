@@ -26,7 +26,7 @@ public class OnNotificationOpenActivity extends Activity {
                 extras.putBoolean("tap", true);
                 
                 // Send notification data to JavaScript
-                FirebaseAnalyticsPlugin.sendNotification(extras);
+                FirebasePlugin.sendNotification(extras);
             }
         }
         

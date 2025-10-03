@@ -24,7 +24,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FirebaseAnalytics">
-                <param name="android-package" value="org.apache.cordova.firebase.FirebaseAnalyticsPlugin" />
+                <param name="android-package" value="org.apache.cordova.firebase.FirebasePlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -61,7 +61,7 @@
             <activity android:name="org.apache.cordova.firebase.OnNotificationOpenActivity" />
         </config-file>
 
-        <source-file src="src/android/FirebaseAnalyticsPlugin.java" target-dir="src/org/apache/cordova/firebase" />
+        <source-file src="src/android/FirebasePlugin.java" target-dir="src/org/apache/cordova/firebase" />
 
         <!-- Include build configuration to resolve JNA conflicts (based on working master) -->
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
@@ -86,7 +86,7 @@
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="FirebaseAnalytics">
-                <param name="ios-package" value="FirebaseAnalyticsPlugin" />
+                <param name="ios-package" value="FirebasePlugin" />
             </feature>
         </config-file>
 
@@ -104,7 +104,7 @@
             <string>YES</string>
         </config-file>
 
-        <source-file src="src/ios/FirebaseAnalyticsPlugin.swift" />
+        <source-file src="src/ios/FirebasePlugin.swift" />
 
         <podspec>
             <config>

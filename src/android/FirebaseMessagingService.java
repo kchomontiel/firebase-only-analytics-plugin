@@ -37,7 +37,7 @@ public class FirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Refreshed token: " + token);
 
         // Send token to JavaScript
-        FirebaseAnalyticsPlugin.sendToken(token);
+        FirebasePlugin.sendToken(token);
     }
 
     /**
@@ -71,7 +71,7 @@ public class FirebaseMessagingService extends FirebaseMessagingService {
             notificationData.put("ttl", remoteMessage.getTtl());
 
             // Send to JavaScript
-            FirebaseAnalyticsPlugin.sendNotification(notificationData);
+            FirebasePlugin.sendNotification(notificationData);
             
         } catch (JSONException e) {
             Log.e(TAG, "Error creating notification JSON", e);

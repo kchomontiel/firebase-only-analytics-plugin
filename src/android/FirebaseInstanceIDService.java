@@ -32,7 +32,7 @@ public class FirebaseInstanceIDService {
                 Log.d(TAG, "New FCM token: " + token);
                 
                 // Send token to JavaScript
-                FirebaseAnalyticsPlugin.sendToken(token);
+                FirebasePlugin.sendToken(token);
             });
     }
 }
