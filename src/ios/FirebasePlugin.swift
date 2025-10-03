@@ -15,8 +15,9 @@ class FirebasePlugin: CDVPlugin {
     override func pluginInitialize() {
         super.pluginInitialize()
         
-        // Firebase is initialized automatically when the app starts
+        // Firebase is automatically initialized when the app starts
         // if GoogleService-Info.plist is present in the bundle
+        // This is the recommended approach per Firebase documentation
         print("FirebasePlugin: Plugin initialized")
     }
     
