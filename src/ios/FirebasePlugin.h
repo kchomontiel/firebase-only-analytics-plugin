@@ -1,7 +1,5 @@
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-#import <Firebase/Firebase.h>
-#import <FirebaseInstallations/FirebaseInstallations.h>
 
 @interface FirebasePlugin : CDVPlugin
 + (FirebasePlugin *)firebasePlugin;
@@ -37,7 +35,7 @@
 
 - (void)getDynamicLink:(CDVInvokedUrlCommand *)command;
 - (void)onDynamicLink:(CDVInvokedUrlCommand *)command;
-- (void)postDynamicLink:(FIRDynamicLink*) dynamicLink;
+- (void)postDynamicLink:(id) dynamicLink;
 
 @property (nonatomic, copy) NSString* dynamicLinkCallbackId;
 @property (nonatomic, retain) NSDictionary* lastDynamicLinkData;
