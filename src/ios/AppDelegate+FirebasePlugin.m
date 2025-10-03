@@ -77,12 +77,12 @@
     // MOCK: Don't actually get token, just log
 }
 
-- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+- (void)messaging:(id)messaging didReceiveMessage:(id)remoteMessage {
     NSLog(@"AppDelegate+FirebasePlugin MOCK: messaging:didReceiveMessage called");
     // MOCK: Don't actually handle the message, just log
 }
 
-- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+- (void)applicationReceivedRemoteMessage:(id)remoteMessage {
     NSLog(@"AppDelegate+FirebasePlugin MOCK: applicationReceivedRemoteMessage called");
     // MOCK: Don't actually handle the message, just log
 }
