@@ -175,6 +175,20 @@
       </pods>
     </podspec>
 
+    <!-- Fix CocoaPods configuration conflicts -->
+    <config-file target="*-Debug.xcconfig" parent="ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES">
+      <string>YES</string>
+    </config-file>
+    <config-file target="*-Release.xcconfig" parent="ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES">
+      <string>YES</string>
+    </config-file>
+    <config-file target="*-Debug.xcconfig" parent="LD_RUNPATH_SEARCH_PATHS">
+      <string>$(inherited) @executable_path/Frameworks @loader_path/Frameworks</string>
+    </config-file>
+    <config-file target="*-Release.xcconfig" parent="LD_RUNPATH_SEARCH_PATHS">
+      <string>$(inherited) @executable_path/Frameworks @loader_path/Frameworks</string>
+    </config-file>
+
 
 
 <!--    <podspec>

@@ -2,10 +2,10 @@
 #import "AppDelegate+FirebasePlugin.h"
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
-@import Firebase;
-@import FirebaseInstallations;
-@import FirebaseAnalytics;
-@import FirebasePerformance;
+#import <Firebase/Firebase.h>
+#import <FirebaseInstallations/FirebaseInstallations.h>
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
+#import <FirebasePerformance/FirebasePerformance.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
