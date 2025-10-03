@@ -8,7 +8,7 @@
   // Implement UNUserNotificationCenterDelegate to receive display notification via APNS for devices
   // running iOS 10 and above. Implement FIRMessagingDelegate to receive data message via FCM for
   // devices running iOS 10 and above.
-  @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+  @interface AppDelegate () <UNUserNotificationCenterDelegate>
   @end
 #endif
 
