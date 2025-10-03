@@ -4,6 +4,18 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -23,6 +35,9 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
 
     private static final String TAG = "FirebaseAnalyticsPlugin";
     private FirebaseAnalytics mFirebaseAnalytics;
+    private static final String KEY = "badge";
+    private static CallbackContext notificationCallbackContext;
+    private static CallbackContext tokenRefreshCallbackContext;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -46,6 +61,22 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
                 return setAnalyticsCollectionEnabled(args, callbackContext);
             case "resetAnalyticsData":
                 return resetAnalyticsData(callbackContext);
+            case "getToken":
+                return getToken(callbackContext);
+            case "subscribe":
+                return subscribe(args, callbackContext);
+            case "unsubscribe":
+                return unsubscribe(args, callbackContext);
+            case "setBadgeNumber":
+                return setBadgeNumber(args, callbackContext);
+            case "getBadgeNumber":
+                return getBadgeNumber(callbackContext);
+            case "clearAllNotifications":
+                return clearAllNotifications(callbackContext);
+            case "onNotificationOpen":
+                return onNotificationOpen(callbackContext);
+            case "onTokenRefresh":
+                return onTokenRefresh(callbackContext);
             default:
                 Log.e(TAG, "Unknown action: " + action);
                 callbackContext.error("Unknown action: " + action);
@@ -209,6 +240,249 @@ public class FirebaseAnalyticsPlugin extends CordovaPlugin {
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, "Error resetting analytics data: " + e.getMessage());
             callbackContext.sendPluginResult(result);
             return false;
+        }
+    }
+
+    //
+    // Cloud Messaging FCM Methods
+    //
+
+    /**
+     * Get FCM registration token
+     */
+    private boolean getToken(CallbackContext callbackContext) {
+        Log.d(TAG, "getToken called");
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    FirebaseMessaging.getInstance().getToken()
+                        .addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                                    callbackContext.error("Failed to get FCM token: " + task.getException().getMessage());
+                                    return;
+                                }
+                                String token = task.getResult();
+                                Log.d(TAG, "FCM token: " + token);
+                                callbackContext.success(token);
+                            }
+                        });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error getting FCM token: " + e.getMessage(), e);
+                    callbackContext.error("Error getting FCM token: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Subscribe to a topic
+     */
+    private boolean subscribe(JSONArray args, CallbackContext callbackContext) throws JSONException {
+        if (args.length() < 1) {
+            callbackContext.error("Topic is required");
+            return false;
+        }
+
+        String topic = args.getString(0);
+        Log.d(TAG, "subscribe called. topic: " + topic);
+
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "Successfully subscribed to topic: " + topic);
+                                    callbackContext.success();
+                                } else {
+                                    Log.e(TAG, "Failed to subscribe to topic: " + topic, task.getException());
+                                    callbackContext.error("Failed to subscribe to topic: " + task.getException().getMessage());
+                                }
+                            }
+                        });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error subscribing to topic: " + e.getMessage(), e);
+                    callbackContext.error("Error subscribing to topic: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Unsubscribe from a topic
+     */
+    private boolean unsubscribe(JSONArray args, CallbackContext callbackContext) throws JSONException {
+        if (args.length() < 1) {
+            callbackContext.error("Topic is required");
+            return false;
+        }
+
+        String topic = args.getString(0);
+        Log.d(TAG, "unsubscribe called. topic: " + topic);
+
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "Successfully unsubscribed from topic: " + topic);
+                                    callbackContext.success();
+                                } else {
+                                    Log.e(TAG, "Failed to unsubscribe from topic: " + topic, task.getException());
+                                    callbackContext.error("Failed to unsubscribe from topic: " + task.getException().getMessage());
+                                }
+                            }
+                        });
+                } catch (Exception e) {
+                    Log.e(TAG, "Error unsubscribing from topic: " + e.getMessage(), e);
+                    callbackContext.error("Error unsubscribing from topic: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Set badge number
+     */
+    private boolean setBadgeNumber(JSONArray args, CallbackContext callbackContext) throws JSONException {
+        if (args.length() < 1) {
+            callbackContext.error("Number is required");
+            return false;
+        }
+
+        int number = args.getInt(0);
+        Log.d(TAG, "setBadgeNumber called. number: " + number);
+
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    Context context = cordova.getActivity();
+                    SharedPreferences settings = context.getSharedPreferences(KEY, Context.MODE_PRIVATE);
+                    settings.edit().putInt(KEY, number).apply();
+                    callbackContext.success();
+                    Log.d(TAG, "setBadgeNumber success. number: " + number);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error setting badge number: " + e.getMessage(), e);
+                    callbackContext.error("Error setting badge number: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Get badge number
+     */
+    private boolean getBadgeNumber(CallbackContext callbackContext) {
+        Log.d(TAG, "getBadgeNumber called");
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    Context context = cordova.getActivity();
+                    SharedPreferences settings = context.getSharedPreferences(KEY, Context.MODE_PRIVATE);
+                    int number = settings.getInt(KEY, 0);
+                    callbackContext.success(number);
+                    Log.d(TAG, "getBadgeNumber success. number: " + number);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error getting badge number: " + e.getMessage(), e);
+                    callbackContext.error("Error getting badge number: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Clear all notifications
+     */
+    private boolean clearAllNotifications(CallbackContext callbackContext) {
+        Log.d(TAG, "clearAllNotifications called");
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                try {
+                    Context context = cordova.getActivity();
+                    NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    nm.cancelAll();
+                    callbackContext.success();
+                    Log.d(TAG, "clearAllNotifications success");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error clearing notifications: " + e.getMessage(), e);
+                    callbackContext.error("Error clearing notifications: " + e.getMessage());
+                }
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Set up notification open listener
+     */
+    private boolean onNotificationOpen(CallbackContext callbackContext) {
+        Log.d(TAG, "onNotificationOpen called");
+        notificationCallbackContext = callbackContext;
+        PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+        result.setKeepCallback(true);
+        callbackContext.sendPluginResult(result);
+        return true;
+    }
+
+    /**
+     * Set up token refresh listener
+     */
+    private boolean onTokenRefresh(CallbackContext callbackContext) {
+        Log.d(TAG, "onTokenRefresh called");
+        tokenRefreshCallbackContext = callbackContext;
+        PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+        result.setKeepCallback(true);
+        callbackContext.sendPluginResult(result);
+        return true;
+    }
+
+    /**
+     * Send notification data to JavaScript
+     */
+    public static void sendNotification(Bundle bundle, Context context) {
+        if (notificationCallbackContext != null && bundle != null) {
+            JSONObject json = new JSONObject();
+            for (String key : bundle.keySet()) {
+                try {
+            result.setKeepCallback(true);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error creating notification JSON", e);
+                    return;
+                }
+            }
+            PluginResult result = new PluginResult(PluginResult.Status.OK, json);
+            result.setKeepCallback(true);
+            notificationCallbackContext.sendPluginResult(result);
+            Log.d(TAG, "sendNotification success");
+        }
+    }
+
+    /**
+     * Send notification data to JavaScript (overloaded for JSONObject)
+     */
+    public static void sendNotification(JSONObject json) {
+        if (notificationCallbackContext != null && json != null) {
+            PluginResult result = new PluginResult(PluginResult.Status.OK, json);
+            result.setKeepCallback(true);
+            notificationCallbackContext.sendPluginResult(result);
+            Log.d(TAG, "sendNotification success (JSONObject)");
+        }
+    }
+            tokenRefreshCallbackContext.sendPluginResult(result);
+            Log.d(TAG, "sendToken success. token: " + token);
         }
     }
 }

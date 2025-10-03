@@ -32,6 +32,9 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.VIBRATE" />
+            <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -41,14 +44,36 @@
             <meta-data android:name="com.google.firebase.analytics.app_id" android:value="1:642052028066:android:a91aa1ee5dd74d30e389fb" />
             <meta-data android:name="google_app_id" android:value="1:642052028066:android:a91aa1ee5dd74d30e389fb" />
         </config-file>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="com.yourcompany.cordova.firebase.FirebaseMessagingService" android:exported="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                </intent-filter>
+            </service>
+            <service android:name="com.yourcompany.cordova.firebase.FirebaseInstanceIDService" android:exported="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                </intent-filter>
+            </service>
+            <receiver android:name="com.yourcompany.cordova.firebase.OnNotificationOpenReceiver" />
+            <activity android:name="com.yourcompany.cordova.firebase.OnNotificationOpenActivity" />
+        </config-file>
 
         <source-file src="src/android/FirebaseAnalyticsPlugin.java" target-dir="src/com/yourcompany/cordova/firebase" />
 
         <!-- Include build configuration to resolve JNA conflicts (based on working master) -->
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+        <source-file src="src/android/FirebaseMessagingService.java" target-dir="src/com/yourcompany/cordova/firebase" />
+        <source-file src="src/android/FirebaseInstanceIDService.java" target-dir="src/com/yourcompany/cordova/firebase" />
+        <source-file src="src/android/OnNotificationOpenReceiver.java" target-dir="src/com/yourcompany/cordova/firebase" />
+        <source-file src="src/android/OnNotificationOpenActivity.java" target-dir="src/com/yourcompany/cordova/firebase" />
         
         <!-- Firebase Analytics dependency -->
         <framework src="com.google.firebase:firebase-analytics:21.5.0" />
+        <!-- Firebase Cloud Messaging dependency -->
+        <framework src="com.google.firebase:firebase-messaging:23.4.0" />
         
         <!-- Google Services plugin for processing google-services.json -->
         <framework src="com.google.gms:google-services:4.4.0" />

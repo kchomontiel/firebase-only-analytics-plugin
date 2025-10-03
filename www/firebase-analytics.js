@@ -225,6 +225,167 @@ var FirebaseAnalytics = {
       [true]
     );
   },
+
+  //
+  // Cloud Messaging FCM
+  //
+  /**
+   * Get FCM registration token
+   * @param {Function} successCallback - Success callback function (receives token)
+   * @param {Function} errorCallback - Error callback function
+   */
+  getToken: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "getToken", []);
+  },
+
+  /**
+   * Subscribe to a topic
+   * @param {string} topic - Topic name to subscribe to
+   * @param {Function} successCallback - Success callback function
+   * @param {Function} errorCallback - Error callback function
+   */
+  subscribe: function (topic, successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    if (!topic || typeof topic !== "string") {
+      errorCallback("Topic must be a non-empty string");
+      return;
+    }
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "subscribe", [topic]);
+  },
+
+  /**
+   * Unsubscribe from a topic
+   * @param {string} topic - Topic name to unsubscribe from
+   * @param {Function} successCallback - Success callback function
+   * @param {Function} errorCallback - Error callback function
+   */
+  unsubscribe: function (topic, successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    if (!topic || typeof topic !== "string") {
+      errorCallback("Topic must be a non-empty string");
+      return;
+    }
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "unsubscribe", [topic]);
+  },
+
+  /**
+   * Set notification badge number (Android)
+   * @param {number} number - Badge number
+   * @param {Function} successCallback - Success callback function
+   * @param {Function} errorCallback - Error callback function
+   */
+  setBadgeNumber: function (number, successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "setBadgeNumber", [number || 0]);
+  },
+
+  /**
+   * Get notification badge number (Android)
+   * @param {Function} successCallback - Success callback function (receives number)
+   * @param {Function} errorCallback - Error callback function
+   */
+  getBadgeNumber: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "getBadgeNumber", []);
+  },
+
+  /**
+   * Clear all notifications
+   * @param {Function} successCallback - Success callback function
+   * @param {Function} errorCallback - Error callback function
+   */
+  clearAllNotifications: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "clearAllNotifications", []);
+  },
+
+  /**
+   * Set up notification open listener
+   * @param {Function} successCallback - Success callback function (receives notification data)
+   * @param {Function} errorCallback - Error callback function
+   */
+  onNotificationOpen: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "onNotificationOpen", []);
+  },
+
+  /**
+   * Set up token refresh listener
+   * @param {Function} successCallback - Success callback function (receives new token)
+   * @param {Function} errorCallback - Error callback function
+   */
+  onTokenRefresh: function (successCallback, errorCallback) {
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function (error) {
+
+     // FCM Methods
+     getToken: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.getToken(successCallback, errorCallback);
+     },
+
+     subscribe: function (topic, successCallback, errorCallback) {
+       return FirebaseAnalytics.subscribe(topic, successCallback, errorCallback);
+     },
+
+     unsubscribe: function (topic, successCallback, errorCallback) {
+       return FirebaseAnalytics.unsubscribe(topic, successCallback, errorCallback);
+     },
+
+     setBadgeNumber: function (number, successCallback, errorCallback) {
+       return FirebaseAnalytics.setBadgeNumber(number, successCallback, errorCallback);
+     },
+
+     getBadgeNumber: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.getBadgeNumber(successCallback, errorCallback);
+     },
+
+     clearAllNotifications: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.clearAllNotifications(successCallback, errorCallback);
+     },
+
+     onNotificationOpen: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.onNotificationOpen(successCallback, errorCallback);
+     },
+
+     onTokenRefresh: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.onTokenRefresh(successCallback, errorCallback);
+     },
+      console.error("Firebase FCM Error:", error);
+    };
+
+    exec(successCallback, errorCallback, "FirebaseAnalytics", "onTokenRefresh", []);
+  },
 };
 
 module.exports = FirebaseAnalytics;
