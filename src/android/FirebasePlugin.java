@@ -481,8 +481,17 @@ public class FirebasePlugin extends CordovaPlugin {
             Log.d(TAG, "sendNotification success (JSONObject)");
         }
     }
+
+    /**
+     * Send token to JavaScript
+     */
+    public static void sendToken(String token) {
+        if (tokenRefreshCallbackContext != null && token != null) {
+            PluginResult result = new PluginResult(PluginResult.Status.OK, token);
+            result.setKeepCallback(true);
             tokenRefreshCallbackContext.sendPluginResult(result);
             Log.d(TAG, "sendToken success. token: " + token);
         }
     }
+}
 }
