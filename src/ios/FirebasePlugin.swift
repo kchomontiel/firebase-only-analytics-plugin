@@ -6,8 +6,8 @@ import FirebaseCore
  * Firebase Analytics Cordova Plugin for iOS
  * Provides Firebase Analytics functionality for Cordova applications
  */
-@objc(FirebaseAnalyticsPlugin)
-class FirebaseAnalyticsPlugin: CDVPlugin {
+@objc(FirebasePlugin)
+class FirebasePlugin: CDVPlugin {
     
     /**
      * Initialize Firebase Analytics
@@ -17,7 +17,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
         
         // Firebase is initialized automatically when the app starts
         // if GoogleService-Info.plist is present in the bundle
-        print("FirebaseAnalyticsPlugin: Plugin initialized")
+        print("FirebasePlugin: Plugin initialized")
     }
     
     /**
@@ -47,7 +47,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
         let firebaseParameters = convertToFirebaseParameters(parameters)
         
         Analytics.logEvent(eventName, parameters: firebaseParameters)
-        print("FirebaseAnalyticsPlugin: Event logged successfully: \(eventName)")
+        print("FirebasePlugin: Event logged successfully: \(eventName)")
         
         sendSuccessResult(command, message: "Event logged successfully")
     }
@@ -70,7 +70,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
         let value = command.argument(at: 1) as? String ?? ""
         
         Analytics.setUserProperty(value, forName: name)
-        print("FirebaseAnalyticsPlugin: User property set successfully: \(name) = \(value)")
+        print("FirebasePlugin: User property set successfully: \(name) = \(value)")
         
         sendSuccessResult(command, message: "User property set successfully")
     }
@@ -83,7 +83,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
         let userId = command.argument(at: 0) as? String ?? ""
         
         Analytics.setUserID(userId)
-        print("FirebaseAnalyticsPlugin: User ID set successfully: \(userId)")
+        print("FirebasePlugin: User ID set successfully: \(userId)")
         
         sendSuccessResult(command, message: "User ID set successfully")
     }
@@ -99,7 +99,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
         }
         
         Analytics.setAnalyticsCollectionEnabled(enabled)
-        print("FirebaseAnalyticsPlugin: Analytics collection enabled set to: \(enabled)")
+        print("FirebasePlugin: Analytics collection enabled set to: \(enabled)")
         
         sendSuccessResult(command, message: "Analytics collection enabled set successfully")
     }
@@ -110,7 +110,7 @@ class FirebaseAnalyticsPlugin: CDVPlugin {
     @objc(resetAnalyticsData:)
     func resetAnalyticsData(_ command: CDVInvokedUrlCommand) {
         Analytics.resetAnalyticsData()
-        print("FirebaseAnalyticsPlugin: Analytics data reset successfully")
+        print("FirebasePlugin: Analytics data reset successfully")
         
         sendSuccessResult(command, message: "Analytics data reset successfully")
     }
