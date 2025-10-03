@@ -44,7 +44,6 @@
             <meta-data android:name="com.google.firebase.analytics.app_id" android:value="1:642052028066:android:a91aa1ee5dd74d30e389fb" />
             <meta-data android:name="google_app_id" android:value="1:642052028066:android:a91aa1ee5dd74d30e389fb" />
         </config-file>
-        </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="org.apache.cordova.firebase.FirebaseMessagingService" android:exported="false">
