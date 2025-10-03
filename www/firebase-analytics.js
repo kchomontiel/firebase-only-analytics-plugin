@@ -38,7 +38,7 @@ var FirebaseAnalytics = {
       return;
     }
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "logEvent", [
+    exec(successCallback, errorCallback, "FirebasePlugin", "logEvent", [
       eventName,
       parameters,
     ]);
@@ -67,7 +67,7 @@ var FirebaseAnalytics = {
     exec(
       successCallback,
       errorCallback,
-      "FirebaseAnalytics",
+      "FirebasePlugin",
       "setUserProperty",
       [name, value || ""]
     );
@@ -87,7 +87,7 @@ var FirebaseAnalytics = {
         console.error("Firebase Analytics Error:", error);
       };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "setUserId", [
+    exec(successCallback, errorCallback, "FirebasePlugin", "setUserId", [
       userId || "",
     ]);
   },
@@ -113,7 +113,7 @@ var FirebaseAnalytics = {
     exec(
       successCallback,
       errorCallback,
-      "FirebaseAnalytics",
+      "FirebasePlugin",
       "setAnalyticsCollectionEnabled",
       [!!enabled]
     );
@@ -135,7 +135,7 @@ var FirebaseAnalytics = {
     exec(
       successCallback,
       errorCallback,
-      "FirebaseAnalytics",
+      "FirebasePlugin",
       "resetAnalyticsData",
       []
     );
@@ -163,7 +163,7 @@ var FirebaseAnalytics = {
       function () {
         successCallback(false);
       },
-      "FirebaseAnalytics",
+      "FirebasePlugin",
       "logEvent",
       ["_init_check", {}]
     );
@@ -190,7 +190,7 @@ var FirebaseAnalytics = {
     }
 
     // Log a screen_view event with the screen name
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "logEvent", [
+    exec(successCallback, errorCallback, "FirebasePlugin", "logEvent", [
       "screen_view",
       { screen_name: screenName },
     ]);
@@ -220,7 +220,7 @@ var FirebaseAnalytics = {
         console.warn("Error checking analytics permission:", error);
         successCallback(false);
       },
-      "FirebaseAnalytics",
+      "FirebasePlugin",
       "setAnalyticsCollectionEnabled",
       [true]
     );
@@ -240,7 +240,7 @@ var FirebaseAnalytics = {
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "getToken", []);
+    exec(successCallback, errorCallback, "FirebasePlugin", "getToken", []);
   },
 
   /**
@@ -260,7 +260,7 @@ var FirebaseAnalytics = {
       return;
     }
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "subscribe", [topic]);
+    exec(successCallback, errorCallback, "FirebasePlugin", "subscribe", [topic]);
   },
 
   /**
@@ -280,7 +280,7 @@ var FirebaseAnalytics = {
       return;
     }
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "unsubscribe", [topic]);
+    exec(successCallback, errorCallback, "FirebasePlugin", "unsubscribe", [topic]);
   },
 
   /**
@@ -295,7 +295,7 @@ var FirebaseAnalytics = {
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "setBadgeNumber", [number || 0]);
+    exec(successCallback, errorCallback, "FirebasePlugin", "setBadgeNumber", [number || 0]);
   },
 
   /**
@@ -309,7 +309,7 @@ var FirebaseAnalytics = {
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "getBadgeNumber", []);
+    exec(successCallback, errorCallback, "FirebasePlugin", "getBadgeNumber", []);
   },
 
   /**
@@ -323,7 +323,7 @@ var FirebaseAnalytics = {
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "clearAllNotifications", []);
+    exec(successCallback, errorCallback, "FirebasePlugin", "clearAllNotifications", []);
   },
 
   /**
@@ -337,7 +337,7 @@ var FirebaseAnalytics = {
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "onNotificationOpen", []);
+    exec(successCallback, errorCallback, "FirebasePlugin", "onNotificationOpen", []);
   },
 
   /**
@@ -345,52 +345,20 @@ var FirebaseAnalytics = {
    * @param {Function} successCallback - Success callback function (receives new token)
    * @param {Function} errorCallback - Error callback function
    */
-  onTokenRefresh: function (successCallback, errorCallback) {
-    successCallback = successCallback || function () {};
+
     errorCallback = errorCallback || function (error) {
-
-     // FCM Methods
-     getToken: function (successCallback, errorCallback) {
-       return FirebaseAnalytics.getToken(successCallback, errorCallback);
-     },
-
-     subscribe: function (topic, successCallback, errorCallback) {
-       return FirebaseAnalytics.subscribe(topic, successCallback, errorCallback);
-     },
-
-     unsubscribe: function (topic, successCallback, errorCallback) {
-       return FirebaseAnalytics.unsubscribe(topic, successCallback, errorCallback);
-     },
-
-     setBadgeNumber: function (number, successCallback, errorCallback) {
-       return FirebaseAnalytics.setBadgeNumber(number, successCallback, errorCallback);
-     },
-
-     getBadgeNumber: function (successCallback, errorCallback) {
-       return FirebaseAnalytics.getBadgeNumber(successCallback, errorCallback);
-     },
-
-     clearAllNotifications: function (successCallback, errorCallback) {
-       return FirebaseAnalytics.clearAllNotifications(successCallback, errorCallback);
-     },
-
-     onNotificationOpen: function (successCallback, errorCallback) {
-       return FirebaseAnalytics.onNotificationOpen(successCallback, errorCallback);
-     },
-
-     onTokenRefresh: function (successCallback, errorCallback) {
-       return FirebaseAnalytics.onTokenRefresh(successCallback, errorCallback);
-     },
       console.error("Firebase FCM Error:", error);
     };
 
-    exec(successCallback, errorCallback, "FirebaseAnalytics", "onTokenRefresh", []);
+    exec(successCallback, errorCallback, "FirebasePlugin", "onTokenRefresh", []);
+  },
+};
+    exec(successCallback, errorCallback, "FirebasePlugin", "onTokenRefresh", []);
   },
 };
 
 module.exports = FirebaseAnalytics;
 
-// Create window.fp interface for compatibility
 if (typeof window !== "undefined") {
   window.fp = {
     logEvent: function (eventName, parameters, successCallback, errorCallback) {
@@ -450,6 +418,39 @@ if (typeof window !== "undefined") {
          screenName,
          successCallback,
          errorCallback
+
+     // FCM Methods
+     getToken: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.getToken(successCallback, errorCallback);
+     },
+
+     subscribe: function (topic, successCallback, errorCallback) {
+       return FirebaseAnalytics.subscribe(topic, successCallback, errorCallback);
+     },
+
+     unsubscribe: function (topic, successCallback, errorCallback) {
+       return FirebaseAnalytics.unsubscribe(topic, successCallback, errorCallback);
+     },
+
+     setBadgeNumber: function (number, successCallback, errorCallback) {
+       return FirebaseAnalytics.setBadgeNumber(number, successCallback, errorCallback);
+     },
+
+     getBadgeNumber: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.getBadgeNumber(successCallback, errorCallback);
+     },
+
+     clearAllNotifications: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.clearAllNotifications(successCallback, errorCallback);
+     },
+
+     onNotificationOpen: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.onNotificationOpen(successCallback, errorCallback);
+     },
+
+     onTokenRefresh: function (successCallback, errorCallback) {
+       return FirebaseAnalytics.onTokenRefresh(successCallback, errorCallback);
+     },
        );
      },
 
