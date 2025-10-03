@@ -162,7 +162,6 @@
         <source url="https://cdn.cocoapods.org/"/>
       </config>
       <pods use-frameworks="true">
-        <pod name="Firebase" spec="~> 10.25.0" />
         <pod name="FirebaseCore" spec="~> 10.25.0" />
         <pod name="FirebaseInstallations" spec="~> 10.25.0" />
         <pod name="FirebaseAnalytics" spec="~> 10.25.0" />
@@ -176,6 +175,12 @@
     </podspec>
 
     <!-- Fix CocoaPods configuration conflicts -->
+    <config-file target="*-Debug.xcconfig" parent="IPHONEOS_DEPLOYMENT_TARGET">
+      <string>12.0</string>
+    </config-file>
+    <config-file target="*-Release.xcconfig" parent="IPHONEOS_DEPLOYMENT_TARGET">
+      <string>12.0</string>
+    </config-file>
     <config-file target="*-Debug.xcconfig" parent="ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES">
       <string>YES</string>
     </config-file>
