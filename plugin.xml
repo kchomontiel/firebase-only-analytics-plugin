@@ -46,7 +46,7 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <service android:name="org.apache.cordova.firebase.FirebaseMessagingService" android:exported="false">
+            <service android:name="org.apache.cordova.firebase.FirebasePluginMessagingService" android:exported="false">
                 <intent-filter>
                     <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 </intent-filter>
@@ -64,7 +64,7 @@
 
         <!-- Include build configuration to resolve JNA conflicts (based on working master) -->
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-        <source-file src="src/android/FirebaseMessagingService.java" target-dir="src/org/apache/cordova/firebase" />
+        <source-file src="src/android/FirebasePluginMessagingService.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/FirebaseInstanceIDService.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/OnNotificationOpenReceiver.java" target-dir="src/org/apache/cordova/firebase" />
         <source-file src="src/android/OnNotificationOpenActivity.java" target-dir="src/org/apache/cordova/firebase" />

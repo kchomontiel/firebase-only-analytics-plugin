@@ -457,7 +457,10 @@ public class FirebasePlugin extends CordovaPlugin {
             JSONObject json = new JSONObject();
             for (String key : bundle.keySet()) {
                 try {
+                    json.put(key, bundle.get(key));
             result.setKeepCallback(true);
+            }
+            PluginResult result = new PluginResult(PluginResult.Status.OK, json);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error creating notification JSON", e);
                     return;

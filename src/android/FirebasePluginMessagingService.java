@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * Firebase Cloud Messaging Service
  * Handles incoming FCM messages
  */
-public class FirebaseMessagingService extends FirebaseMessagingService {
+public class FirebasePluginMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "FirebaseMessagingService";
 
