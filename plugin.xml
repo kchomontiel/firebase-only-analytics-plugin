@@ -162,14 +162,16 @@
         <source url="https://cdn.cocoapods.org/"/>
       </config>
       <pods use-frameworks="true">
-        <pod name="Firebase" spec="~> 7.0.0" />
-        <pod name="FirebaseCore" spec="~> 7.0.0" />
-        <pod name="FirebaseCrashlytics" spec="~> 7.0.0" />
-        <pod name="FirebaseMessaging" spec="~> 7.0.0" />
-        <pod name="FirebaseAuth" spec="~> 7.0.0" />
-        <pod name="FirebaseRemoteConfig" spec="~>  7.0.0" />
-        <pod name="FirebasePerformance" spec="~> 7.0.0" />
-	      <pod name="FirebaseDynamicLinks" spec="~> 7.0.0" />
+        <pod name="Firebase" spec="~> 10.25.0" />
+        <pod name="FirebaseCore" spec="~> 10.25.0" />
+        <pod name="FirebaseInstallations" spec="~> 10.25.0" />
+        <pod name="FirebaseAnalytics" spec="~> 10.25.0" />
+        <pod name="FirebaseCrashlytics" spec="~> 10.25.0" />
+        <pod name="FirebaseMessaging" spec="~> 10.25.0" />
+        <pod name="FirebaseAuth" spec="~> 10.25.0" />
+        <pod name="FirebaseRemoteConfig" spec="~> 10.25.0" />
+        <pod name="FirebasePerformance" spec="~> 10.25.0" />
+	      <pod name="FirebaseDynamicLinks" spec="~> 10.25.0" />
       </pods>
     </podspec>
 

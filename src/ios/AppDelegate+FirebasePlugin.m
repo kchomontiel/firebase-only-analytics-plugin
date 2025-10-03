@@ -113,7 +113,7 @@
     //[FIRApp configure];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
-                                                 name:kFIRInstanceIDTokenRefreshNotification object:nil];
+                                                 name:FIRMessagingRegistrationTokenRefreshedNotification object:nil];
     
     self.applicationInBackground = @(YES);
     
@@ -144,13 +144,10 @@
     [self connectToFcm];
     [FirebasePlugin.firebasePlugin sendToken:refreshedToken];
     */
-    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
-        NSString* token = nil;
-        if (error == nil && result != nil && result.token != nil) {
-            token = result.token;
+    [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+        if (token != nil) {
+            [FirebasePlugin.firebasePlugin sendToken:token];
         }
-        // [self connectToFcm];
-        [FirebasePlugin.firebasePlugin sendToken:token];
     }];
 }
 /* MODIFIED

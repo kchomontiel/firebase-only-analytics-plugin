@@ -3,6 +3,7 @@
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
 @import Firebase;
+@import FirebaseInstallations;
 @import FirebaseAnalytics;
 @import FirebasePerformance;
 
@@ -43,32 +44,27 @@ static FirebasePlugin *firebasePlugin;
 - (void)getId:(CDVInvokedUrlCommand *)command {
   __block CDVPluginResult *pluginResult;
 
-  FIRInstanceIDHandler handler = ^(NSString *_Nullable instID, NSError *_Nullable error) {
+  [[FIRInstallations installations] installationIDWithCompletion:^(NSString * _Nullable identifier, NSError * _Nullable error) {
     if (error) {
       pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     } else {
-      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:instID];
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:identifier];
     }
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-  };
-
-  [[FIRInstanceID instanceID] getIDWithHandler:handler];
+  }];
 }
 
 - (void)getToken:(CDVInvokedUrlCommand *)command {
-    //CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[FIRInstanceID instanceID] token]];
-    //[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
-        NSString* token = nil;
-        if (error == nil && result != nil && result.token != nil) {
-            token = result.token;
+    [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+        CDVPluginResult *pluginResult;
+        if (error == nil && token != nil) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:token];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
         }
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: token];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
-
 }
 
 - (void)hasPermission:(CDVInvokedUrlCommand *)command {
@@ -154,33 +150,20 @@ static FirebasePlugin *firebasePlugin;
 }
 
 - (void)unregister:(CDVInvokedUrlCommand *)command {
-    [[FIRInstanceID instanceID] deleteIDWithHandler:^void(NSError *_Nullable error) {
+    [[FIRMessaging messaging] deleteTokenWithCompletion:^(NSError * _Nullable error) {
         if (error) {
-            NSLog(@"FirebasePlugin - Unable to delete instance");
+            NSLog(@"FirebasePlugin - Unable to delete token");
+            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         } else {
-            
-            [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
-                NSString* token = nil;
-                if (error == nil && result != nil && result.token != nil) {
-                    token = result.token;
-                }
+            // Get new token after deletion
+            [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
                 if (token != nil) {
                     [self sendToken:token];
                 }
                 CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
             }];
-            
-
-        /*
-            NSString* currentToken = [[FIRInstanceID instanceID] token];
-            if (currentToken != nil) {
-                [self sendToken:currentToken];
-            }
-            CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-            */
-
         }
     }];
 }
@@ -199,11 +182,7 @@ static FirebasePlugin *firebasePlugin;
 
 - (void)onTokenRefresh:(CDVInvokedUrlCommand *)command {
     self.tokenRefreshCallbackId = command.callbackId;
-    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
-        NSString* token = nil;
-        if (error == nil && result != nil && result.token != nil) {
-            token = result.token;
-        }
+    [[FIRMessaging messaging] tokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
         if (token != nil) {
             [self sendToken:token];
         }
