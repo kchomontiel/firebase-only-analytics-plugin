@@ -61,6 +61,25 @@ module.exports = function (context) {
     "GoogleService-Info.plist"
   );
 
+  // First try to copy from www/ (where OutSystems places it) to project root
+  const wwwGoogleServicesPath = path.join(context.opts.projectRoot, "www", "GoogleService-Info.plist");
+  const projectRootGoogleServicesPath = path.join(context.opts.projectRoot, "GoogleService-Info.plist");
+  
+  // Try to copy from www/ to project root first
+  if (fs.existsSync(wwwGoogleServicesPath)) {
+    try {
+      fs.copyFileSync(wwwGoogleServicesPath, projectRootGoogleServicesPath);
+      console.log(
+        "Firebase Analytics Plugin: Copied GoogleService-Info.plist from www/ to project root"
+      );
+    } catch (error) {
+      console.error(
+        "Firebase Analytics Plugin: Error copying GoogleService-Info.plist from www/:",
+        error.message
+      );
+    }
+  }
+
   // Check if GoogleService-Info.plist exists in project root
   if (!fs.existsSync(googleServicesSourcePath)) {
     console.log(
