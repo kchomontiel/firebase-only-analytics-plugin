@@ -23,7 +23,7 @@ public class OnNotificationOpenReceiver extends BroadcastReceiver {
             extras.putBoolean("tap", true);
             
             // Send notification data to JavaScript
-            FirebasePlugin.sendNotification(extras, getApplicationContext());
+            FirebasePlugin.sendNotification(extras, context);
         }
     }
 }
