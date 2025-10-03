@@ -494,4 +494,3 @@ public class FirebasePlugin extends CordovaPlugin {
         }
     }
 }
-}
