@@ -452,10 +452,6 @@ public class FirebasePlugin extends CordovaPlugin {
     /**
      * Send notification data to JavaScript
      */
-    /**
-    /**
-     * Send notification data to JavaScript
-     */
     public static void sendNotification(Bundle bundle, Context context) {
         if (notificationCallbackContext != null && bundle != null) {
             JSONObject json = new JSONObject();
@@ -479,11 +475,11 @@ public class FirebasePlugin extends CordovaPlugin {
 
     public static void sendNotification(JSONObject json) {
         if (notificationCallbackContext != null && json != null) {
-            PluginResult result = new PluginResult(PluginResult.Status.OK, json);
-            result.setKeepCallback(true);
-            notificationCallbackContext.sendPluginResult(result);
-            Log.d(TAG, "sendNotification success (JSONObject)");
         }
+
+    /**
+     * Send notification data to JavaScript (overloaded for JSONObject)
+     */
     }
 
     /**
