@@ -14,17 +14,26 @@ module.exports = function (context) {
   console.log(
     "Firebase Analytics Plugin: Running Android post-install hook..."
   );
+  
+  // Debug logging for OutSystems builds
+  console.log("Firebase Analytics Plugin: context.opts.projectRoot:", context.opts.projectRoot);
+  console.log("Firebase Analytics Plugin: context.opts.platforms:", context.opts.platforms);
 
   // Check if we're running on Android platform
-  if (
-    !context.opts.platforms ||
-    context.opts.platforms.indexOf("android") === -1
-  ) {
+  // For OutSystems builds, context.opts.platforms might not be set correctly
+  // So we'll check if the android platform directory exists instead
+  const androidPlatformPath = path.join(context.opts.projectRoot, "platforms", "android");
+  console.log("Firebase Analytics Plugin: Checking Android platform at:", androidPlatformPath);
+  console.log("Firebase Analytics Plugin: Android platform exists:", fs.existsSync(androidPlatformPath));
+  
+  if (!fs.existsSync(androidPlatformPath)) {
     console.log(
-      "Firebase Analytics Plugin: Not Android platform, skipping hook"
+      "Firebase Analytics Plugin: Android platform not found, skipping hook"
     );
     return;
   }
+  
+  console.log("Firebase Analytics Plugin: Android platform found, continuing with hook execution");
 
   const platformPath = path.join(
     context.opts.projectRoot,
