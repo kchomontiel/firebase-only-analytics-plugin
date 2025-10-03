@@ -470,16 +470,16 @@ public class FirebasePlugin extends CordovaPlugin {
         }
     }
     /**
-     */
      * Send notification data to JavaScript (overloaded for JSONObject)
-
+     * @param json JSONObject containing notification data
+     */
     public static void sendNotification(JSONObject json) {
         if (notificationCallbackContext != null && json != null) {
+            PluginResult result = new PluginResult(PluginResult.Status.OK, json);
+            result.setKeepCallback(true);
+            notificationCallbackContext.sendPluginResult(result);
+            Log.d(TAG, "sendNotification (JSONObject) success");
         }
-
-    /**
-     * Send notification data to JavaScript (overloaded for JSONObject)
-     */
     }
 
     /**
